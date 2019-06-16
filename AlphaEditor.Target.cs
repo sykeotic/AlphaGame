@@ -9,5 +9,5 @@ public class AlphaEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		ExtraModuleNames.Add("Alpha");
-	}
+    }
 }

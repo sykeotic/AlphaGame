@@ -13,5 +13,8 @@ UCLASS()
 class ALPHA_API ATestGameMode : public AGameMode
 {
 	GENERATED_BODY()
+
+protected:
+	ATestGameMode();
 	
 };
