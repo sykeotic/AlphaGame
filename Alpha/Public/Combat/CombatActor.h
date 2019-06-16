@@ -39,6 +39,7 @@ public:
 	UStaticMeshComponent* MeshComp;
 
 	UCombatComponent* ComponentOwner;
+	UMaterial* WeaponMaterial;
 
 	void SetComponentOwner(UCombatComponent* InComp);
 	UCombatComponent* GetComponentOwner();

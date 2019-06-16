@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PlayableCharacter.h"
+#include "CombatActor.h"
 #include "HumanPlayerController.generated.h"
 
 UENUM(BlueprintType)
@@ -28,21 +29,15 @@ public:
 	void HeroSelect(FString& InKey);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void AssignMesh(const FString& InKey);
+	void AssignMesh(const FString& InKey);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void GetValues(const FString& InKey);
+	void GetValues(const FString& InKey);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void SetupHero(const FString& InKey);
+	void SetupHero(const FString& InKey);
 
 	void GeneralSelect();
-
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignCameraValues(float BaseTurnRate, float BaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll);
-
-	UFUNCTION(BlueprintCallable, Category = "Game")
-		void AssignHeroStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	APlayableCharacter* HeroChar;	

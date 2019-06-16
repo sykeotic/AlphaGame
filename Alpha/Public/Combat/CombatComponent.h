@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Runtime/Engine/Classes/Materials/Material.h"
 #include "CombatComponent.generated.h"
 
 class ACombatActor;
@@ -18,37 +19,51 @@ public:
 	UCombatComponent();
 
 	void UseCurrentWeapon();
+
+	UFUNCTION(BlueprintCallable)
 	void CycleNextWeapon();
+
 	void CyclePreviousWeapon();
-	void GetWeaponAt(int8 WeaponIndex);
-	void AddWeapon(ACombatActor* InActor);
-	void RemoveWeapon(int8 WeaponIndex);
+	void GetWeaponAt(uint8 WeaponIndex);
 
 	void UseCurrentAbility();
 	void CycleNextAbility();
 	void CyclePreviousAbility();
-	void GetAbilityAt(int8 WeaponIndex);
-	void AddAbility(ACombatActor* InActor);
-	void RemoveAbility(int8 AbilityIndex);
+	void GetAbilityAt(uint8 WeaponIndex);
+
+	void SetCurrentWeapon(ACombatActor* InActor);
 
 	void DestroyThisComponent();
 	APlayableCharacter* GetOwner();
 	void SetOwner(APlayableCharacter* InChar);
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignCombatActors();
-
+protected:
 	TArray<ACombatActor*> WeaponArray;
 	TArray<ACombatActor*> AbilityArray;
 	ACombatActor* CurrentWeapon;
 	ACombatActor* CurrentAbility;
 	APlayableCharacter* Owner;
+	uint8 AbilityCount;
+	uint8 WeaponCount;
+	uint8 CurrentWeaponIndex;
 
 	bool bCanUseActor;
 	bool bIsUsingActor;
 
-protected:
-
 public:	
+	UFUNCTION(BlueprintCallable)
+		void AddWeapon(ACombatActor* InActor, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation);
+
+	UFUNCTION(BlueprintCallable)
+		void RemoveWeapon(uint8 WeaponIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+		void AssignCombatActors();
+
+	UFUNCTION(BlueprintCallable)
+		void AddAbility(ACombatActor* InActor);
+
+	UFUNCTION(BlueprintCallable)
+		void RemoveAbility(uint8 AbilityIndex);
 		
 };

@@ -4,23 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CombatWeapon.h"
 #include "MeleeCombatWeapon.generated.h"
 
 UCLASS()
-class ALPHA_API AMeleeCombatWeapon : public AActor
+class ALPHA_API AMeleeCombatWeapon : public ACombatWeapon
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AMeleeCombatWeapon();
+	virtual void OnUse() override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 };

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "StatsComponent.h"
 #include "CombatComponent.h"
+#include "CombatActor.h"
 #include "PlayableCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -24,6 +25,9 @@ public:
 	void LookUpAtRate(float Rate);
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE);
 	virtual void Tick(float DeltaTime) override;
 	//protected
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -41,6 +45,21 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
 	void ReceiveOnCharacterDeath();
 
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform);
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed);
+
+	UFUNCTION(BlueprintCallable)
+	void AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh);
+
+	UFUNCTION(BlueprintCallable)
+	void AssignCombatMesh(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE);
+
+	UFUNCTION(BlueprintCallable)
+	void AssignCombatValues(float Damage, int32 MaxAmmo, float Range, FString ProjectileSpawn, EActorType WeaponType, ERange WeaponRange);
+
 	void CharacterAttackStart();
 	void CharacterAttackStop();
 	bool IsCharacterAttacking();
@@ -50,5 +69,6 @@ public:
 
 	float BaseLookUpRate;
 	float BaseTurnRate;
+	FString WeaponSocketLocation;
 	bool bIsAttacking;
 };

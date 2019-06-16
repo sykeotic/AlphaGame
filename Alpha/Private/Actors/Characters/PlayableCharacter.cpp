@@ -1,10 +1,15 @@
 #include "PlayableCharacter.h"
 #include "CombatComponent.h"
+#include "CombatActor.h"
 #include "StatsComponent.h"
 #include "Logger.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "RangedCombatWeapon.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "MeleeCombatWeapon.h"
 #include "Components/InputComponent.h"
 #include "Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -122,4 +127,55 @@ void APlayableCharacter::SetBaseTurnRate(float InRate) {
 
 void APlayableCharacter::SetBaseLookUpRate(float InRate) {
 	BaseLookUpRate = InRate;
+}
+
+void APlayableCharacter::SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE) {
+	FVector Location(0.0f, 0.0f, 0.0f);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters SpawnInfo;
+	ACombatActor* Weapon;
+	if (IN_RANGE == ERange::MELEE && IN_ACTOR_TYPE == EActorType::WEAPON) {
+		Weapon = Cast<ACombatActor>(GetWorld()->SpawnActor<AMeleeCombatWeapon>(Location, Rotation, SpawnInfo));
+	} else if (IN_RANGE == ERange::RANGED && IN_ACTOR_TYPE == EActorType::WEAPON)	{
+		Weapon = Cast<ACombatActor>(GetWorld()->SpawnActor<ARangedCombatWeapon>(Location, Rotation, SpawnInfo));
+	} else {
+		Weapon = nullptr;
+	}
+	CombatComponent->AddWeapon(Weapon, InWeaponMaterial, InStaticMesh, SocketLocation);
+}
+
+void APlayableCharacter::AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform) {
+	ULogger::ScreenMessage(FColor::Red, "Assigning Camera Stats");
+	SetBaseTurnRate(InBaseTurnRate);
+	SetBaseLookUpRate(InBaseLookupRate);
+	bUseControllerRotationPitch = bUsePitch;
+	bUseControllerRotationRoll = bUseRoll;
+	bUseControllerRotationYaw = bUseYaw;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bUsePawnControlRotation = bInUseControlRotation;
+	CameraBoom->TargetArmLength = BoomArmLength;
+	CameraBoom->SetRelativeTransform(RelTransform);
+}
+
+void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed) {
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
+	GetCharacterMovement()->RotationRate = RotationRate;
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+}
+
+void APlayableCharacter::AssignCombatMesh(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE) {
+	SpawnWeapon(InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE);
+}
+
+void APlayableCharacter::AssignCombatValues(float Damage, int32 MaxAmmo, float Range, FString ProjectileSpawn, EActorType WeaponType, ERange WeaponRange) {
+
+}
+
+void APlayableCharacter::AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh) {
+	GetMesh()->SetSkeletalMesh(InMesh);
+	GetMesh()->SetMaterial(0, InMaterial_0);
+	GetMesh()->SetMaterial(1, InMaterial_1);
 }
