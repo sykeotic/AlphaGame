@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PlayableCharacter.h"
+#include "PlayableGeneralPawn.h"
 #include "CombatActor.h"
 #include "HumanPlayerController.generated.h"
 
@@ -37,10 +38,30 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
 	void SetupHero(const FString& InKey);
 
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* FollowCamera;
+
+	UFUNCTION(BlueprintCallable)
 	void GeneralSelect();
 
+	void General_SetupInputComponent();
+
+	void General_SelectionPressed();
+	void General_SelectionReleased();
+	void General_MoveReleased();
+	void General_MoveForward(float Value);
+	void General_MoveRight(float Value);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	APlayableCharacter* HeroChar;	
+	APlayableCharacter* HeroChar;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	APlayableGeneralPawn* GeneralChar;
 
 private:
 	EPlayerType PlayerType;

@@ -45,8 +45,8 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("CombatUse", IE_Pressed, this, &APlayableCharacter::CharacterAttackStart);
-	PlayerInputComponent->BindAction("CombatUse", IE_Released, this, &APlayableCharacter::CharacterAttackStop);
+	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &APlayableCharacter::CharacterAttackStart);
+	PlayerInputComponent->BindAction("LeftMouseClick", IE_Released, this, &APlayableCharacter::CharacterAttackStop);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayableCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayableCharacter::MoveRight);

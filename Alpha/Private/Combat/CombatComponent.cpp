@@ -69,7 +69,7 @@ void UCombatComponent::AddWeapon(ACombatActor* InActor, UMaterial* InWeaponMater
 void UCombatComponent::SetCurrentWeapon(ACombatActor* InActor) {
 	if (CurrentWeapon) {
 		FDetachmentTransformRules DetachRules(EDetachmentRule::KeepRelative, true);
-		CurrentWeapon->DetachFromActor(DetachRules);
+		CurrentWeapon->DetachFromActor(DetachRules); 
 	}
 	CurrentWeapon = InActor;
 	CurrentWeapon->MeshComp->SetStaticMesh(InActor->MeshComp->GetStaticMesh());
