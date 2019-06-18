@@ -38,7 +38,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
 	void SetupHero(const FString& InKey);
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class AGeneralHUD* GeneralHUD;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom;

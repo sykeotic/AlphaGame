@@ -7,6 +7,7 @@
 #include "StatsComponent.h"
 #include "CombatComponent.h"
 #include "CombatActor.h"
+#include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "PlayableCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -25,6 +26,11 @@ public:
 	void LookUpAtRate(float Rate);
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
+
+	UFUNCTION(BlueprintCallable)
+	void SetDecal(UMaterial* InMaterial);
+	void SwitchOnDecal();
+	void SwitchOffDecal();
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE);
@@ -59,6 +65,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AssignCombatValues(float Damage, int32 MaxAmmo, float Range, FString ProjectileSpawn, EActorType WeaponType, ERange WeaponRange);
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UDecalComponent* CursorToWorld;
 
 	void CharacterAttackStart();
 	void CharacterAttackStop();

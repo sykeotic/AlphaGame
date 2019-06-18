@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MeleeCombatWeapon.h"
 #include "Components/InputComponent.h"
+#include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -31,6 +32,25 @@ APlayableCharacter::APlayableCharacter()
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);	
+
+	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
+	CursorToWorld->SetupAttachment(RootComponent);
+
+}
+
+void APlayableCharacter::SetDecal(UMaterial* InMaterial) {
+	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
+	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	CursorToWorld->SetVisibility(false);
+	CursorToWorld->SetDecalMaterial(InMaterial);
+}
+
+void APlayableCharacter::SwitchOnDecal() {
+	CursorToWorld->SetVisibility(true);
+}
+
+void APlayableCharacter::SwitchOffDecal() {
+	CursorToWorld->SetVisibility(false);
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
