@@ -15,7 +15,7 @@ class ACombatWeapon : public ACombatActor
 public:	
 	ACombatWeapon();
 
-	virtual void OnUse() override;
+	virtual void OnUse(FVector InLocation, FRotator InRotation) override;
 
 protected:
 

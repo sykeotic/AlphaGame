@@ -14,7 +14,7 @@ class ALPHA_API AMeleeCombatWeapon : public ACombatWeapon
 	
 public:	
 	AMeleeCombatWeapon();
-	virtual void OnUse() override;
+	virtual void OnUse(FVector InLocation, FRotator InRotation) override;
 
 protected:
 

@@ -1,5 +1,9 @@
 #include "RangedCombatWeapon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Logger.h"
+#include "CombatComponent.h"
+#include "PlayableCharacter.h"
+#include "Engine.h"
 
 ARangedCombatWeapon::ARangedCombatWeapon()
 {
@@ -7,6 +11,44 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 
 }
 
-void ARangedCombatWeapon::OnUse(){
+void ARangedCombatWeapon::OnUse(FVector InLocation, FRotator InRotation){
+	Super::OnUse(InLocation, InRotation);
+	ULogger::ScreenMessage(FColor::Yellow, "Using Ranged Combat Weapon: ");
 	ULogger::ScreenMessage(FColor::Red, "Ranged Weapon Firing");
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+
+	FVector WeaponLocation = MeshComp->GetSocketLocation("Muzzle");
+	FRotator WeaponRotation = MeshComp->GetSocketRotation("Muzzle");
+
+	FVector ShotDirection = InRotation.Vector();
+
+	UWorld* World = GetWorld();
+	FVector TraceEnd = InLocation + (InRotation.Vector() * 5000);
+
+	FCollisionQueryParams QueryParams;
+	FHitResult Hit;
+
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
+	QueryParams.bTraceComplex = true;
+
+	if (World->LineTraceSingleByChannel(Hit, InLocation, TraceEnd, ECC_Visibility, QueryParams)) {
+		if (ComponentOwner->GetOwner() && ComponentOwner) {
+			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, .05f, 0, 1.0f);
+			AActor* HitActor = Hit.GetActor();
+			if (IsValid(HitActor)) {
+				ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
+			}
+			UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
+		}
+		else {
+			ULogger::ScreenMessage(FColor::Red, "Owner null");
+		}
+	}
+	else {
+		ULogger::ScreenMessage(FColor::Blue, TEXT("LineTrace failed!"));
+	}
 }

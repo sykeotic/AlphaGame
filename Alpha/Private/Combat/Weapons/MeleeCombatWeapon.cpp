@@ -6,6 +6,6 @@ AMeleeCombatWeapon::AMeleeCombatWeapon()
 
 }
 
-void AMeleeCombatWeapon::OnUse() {
+void AMeleeCombatWeapon::OnUse(FVector InLocation, FRotator InRotation) {
 	
 }

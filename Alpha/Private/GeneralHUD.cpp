@@ -14,20 +14,22 @@ FVector2D AGeneralHUD::Get2DMousePosition() {
 void AGeneralHUD::DrawHUD() {
 	if (bStartSelecting) {
 
-		if (SelectedActors.Num() > 0) {
-			for (int32 i = 0; i < SelectedActors.Num(); i++) {
-				SelectedActors[i]->SwitchOffDecal();
+		if (FoundActors.Num() > 0) {
+			for (int32 i = 0; i < FoundActors.Num(); i++) {
+				FoundActors[i]->SwitchOffDecal();
 			}
 		}
 
-		SelectedActors.Empty();
+		FoundActors.Empty();
 		CurrentPoint = Get2DMousePosition();
 		float DiffX = CurrentPoint.X - InitialPoint.X;
 		float DiffY = CurrentPoint.Y - InitialPoint.Y;
 		DrawRect(FLinearColor(0, 0, 1, .15f), InitialPoint.X, InitialPoint.Y, DiffX, DiffY);
-		GetActorsInSelectionRectangle<APlayableCharacter>(InitialPoint, CurrentPoint, SelectedActors, false, false);
-		for (int32 i = 0; i < SelectedActors.Num(); i++) {
-			SelectedActors[i]->SwitchOnDecal();
+		GetActorsInSelectionRectangle<APlayableCharacter>(InitialPoint, CurrentPoint, FoundActors, false, false);
+		if (FoundActors.Num() > 0) {
+			for (int32 i = 0; i < FoundActors.Num(); i++) {
+				FoundActors[i]->SwitchOnDecal();
+			}
 		}
 	}
 }

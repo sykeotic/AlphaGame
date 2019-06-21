@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayableCharacter.h"
 #include "PlayableGeneralPawn.h"
+#include "DrawDebugHelpers.h"
 #include "CombatActor.h"
 #include "HumanPlayerController.generated.h"
 
@@ -63,6 +64,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	APlayableGeneralPawn* GeneralChar;
+
+	TArray<APlayableCharacter*> SelectedActors;
+
+	bool bHeroChosen;
+	bool bGeneralChosen;
 
 private:
 	EPlayerType PlayerType;

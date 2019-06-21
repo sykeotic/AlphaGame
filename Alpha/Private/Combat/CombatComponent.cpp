@@ -11,11 +11,12 @@ UCombatComponent::UCombatComponent()
 	CurrentWeapon = nullptr;
 }
 
-void UCombatComponent::UseCurrentWeapon() {
+void UCombatComponent::UseCurrentWeapon(FVector InLocation, FRotator InRotation) {
 	ULogger::ScreenMessage(FColor::Yellow, "Using Combat Weapon: ");
 	ULogger::ScreenMessage(FColor::Yellow, FString::FromInt(CurrentWeaponIndex));
 	if (CurrentWeapon) {
-		CurrentWeapon->OnUse();
+		ULogger::ScreenMessage(FColor::Yellow, "Current Weapon Exists");
+		CurrentWeapon->OnUse(InLocation, InRotation);
 	}
 }
 
@@ -79,10 +80,10 @@ void UCombatComponent::SetCurrentWeapon(ACombatActor* InActor) {
 	CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void UCombatComponent::UseCurrentAbility() {
+void UCombatComponent::UseCurrentAbility(FVector InLocation, FRotator InRotation) {
 	ULogger::ScreenMessage(FColor::Red, "Using Combat Ability");
 	if (CurrentAbility) {
-		CurrentAbility->OnUse();
+		CurrentAbility->OnUse(InLocation, InRotation);
 	}
 }
 

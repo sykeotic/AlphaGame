@@ -44,7 +44,10 @@ public:
 	void SetComponentOwner(UCombatComponent* InComp);
 	UCombatComponent* GetComponentOwner();
 
-	virtual void OnUse();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<UDamageType> DamageType;
+
+	virtual void OnUse(FVector InLocation, FRotator InRotation);
 
 protected:
 

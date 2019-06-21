@@ -25,5 +25,5 @@ public:
 	FVector2D Get2DMousePosition();
 	virtual void DrawHUD();
 
-	TArray<APlayableCharacter*> SelectedActors;
+	TArray<APlayableCharacter*> FoundActors;
 };

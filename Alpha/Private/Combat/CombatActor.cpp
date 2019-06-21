@@ -8,7 +8,7 @@ ACombatActor::ACombatActor()
 	MeshComp->SetupAttachment(RootComponent);
 }
 
-void ACombatActor::OnUse() {
+void ACombatActor::OnUse(FVector InLocation, FRotator InRotation) {
 
 }
 

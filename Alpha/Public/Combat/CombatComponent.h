@@ -18,7 +18,7 @@ class UCombatComponent : public UActorComponent
 public:	
 	UCombatComponent();
 
-	void UseCurrentWeapon();
+	void UseCurrentWeapon(FVector InLocation, FRotator InRotation);
 
 	UFUNCTION(BlueprintCallable)
 	void CycleNextWeapon();
@@ -26,7 +26,7 @@ public:
 	void CyclePreviousWeapon();
 	void GetWeaponAt(uint8 WeaponIndex);
 
-	void UseCurrentAbility();
+	void UseCurrentAbility(FVector InLocation, FRotator InRotation);
 	void CycleNextAbility();
 	void CyclePreviousAbility();
 	void GetAbilityAt(uint8 WeaponIndex);

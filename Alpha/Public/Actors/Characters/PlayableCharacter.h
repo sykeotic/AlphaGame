@@ -80,5 +80,7 @@ public:
 	float BaseLookUpRate;
 	float BaseTurnRate;
 	FString WeaponSocketLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
 };

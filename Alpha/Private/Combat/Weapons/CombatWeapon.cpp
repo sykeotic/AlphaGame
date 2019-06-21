@@ -1,4 +1,5 @@
 #include "CombatWeapon.h"
+#include "Logger.h"
 
 ACombatWeapon::ACombatWeapon()
 {
@@ -7,6 +8,7 @@ ACombatWeapon::ACombatWeapon()
 	ACTOR_TYPE = EActorType::WEAPON;
 }
 
-void ACombatWeapon::OnUse() {
-
+void ACombatWeapon::OnUse(FVector InLocation, FRotator InRotation) {
+	Super::OnUse(InLocation, InRotation);
+	ULogger::ScreenMessage(FColor::Yellow, "ACombatWeapon");
 }

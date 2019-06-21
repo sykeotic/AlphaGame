@@ -35,7 +35,6 @@ APlayableCharacter::APlayableCharacter()
 
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-
 }
 
 void APlayableCharacter::SetDecal(UMaterial* InMaterial) {
@@ -126,9 +125,17 @@ void APlayableCharacter::MoveRight(float Value)
 }
 
 void APlayableCharacter::CharacterAttackStart() {
-	bIsAttacking = true;
 	ULogger::ScreenMessage(FColor::Green, "Character Attacking");
-	CombatComponent->UseCurrentWeapon();
+	if (!bIsAttacking) {
+		bIsAttacking = true;
+			FTimerHandle Handle;
+			GetWorld()->GetTimerManager().SetTimer(Handle, [this]() {
+				FVector CameraLocation;
+				FRotator CameraRotation;
+				GetActorEyesViewPoint(CameraLocation, CameraRotation);
+				CombatComponent->UseCurrentWeapon(CameraLocation, CameraRotation);
+			}, .25, false);
+	}
 }
 
 void APlayableCharacter::CharacterAttackStop() {
@@ -161,6 +168,7 @@ void APlayableCharacter::SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* I
 	} else {
 		Weapon = nullptr;
 	}
+	Weapon->SetComponentOwner(CombatComponent);
 	CombatComponent->AddWeapon(Weapon, InWeaponMaterial, InStaticMesh, SocketLocation);
 }
 
