@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "GeneralHUD.h"
 #include "Logger.h"
+#include "PlayableGeneralPawn.h"
 #include "GameFramework/PlayerController.h"
 
 FVector2D AGeneralHUD::Get2DMousePosition() {

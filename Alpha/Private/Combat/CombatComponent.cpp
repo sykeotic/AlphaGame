@@ -1,5 +1,7 @@
 #include "CombatComponent.h"
 #include "CombatActor.h"
+#include "RangedCombatWeapon.h"
+#include "MeleeCombatWeapon.h"
 #include "PlayableCharacter.h"
 #include "Runtime/Engine/Classes/Materials/Material.h"
 #include "Logger.h"
@@ -11,12 +13,12 @@ UCombatComponent::UCombatComponent()
 	CurrentWeapon = nullptr;
 }
 
-void UCombatComponent::UseCurrentWeapon(FVector InLocation, FRotator InRotation) {
+void UCombatComponent::UseCurrentWeapon() {
 	ULogger::ScreenMessage(FColor::Yellow, "Using Combat Weapon: ");
 	ULogger::ScreenMessage(FColor::Yellow, FString::FromInt(CurrentWeaponIndex));
 	if (CurrentWeapon) {
 		ULogger::ScreenMessage(FColor::Yellow, "Current Weapon Exists");
-		CurrentWeapon->OnUse(InLocation, InRotation);
+		CurrentWeapon->OnUse();
 	}
 }
 
@@ -47,12 +49,29 @@ void UCombatComponent::RemoveWeapon(uint8 InPosition) {
 	ULogger::ScreenMessage(FColor::Red, "Removing Weapon");
 }
 
-void UCombatComponent::AddWeapon(ACombatActor* InActor, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation) {
+void UCombatComponent::SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange) {
+	FVector Location(0.0f, 0.0f, 0.0f);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters SpawnInfo;
+	ACombatActor* Weapon;
+	if (IN_RANGE == ERange::MELEE && IN_ACTOR_TYPE == EActorType::WEAPON) {
+		Weapon = Cast<ACombatActor>(GetWorld()->SpawnActor<AMeleeCombatWeapon>(Location, Rotation, SpawnInfo));
+	}
+	else if (IN_RANGE == ERange::RANGED && IN_ACTOR_TYPE == EActorType::WEAPON) {
+		Weapon = Cast<ACombatActor>(GetWorld()->SpawnActor<ARangedCombatWeapon>(Location, Rotation, SpawnInfo));
+	}
+	else {
+		Weapon = nullptr;
+	}
+	Weapon->SetComponentOwner(this);
+	Weapon->AssignWeaponValues(InStaticMesh, ProjectileSpawnLocation, IN_RANGE, IN_ACTOR_TYPE, Dmg, InRange);
+	AddWeapon(Weapon, SocketLocation);
+}
+
+void UCombatComponent::AddWeapon(ACombatActor* InActor, FName SocketLocation) {
 	ULogger::ScreenMessage(FColor::Green, "AddWeapon() Weapon Count:");
 	ULogger::ScreenMessage(FColor::Green, FString::FromInt(WeaponCount));
 	WeaponArray.AddUnique(InActor);
-	InActor->WeaponMaterial = InWeaponMaterial;
-	InActor->MeshComp->SetStaticMesh(InStaticMesh);
 	Owner->WeaponSocketLocation = SocketLocation;
 	if(CurrentWeapon)
 		ULogger::ScreenMessage(FColor::White, "CurrWeapon is valid");
@@ -73,17 +92,14 @@ void UCombatComponent::SetCurrentWeapon(ACombatActor* InActor) {
 		CurrentWeapon->DetachFromActor(DetachRules); 
 	}
 	CurrentWeapon = InActor;
-	CurrentWeapon->MeshComp->SetStaticMesh(InActor->MeshComp->GetStaticMesh());
-	CurrentWeapon->MeshComp->SetMaterial(0, InActor->WeaponMaterial);
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-	CurrentWeapon->AttachToComponent(Owner->GetMesh(), AttachRules, FName(*Owner->WeaponSocketLocation));
-	CurrentWeapon->MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CurrentWeapon->AttachToComponent(Owner->GetMesh(), AttachRules, Owner->WeaponSocketLocation);
 }
 
 void UCombatComponent::UseCurrentAbility(FVector InLocation, FRotator InRotation) {
 	ULogger::ScreenMessage(FColor::Red, "Using Combat Ability");
 	if (CurrentAbility) {
-		CurrentAbility->OnUse(InLocation, InRotation);
+		CurrentAbility->OnUse();
 	}
 }
 

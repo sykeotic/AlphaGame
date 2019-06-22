@@ -15,6 +15,6 @@ class ARangedCombatWeapon : public ACombatWeapon
 public:	
 	ARangedCombatWeapon();
 
-	virtual void OnUse(FVector InLocation, FRotator InRotation) override;
+	virtual void OnUse() override;
 
 };

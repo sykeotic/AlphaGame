@@ -5,28 +5,6 @@
 #include "CombatComponent.h"
 #include "CombatActor.generated.h"
 
-UENUM(BlueprintType)
-enum class EValidTargets : uint8 {
-	ALLIES UMETA(DisplayName = "Allies"),
-	ENEMIES UMETA(DisplayName = "Enemies"),
-	ALL UMETA(DisplayName = "All"),
-	SELF UMETA(DisplayName = "Self")
-};
-
-UENUM(BlueprintType)
-enum class ERange : uint8 {
-	MELEE UMETA(DisplayName = "Melee"),
-	RANGED UMETA(DisplayName = "Ranged"),
-	THROWN UMETA(DisplayName = "Thrown")
-};
-
-UENUM(BlueprintType)
-enum class EActorType : uint8 {
-	WEAPON UMETA(DisplayName = "Weapon"),
-	SPELL UMETA(DisplayName = "Spell"),
-	CONSUMABLE UMETA(DisplayName = "Consumable")
-};
-
 UCLASS(ABSTRACT)
 class ACombatActor : public AActor
 {
@@ -47,13 +25,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
 
-	virtual void OnUse(FVector InLocation, FRotator InRotation);
+	FName ProjectileSpawnLocation;
+	float UseRange;
+	float Damage;
+
+	virtual void OnUse();
+
+	virtual void AssignWeaponValues(UStaticMesh* InStaticMesh, FName InProjectileSpawnLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, float InDmg, float InRange);
 
 protected:
 
 	EActorType ACTOR_TYPE;
 	EValidTargets VALID_TARGETS;
-	ERange RANGE;
+	ERange RANGE_TYPE;
 
 public:	
 

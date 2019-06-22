@@ -10,6 +10,8 @@
 /**
  * 
  */
+class APlayableGeneralPawn;
+
 UCLASS()
 class ALPHA_API AGeneralHUD : public AHUD
 {

@@ -8,7 +8,7 @@ ACombatWeapon::ACombatWeapon()
 	ACTOR_TYPE = EActorType::WEAPON;
 }
 
-void ACombatWeapon::OnUse(FVector InLocation, FRotator InRotation) {
-	Super::OnUse(InLocation, InRotation);
+void ACombatWeapon::OnUse() {
+	Super::OnUse();
 	ULogger::ScreenMessage(FColor::Yellow, "ACombatWeapon");
 }

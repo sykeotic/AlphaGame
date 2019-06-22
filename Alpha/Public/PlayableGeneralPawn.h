@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GeneralHUD.h"
 #include "PlayableGeneralPawn.generated.h"
+
+class AHumanPlayerController;
 
 UCLASS()
 class ALPHA_API APlayableGeneralPawn : public APawn
@@ -26,4 +29,18 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void LeftClickPressed();
+	void LeftClickReleased();
+	void RightClickReleased();
+
+	void SetOwner(AHumanPlayerController* InController);
+
+	AGeneralHUD* GetHUD();
+
+	AHumanPlayerController* Owner;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class AGeneralHUD* GeneralHUD;
+
+	TArray<APlayableCharacter*> SelectedActors;
 };

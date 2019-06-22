@@ -11,22 +11,22 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 
 }
 
-void ARangedCombatWeapon::OnUse(FVector InLocation, FRotator InRotation){
-	Super::OnUse(InLocation, InRotation);
-	ULogger::ScreenMessage(FColor::Yellow, "Using Ranged Combat Weapon: ");
-	ULogger::ScreenMessage(FColor::Red, "Ranged Weapon Firing");
-
+void ARangedCombatWeapon::OnUse(){
+	Super::OnUse();
+	FRotator OwnerView;
+	FVector OwnerLoc;
+	ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 
-	FVector WeaponLocation = MeshComp->GetSocketLocation("Muzzle");
-	FRotator WeaponRotation = MeshComp->GetSocketRotation("Muzzle");
+	FVector WeaponLocation = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
+	FRotator WeaponRotation = MeshComp->GetSocketRotation(ProjectileSpawnLocation);
 
-	FVector ShotDirection = InRotation.Vector();
+	FVector ShotDirection = OwnerView.Vector();
 
 	UWorld* World = GetWorld();
-	FVector TraceEnd = InLocation + (InRotation.Vector() * 5000);
+	FVector TraceEnd = WeaponLocation + (OwnerView.Vector() * UseRange);
 
 	FCollisionQueryParams QueryParams;
 	FHitResult Hit;
@@ -35,14 +35,14 @@ void ARangedCombatWeapon::OnUse(FVector InLocation, FRotator InRotation){
 	QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
 	QueryParams.bTraceComplex = true;
 
-	if (World->LineTraceSingleByChannel(Hit, InLocation, TraceEnd, ECC_Visibility, QueryParams)) {
+	if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_Visibility, QueryParams)) {
 		if (ComponentOwner->GetOwner() && ComponentOwner) {
-			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, .05f, 0, 1.0f);
+			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor)) {
 				ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
 			}
-			UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
+			UGameplayStatics::ApplyPointDamage(HitActor, Damage, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
 		}
 		else {
 			ULogger::ScreenMessage(FColor::Red, "Owner null");

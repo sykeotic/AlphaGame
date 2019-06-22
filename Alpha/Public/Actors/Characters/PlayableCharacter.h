@@ -28,14 +28,12 @@ public:
 	void SetBaseLookUpRate(float InRate);
 
 	UFUNCTION(BlueprintCallable)
-	void SetDecal(UMaterial* InMaterial);
+	void SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation);
 	void SwitchOnDecal();
 	void SwitchOffDecal();
 
-	UFUNCTION(BlueprintCallable)
-	void SpawnWeapon(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE);
 	virtual void Tick(float DeltaTime) override;
-	//protected
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	class UStatsComponent* StatsComponent;
 
@@ -55,17 +53,13 @@ public:
 	void AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform);
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed);
+	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation);
 
 	UFUNCTION(BlueprintCallable)
 	void AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh);
 
 	UFUNCTION(BlueprintCallable)
-	void AssignCombatMesh(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FString InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE);
-
-	UFUNCTION(BlueprintCallable)
-	void AssignCombatValues(float Damage, int32 MaxAmmo, float Range, FString ProjectileSpawn, EActorType WeaponType, ERange WeaponRange);
-
+	void AssignCombatMesh(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* CursorToWorld;
@@ -79,7 +73,7 @@ public:
 
 	float BaseLookUpRate;
 	float BaseTurnRate;
-	FString WeaponSocketLocation;
+	FName WeaponSocketLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
