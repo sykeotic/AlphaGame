@@ -11,15 +11,6 @@ APlayableGeneralPawn::APlayableGeneralPawn()
 
 	GeneralCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	GeneralCamera->SetupAttachment(RootComponent);
-
-	GeneralHUD = Cast<AGeneralHUD>(this->GetHUD());
-	if (GeneralHUD->IsValidLowLevel()) {
-		ULogger::ScreenMessage(FColor::Red, "Cast worked");
-	}
-}
-
-AGeneralHUD* APlayableGeneralPawn::GetHUD() {
-	return GeneralHUD;
 }
 
 void APlayableGeneralPawn::BeginPlay()
@@ -49,7 +40,6 @@ void APlayableGeneralPawn::RightClickReleased() {
 			else {
 				ULogger::ScreenMessage(FColor::Red, "Controller found");
 			}
-			//UNavigationSystem::SimpleMoveToLocation(SelectedActors[i]->GetController(), MoveLocation);
 			DrawDebugSphere(GetWorld(), MoveLocation, 25, 10, FColor::Red, 3);
 		}
 	}
@@ -57,14 +47,14 @@ void APlayableGeneralPawn::RightClickReleased() {
 
 void APlayableGeneralPawn::LeftClickPressed() {
 	ULogger::ScreenMessage(FColor::Red, "Selection Pressed");
-	GeneralHUD->InitialPoint = GeneralHUD->Get2DMousePosition();
-	GeneralHUD->bStartSelecting = true;
+	Owner->GeneralHUD->InitialPoint = Owner->GeneralHUD->Get2DMousePosition();
+	Owner->GeneralHUD->bStartSelecting = true;
 }
 
 void APlayableGeneralPawn::LeftClickReleased() {
 	ULogger::ScreenMessage(FColor::Red, "Selection Released");
-	GeneralHUD->bStartSelecting = false;
-	SelectedActors = GeneralHUD->FoundActors;
+	Owner->GeneralHUD->bStartSelecting = false;
+	SelectedActors = Owner->GeneralHUD->FoundActors;
 }
 
 void APlayableGeneralPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
@@ -74,4 +64,22 @@ void APlayableGeneralPawn::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Released, this, &APlayableGeneralPawn::LeftClickReleased);
 
 	PlayerInputComponent->BindAction("RightMouseClick", IE_Pressed, this, &APlayableGeneralPawn::RightClickReleased);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &APlayableGeneralPawn::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &APlayableGeneralPawn::MoveRight);
+}
+
+void APlayableGeneralPawn::TeardownInput() {
+	
+}
+
+
+void APlayableGeneralPawn::MoveForward(float Value) {
+	if(Value > 0.f)
+		ULogger::ScreenMessage(FColor::Red, "Move Forward Pawn");
+}
+
+void APlayableGeneralPawn::MoveRight(float Value) {
+	if (Value > 0.f)
+		ULogger::ScreenMessage(FColor::Red, "Move Right Pawn");
 }

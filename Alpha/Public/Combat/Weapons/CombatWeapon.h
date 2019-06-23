@@ -17,6 +17,9 @@ public:
 
 	virtual void OnUse() override;
 
+	FRotator WeaponRotation;
+	FVector WeaponLocation;
+
 protected:
 
 };

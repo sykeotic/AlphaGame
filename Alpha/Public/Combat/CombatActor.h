@@ -29,15 +29,15 @@ public:
 	float UseRange;
 	float Damage;
 
+	EActorType ACTOR_TYPE;
+	EValidTargets VALID_TARGETS;
+	ERange RANGE_TYPE;
+
 	virtual void OnUse();
 
 	virtual void AssignWeaponValues(UStaticMesh* InStaticMesh, FName InProjectileSpawnLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, float InDmg, float InRange);
 
 protected:
-
-	EActorType ACTOR_TYPE;
-	EValidTargets VALID_TARGETS;
-	ERange RANGE_TYPE;
 
 public:	
 

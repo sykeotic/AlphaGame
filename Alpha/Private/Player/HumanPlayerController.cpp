@@ -23,6 +23,7 @@ void AHumanPlayerController::HeroSelect(FString& InKey) {
 	FActorSpawnParameters SpawnInfo;
 	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(Location, Rotation, SpawnInfo);
 	Possess(HeroChar);
+	Unbind();
 	HeroChar->SetupPlayerInputComponent(InputComponent);
 	ULogger::ScreenMessage(FColor::Red, "Spawning Hero");
 	bHeroChosen = true;
@@ -39,16 +40,24 @@ void AHumanPlayerController::GeneralSelect() {
 	FActorSpawnParameters SpawnInfo;
 	GeneralChar = GetWorld()->SpawnActor<APlayableGeneralPawn>(Location, Rotation, SpawnInfo);
 	Possess(GeneralChar);
+	Unbind();
 	GeneralChar->SetOwner(this);
-	if (GeneralChar->GeneralHUD) {
-		GeneralChar->GeneralHUD->PlayerOwner = this;
-	}
-	else {
-		ULogger::ScreenMessage(FColor::Red, "HUD NotValid");
-	}
+	SetupGeneralHUD();
 	GeneralChar->SetupPlayerInputComponent(InputComponent);
 	GeneralChar->GeneralCamera->AddRelativeRotation(FRotator(-70.f, 0.f, 0.f));
 	GeneralChar->GeneralCamera->AddRelativeLocation(FVector(0.f, 0.f, 600.f));
 	bGeneralChosen = true;
 	bHeroChosen = false;
+}
+
+void AHumanPlayerController::Unbind() {
+	InputComponent->AxisBindings.Empty();
+	InputComponent->ClearActionBindings();
+}
+
+void AHumanPlayerController::SetupGeneralHUD() {
+	GeneralHUD = Cast<AGeneralHUD>(this->GetHUD());
+	if (GeneralHUD->IsValidLowLevel()) {
+		ULogger::ScreenMessage(FColor::Red, "Cast worked");
+	}
 }

@@ -25,7 +25,6 @@ class ALPHA_API AHumanPlayerController : public APlayerController
 	
 public:
 	AHumanPlayerController();
-	void PlayerTypeSelection();
 
 	UFUNCTION(BlueprintCallable)
 	void HeroSelect(FString& InKey);
@@ -41,6 +40,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GeneralSelect();
+
+	void Unbind();
+
+	void SetupGeneralHUD();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class AGeneralHUD* GeneralHUD;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	APlayableCharacter* HeroChar;

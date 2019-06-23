@@ -61,11 +61,11 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &APlayableCharacter::CharacterAttackStart);
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Released, this, &APlayableCharacter::CharacterAttackStop);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayableCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayableCharacter::MoveRight);
@@ -101,7 +101,6 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 
 void APlayableCharacter::MoveForward(float Value)
 {
-
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -175,8 +174,8 @@ void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationR
 	GetMesh()->SetRelativeLocation(MeshRotation);
 }
 
-void APlayableCharacter::AssignCombatMesh(UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange) {
-	CombatComponent->SpawnWeapon(InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE, ProjSpawn, InDmg, InRange);
+void APlayableCharacter::AssignCombatMesh(FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange) {
+	CombatComponent->SpawnWeapon(InLocation, InRotation, InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE, ProjSpawn, InDmg, InRange);
 }
 
 void APlayableCharacter::AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh) {

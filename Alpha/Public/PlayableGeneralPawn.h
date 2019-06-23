@@ -21,9 +21,6 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	//UFUNCTION(BlueprintCallable, Category = "Game")
-	//void AssignCameraValues(bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* GeneralCamera;
 
@@ -33,14 +30,16 @@ public:
 	void LeftClickReleased();
 	void RightClickReleased();
 
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void TeardownInput();
+
 	void SetOwner(AHumanPlayerController* InController);
 
 	AGeneralHUD* GetHUD();
 
 	AHumanPlayerController* Owner;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class AGeneralHUD* GeneralHUD;
 
 	TArray<APlayableCharacter*> SelectedActors;
 };
