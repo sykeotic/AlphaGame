@@ -27,7 +27,7 @@ public:
 	AHumanPlayerController();
 
 	UFUNCTION(BlueprintCallable)
-	void HeroSelect(FString& InKey);
+	void HeroSelect(FString& InKey, FVector InLoc, FRotator InRot);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
 	void AssignMesh(const FString& InKey);
@@ -39,7 +39,7 @@ public:
 	void SetupHero(const FString& InKey);
 
 	UFUNCTION(BlueprintCallable)
-	void GeneralSelect();
+	void GeneralSelect(FVector InLoc, FRotator InRot);
 
 	void Unbind();
 

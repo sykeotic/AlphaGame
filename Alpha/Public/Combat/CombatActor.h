@@ -27,6 +27,7 @@ public:
 
 	FName ProjectileSpawnLocation;
 	float UseRange;
+	float UseCooldown;
 	float Damage;
 
 	EActorType ACTOR_TYPE;
@@ -35,7 +36,7 @@ public:
 
 	virtual void OnUse();
 
-	virtual void AssignWeaponValues(UStaticMesh* InStaticMesh, FName InProjectileSpawnLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, float InDmg, float InRange);
+	virtual void AssignWeaponValues(float InCooldown, UStaticMesh* InStaticMesh, FName InProjectileSpawnLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, float InDmg, float InRange);
 
 protected:
 

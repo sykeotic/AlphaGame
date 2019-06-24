@@ -50,7 +50,7 @@ void UCombatComponent::RemoveWeapon(uint8 InPosition) {
 	ULogger::ScreenMessage(FColor::Red, "Removing Weapon");
 }
 
-void UCombatComponent::SpawnWeapon(FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange) {
+void UCombatComponent::SpawnWeapon(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange) {
 	FActorSpawnParameters SpawnInfo;
 	ACombatWeapon* Weapon;
 	if (IN_RANGE == ERange::MELEE && IN_ACTOR_TYPE == EActorType::WEAPON) {
@@ -65,7 +65,7 @@ void UCombatComponent::SpawnWeapon(FVector InLocation, FRotator InRotation, UMat
 	Weapon->SetComponentOwner(this);
 	Weapon->WeaponLocation = InLocation;
 	Weapon->WeaponRotation = InRotation;
-	Weapon->AssignWeaponValues(InStaticMesh, ProjectileSpawnLocation, IN_RANGE, IN_ACTOR_TYPE, Dmg, InRange);
+	Weapon->AssignWeaponValues(InCooldown, InStaticMesh, ProjectileSpawnLocation, IN_RANGE, IN_ACTOR_TYPE, Dmg, InRange);
 	AddWeapon(Weapon, SocketLocation);
 }
 

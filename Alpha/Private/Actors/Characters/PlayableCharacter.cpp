@@ -35,6 +35,9 @@ APlayableCharacter::APlayableCharacter()
 
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
+
+	bCanAttack = true;
+	bIsAttacking = false;
 }
 
 void APlayableCharacter::SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation) {
@@ -55,6 +58,11 @@ void APlayableCharacter::SwitchOffDecal() {
 void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bIsAttacking && bCanAttack) {
+		CharacterAttackStart();
+	}
+
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -125,12 +133,27 @@ void APlayableCharacter::MoveRight(float Value)
 
 void APlayableCharacter::CharacterAttackStart() {
 	ULogger::ScreenMessage(FColor::Green, "Character Attacking");
-	if (!bIsAttacking) {
+	if (!bIsAttacking && bCanAttack) {
+		ULogger::ScreenMessage(FColor::Green, "Character Can Attack");
 		bIsAttacking = true;
-			FTimerHandle Handle;
-			GetWorld()->GetTimerManager().SetTimer(Handle, [this]() {
-				CombatComponent->UseCurrentWeapon();
-			}, .25, false);
+		bCanAttack = false;
+		FTimerHandle Handle;
+		FTimerHandle DelayHandle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, [this]() {
+			CombatComponent->UseCurrentWeapon();
+		}, .25, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]() {
+			bCanAttack = true;
+		}, CombatComponent->CurrentWeapon->UseCooldown, false);
+	}
+	else if (bIsAttacking && bCanAttack) {
+		bCanAttack = false;
+		FTimerHandle Handle;
+		FTimerHandle DelayHandle;
+		CombatComponent->UseCurrentWeapon();
+		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]() {
+			bCanAttack = true;
+		}, CombatComponent->CurrentWeapon->UseCooldown, false);
 	}
 }
 
@@ -174,8 +197,8 @@ void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationR
 	GetMesh()->SetRelativeLocation(MeshRotation);
 }
 
-void APlayableCharacter::AssignCombatMesh(FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange) {
-	CombatComponent->SpawnWeapon(InLocation, InRotation, InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE, ProjSpawn, InDmg, InRange);
+void APlayableCharacter::AssignCombatMesh(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange) {
+	CombatComponent->SpawnWeapon(InCooldown, InLocation, InRotation, InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE, ProjSpawn, InDmg, InRange);
 }
 
 void APlayableCharacter::AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh) {

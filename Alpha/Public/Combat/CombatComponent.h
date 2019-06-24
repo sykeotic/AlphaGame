@@ -39,11 +39,11 @@ public:
 	void DestroyThisComponent();
 	APlayableCharacter* GetOwner();
 	void SetOwner(APlayableCharacter* InChar);
+	ACombatWeapon* CurrentWeapon;
 
 protected:
 	TArray<ACombatWeapon*> WeaponArray;
 	TArray<ACombatAbility*> AbilityArray;
-	ACombatWeapon* CurrentWeapon;
 	ACombatAbility* CurrentAbility;
 	APlayableCharacter* Owner;
 	uint8 AbilityCount;
@@ -58,7 +58,7 @@ public:
 		void AddWeapon(ACombatWeapon* InActor, FName SocketLocation);
 
 	UFUNCTION(BlueprintCallable)
-		void SpawnWeapon(FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange);
+		void SpawnWeapon(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange);
 
 	UFUNCTION(BlueprintCallable)
 		void RemoveWeapon(uint8 WeaponIndex);

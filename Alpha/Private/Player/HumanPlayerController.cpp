@@ -14,14 +14,12 @@ AHumanPlayerController::AHumanPlayerController() {
 	bGeneralChosen = false;
 }
 
-void AHumanPlayerController::HeroSelect(FString& InKey) {
+void AHumanPlayerController::HeroSelect(FString& InKey, FVector InLoc, FRotator InRot) {
 	if (bGeneralChosen)
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
-	FVector Location(0.0f, 0.0f, 0.0f);
-	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(Location, Rotation, SpawnInfo);
+	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(InLoc, InRot, SpawnInfo);
 	Possess(HeroChar);
 	Unbind();
 	HeroChar->SetupPlayerInputComponent(InputComponent);
@@ -30,15 +28,13 @@ void AHumanPlayerController::HeroSelect(FString& InKey) {
 	bGeneralChosen = false;
 }
 
-void AHumanPlayerController::GeneralSelect() {
+void AHumanPlayerController::GeneralSelect(FVector InLoc, FRotator InRot) {
 	if (bHeroChosen)
 		UnPossess();
 	ULogger::ScreenMessage(FColor::Red, "Spawning General");
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
-	FVector Location(100.0f, 0.0f, 0.0f);
-	FRotator Rotation(0.0f, 0.f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	GeneralChar = GetWorld()->SpawnActor<APlayableGeneralPawn>(Location, Rotation, SpawnInfo);
+	GeneralChar = GetWorld()->SpawnActor<APlayableGeneralPawn>(InLoc, InRot, SpawnInfo);
 	Possess(GeneralChar);
 	Unbind();
 	GeneralChar->SetOwner(this);
