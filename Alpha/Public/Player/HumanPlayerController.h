@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PlayableCharacter.h"
-#include "PlayableGeneralPawn.h"
 #include "DrawDebugHelpers.h"
 #include "CombatActor.h"
 #include "HumanPlayerController.generated.h"
@@ -18,28 +16,31 @@ enum class EPlayerType : uint8 {
 /**
  * 
  */
+class APlayableCharacter;
+class APlayableGeneralPawn;
+
 UCLASS()
 class ALPHA_API AHumanPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 	AHumanPlayerController();
 
 	UFUNCTION(BlueprintCallable)
-	void HeroSelect(FString& InKey, FVector InLoc, FRotator InRot);
+		void HeroSelect(FString& InKey, FVector InLoc, FRotator InRot);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-	void AssignMesh(const FString& InKey);
+		void AssignMesh(const FString& InKey);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-	void GetValues(const FString& InKey);
+		void GetValues(const FString& InKey);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-	void SetupHero(const FString& InKey);
+		void SetupHero(const FString& InKey);
 
 	UFUNCTION(BlueprintCallable)
-	void GeneralSelect(FVector InLoc, FRotator InRot);
+		void GeneralSelect(FVector InLoc, FRotator InRot);
 
 	void Unbind();
 
@@ -49,10 +50,16 @@ public:
 		class AGeneralHUD* GeneralHUD;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	APlayableCharacter* HeroChar;
+		APlayableCharacter* HeroChar;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	APlayableGeneralPawn* GeneralChar;
+		APlayableGeneralPawn* GeneralChar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
+		TSubclassOf<class APlayableCharacter> CharacterBlueprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
+		TSubclassOf<class APlayableGeneralPawn> PawnBlueprint;
 
 	bool bHeroChosen;
 	bool bGeneralChosen;

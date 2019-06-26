@@ -54,15 +54,15 @@ void UCombatComponent::SpawnWeapon(float InCooldown, FVector InLocation, FRotato
 	FActorSpawnParameters SpawnInfo;
 	ACombatWeapon* Weapon;
 	if (IN_RANGE == ERange::MELEE && IN_ACTOR_TYPE == EActorType::WEAPON) {
-		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<AMeleeCombatWeapon>(InLocation, InRotation, SpawnInfo));
+		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<AMeleeCombatWeapon>(MeleeWeaponClass, InLocation, InRotation, SpawnInfo));
 	}
 	else if (IN_RANGE == ERange::RANGED && IN_ACTOR_TYPE == EActorType::WEAPON) {
-		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<ARangedCombatWeapon>(InLocation, InRotation, SpawnInfo));
+		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<ARangedCombatWeapon>(RangedWeaponClass, InLocation, InRotation, SpawnInfo));
 	}
 	else {
 		Weapon = nullptr;
 	}
-	Weapon->SetComponentOwner(this);
+	Weapon->SetCombatComponentOwner(this);
 	Weapon->WeaponLocation = InLocation;
 	Weapon->WeaponRotation = InRotation;
 	Weapon->AssignWeaponValues(InCooldown, InStaticMesh, ProjectileSpawnLocation, IN_RANGE, IN_ACTOR_TYPE, Dmg, InRange);
@@ -73,18 +73,16 @@ void UCombatComponent::AddWeapon(ACombatWeapon* InActor, FName SocketLocation) {
 	ULogger::ScreenMessage(FColor::Green, "AddWeapon() Weapon Count:");
 	ULogger::ScreenMessage(FColor::Green, FString::FromInt(WeaponCount));
 	WeaponArray.AddUnique(InActor);
-	Owner->WeaponSocketLocation = SocketLocation;
+	CharacterOwner->WeaponSocketLocation = SocketLocation;
 	if (WeaponCount < 1 && InActor) {
 		CurrentWeaponIndex = 0;
 		SetCurrentWeapon(WeaponArray[CurrentWeaponIndex]);
-		FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::SnapToTarget, true);
-		InActor->AttachToComponent(Owner->GetMesh(), AttachRules, Owner->WeaponSocketLocation);
 		InActor->MeshComp->SetVisibility(true);
 	} else {
-		FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::SnapToTarget, true);
-		InActor->AttachToComponent(Owner->GetMesh(), AttachRules, Owner->WeaponSocketLocation);
 		InActor->MeshComp->SetVisibility(false);
 	}
+	FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::SnapToTarget, true);
+	InActor->MeshComp->AttachToComponent(CharacterOwner->GetMesh(), AttachRules, CharacterOwner->WeaponSocketLocation);
 	WeaponCount++;
 }
 
@@ -94,12 +92,13 @@ void UCombatComponent::SetCurrentWeapon(ACombatWeapon* InActor) {
 	}
 	CurrentWeapon = InActor;
 	if (CurrentWeapon->RANGE_TYPE == ERange::RANGED) {
-		Owner->bWeaponIsRanged = true;
+		CharacterOwner->bWeaponIsRanged = true;
 	}
 	else if (CurrentWeapon->RANGE_TYPE == ERange::MELEE) {
-		Owner->bWeaponIsRanged = false;
+		CharacterOwner->bWeaponIsRanged = false;
 	}
 	CurrentWeapon->MeshComp->SetVisibility(true);
+	ULogger::ScreenMessage(FColor::Red,CurrentWeapon->WeaponRotation.ToString());
 	CurrentWeapon->AddActorLocalRotation(CurrentWeapon->WeaponRotation);
 }
 
@@ -141,10 +140,10 @@ void UCombatComponent::AssignCombatActors() {
 
 }
 
-APlayableCharacter* UCombatComponent::GetOwner() {
-	return Owner;
+APlayableCharacter* UCombatComponent::GetCharacterOwner() {
+	return CharacterOwner;
 }
 
-void UCombatComponent::SetOwner(APlayableCharacter* InChar) {
-	Owner = InChar;
+void UCombatComponent::SetCharacterOwner(APlayableCharacter* InChar) {
+	CharacterOwner = InChar;
 }

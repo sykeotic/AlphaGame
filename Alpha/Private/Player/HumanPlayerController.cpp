@@ -19,7 +19,7 @@ void AHumanPlayerController::HeroSelect(FString& InKey, FVector InLoc, FRotator 
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(InLoc, InRot, SpawnInfo);
+	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(CharacterBlueprint, InLoc, InRot, SpawnInfo);
 	Possess(HeroChar);
 	Unbind();
 	HeroChar->SetupPlayerInputComponent(InputComponent);
@@ -34,7 +34,7 @@ void AHumanPlayerController::GeneralSelect(FVector InLoc, FRotator InRot) {
 	ULogger::ScreenMessage(FColor::Red, "Spawning General");
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
 	FActorSpawnParameters SpawnInfo;
-	GeneralChar = GetWorld()->SpawnActor<APlayableGeneralPawn>(InLoc, InRot, SpawnInfo);
+	GeneralChar = GetWorld()->SpawnActor<APlayableGeneralPawn>(PawnBlueprint, InLoc, InRot, SpawnInfo);
 	Possess(GeneralChar);
 	Unbind();
 	GeneralChar->SetOwner(this);

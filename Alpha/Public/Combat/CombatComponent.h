@@ -37,15 +37,26 @@ public:
 	void SetCurrentWeapon(ACombatWeapon* InActor);
 
 	void DestroyThisComponent();
-	APlayableCharacter* GetOwner();
-	void SetOwner(APlayableCharacter* InChar);
-	ACombatWeapon* CurrentWeapon;
 
-protected:
+	void SetCharacterOwner(APlayableCharacter* InChar);
 	TArray<ACombatWeapon*> WeaponArray;
 	TArray<ACombatAbility*> AbilityArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	ACombatWeapon* CurrentWeapon;
+
+
+	APlayableCharacter* CharacterOwner;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	TSubclassOf<class AMeleeCombatWeapon > MeleeWeaponClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	TSubclassOf<class ARangedCombatWeapon > RangedWeaponClass;
+
 	ACombatAbility* CurrentAbility;
-	APlayableCharacter* Owner;
+
 	uint8 AbilityCount;
 	uint8 WeaponCount;
 	uint8 CurrentWeaponIndex;
@@ -71,5 +82,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void RemoveAbility(uint8 AbilityIndex);
+
+	UFUNCTION(BlueprintCallable)
+	APlayableCharacter* GetCharacterOwner();
 		
 };

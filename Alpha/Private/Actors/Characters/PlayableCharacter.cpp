@@ -22,10 +22,11 @@ APlayableCharacter::APlayableCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("StatsComponent"));
-	StatsComponent->SetOwner(this);
+	StatsComponent->SetOwner(Cast<APlayableCharacter>(this));
+	StatsComponent->SetAlive(true);
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	CombatComponent->SetOwner(this);
+	CombatComponent->SetCharacterOwner(this);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -90,11 +91,6 @@ FVector APlayableCharacter::GetPawnViewLocation() const{
 			return FollowCamera->GetComponentLocation();
 		}
 		return Super::GetPawnViewLocation();
-}
-
-float APlayableCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) {
-	StatsComponent->TakeDamage(Damage);
-	return Damage;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -173,6 +169,16 @@ void APlayableCharacter::SetBaseTurnRate(float InRate) {
 
 void APlayableCharacter::SetBaseLookUpRate(float InRate) {
 	BaseLookUpRate = InRate;
+}
+
+float APlayableCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) {
+	if (StatsComponent->IsAlive()) {
+		StatsComponent->TakeDamage(Damage);
+		if (StatsComponent->GetCurrentHealth() <= 0.f) {
+			ReceiveOnCharacterDeath();
+		}
+	}
+	return Damage;
 }
 
 void APlayableCharacter::AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform) {

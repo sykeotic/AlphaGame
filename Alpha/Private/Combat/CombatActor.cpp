@@ -4,6 +4,9 @@
 ACombatActor::ACombatActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	RootComponent = BoxComponent;
+
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
 }
@@ -12,11 +15,11 @@ void ACombatActor::OnUse() {
 
 }
 
-void ACombatActor::SetComponentOwner(UCombatComponent* InComp) {
+void ACombatActor::SetCombatComponentOwner(UCombatComponent* InComp) {
 	ComponentOwner = InComp;
 }
 
-UCombatComponent* ACombatActor::GetComponentOwner() {
+UCombatComponent* ACombatActor::GetCombatComponentOwner() {
 	return ComponentOwner;
 }
 

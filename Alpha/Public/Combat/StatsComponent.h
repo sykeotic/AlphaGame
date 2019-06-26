@@ -22,6 +22,7 @@ public:
 	void SetAlive(bool IsAlive);
 	void SetCurrentHealth(float InCurrHealth);
 	void SetMaxHealth(float InMaxHealth);
+	void DisplayCurrentHealth();
 
 	float GetCurrentHealth();
 	float GetMaxHealth();
@@ -29,7 +30,6 @@ public:
 
 	void SetOwner(APlayableCharacter* InChar);
 	APlayableCharacter* GetOwner();
-	void DisplayHealth();
 
 	bool bIsAlive;
 	float CurrentHealth;

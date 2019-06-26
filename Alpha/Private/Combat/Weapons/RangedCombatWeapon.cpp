@@ -35,9 +35,9 @@ void ARangedCombatWeapon::OnUse(){
 	QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
 	QueryParams.bTraceComplex = true;
 
-	if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_Visibility, QueryParams)) {
+	if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_PhysicsBody, QueryParams)) {
 		if (ComponentOwner->GetOwner() && ComponentOwner) {
-			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 0.1f, 0, 1.0f);
 			AActor* HitActor = Hit.GetActor();
 			if (IsValid(HitActor)) {
 				ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
