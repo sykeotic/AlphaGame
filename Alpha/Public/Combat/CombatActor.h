@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CombatComponent.h"
+#include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
 #include "CombatActor.generated.h"
 
@@ -17,39 +18,90 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Instanced, Category = "Mesh")
 	UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Mesh")
-	UBoxComponent* BoxComponent;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* EquipAnim;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCombatComponent* ComponentOwner;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* FireAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditDefaultsOnly)
 	UMaterial* WeaponMaterial;
 
-	void SetCombatComponentOwner(UCombatComponent* InComp);
-
 	UFUNCTION(BlueprintCallable)
-		UCombatComponent* GetCombatComponentOwner();
+	UCombatComponent* GetCombatComponentOwner();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
 
+	UFUNCTION()
+	void OnRep_BurstCounter();
+
 	FName ProjectileSpawnLocation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bPlayingFireAnim;
+	bool bWantsToUse;
+	bool bRefiring;
+	bool bIsEquipped;
+	bool bPendingEquip;
+
 	float UseRange;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float UseCooldown;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float Damage;
+	float EquipStartedTime;
+	float EquipDuration;
+	float LastFireTime;
+	float TimeBetweenShots;
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_BurstCounter)
+	int32 BurstCounter;
+
+	FTimerHandle TimerHandle_HandleFiring;
+	FTimerHandle EquipFinishedTimerHandle;
+
+	UCombatComponent* ComponentOwner;
 
 	EActorType ACTOR_TYPE;
 	EValidTargets VALID_TARGETS;
 	ERange RANGE_TYPE;
+	ECombatActorState ACTOR_STATE;
+
+	float PlayActorAnimation(UAnimMontage* Animation, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
+
+	void StopActorAnimation(UAnimMontage* Animation);
+
+	void SetCombatComponentOwner(UCombatComponent* InComp);
+
+	bool CanUse();
+
+	void AssertActorState();
+
+	void OnBurstStarted();
+
+	void OnBurstFinished();
+
+	void OnEquipFinished();
+
+	void HandleUse();
+
+	void StartSimulatingActorUse();
+
+	void AttachMeshToOwner(FName AttachPoint);
+
+	void OnUnEquip();
+
+	void DetachMeshFromOwner();
+
+	void StopSimulatingActorUse();
+
+	void SetCombatActorState(ECombatActorState InState);
+
+	void OnEquip(bool bPlayAnimation);
 
 	virtual void OnUse();
+
+	void StopUse();
+
+	void BoolSpam();
 
 	virtual void AssignWeaponValues(float InCooldown, UStaticMesh* InStaticMesh, FName InProjectileSpawnLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, float InDmg, float InRange);
 };

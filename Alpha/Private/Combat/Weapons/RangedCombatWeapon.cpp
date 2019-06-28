@@ -11,44 +11,47 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 
 }
 
-void ARangedCombatWeapon::OnUse(){
-	Super::OnUse();
-	FRotator OwnerView;
-	FVector OwnerLoc;
-	ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
+void ARangedCombatWeapon::OnUse() {
+	Super::OnUse();	
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, [this]() {
+		FRotator OwnerView;
+		FVector OwnerLoc;
+		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Instigator;
 
-	FVector WeaponLocation = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
-	FRotator WeaponRotation = MeshComp->GetSocketRotation(ProjectileSpawnLocation);
+		FVector WeaponLocation = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
+		FRotator WeaponRotation = MeshComp->GetSocketRotation(ProjectileSpawnLocation);
 
-	FVector ShotDirection = OwnerView.Vector();
+		FVector ShotDirection = OwnerView.Vector();
 
-	UWorld* World = GetWorld();
-	FVector TraceEnd = WeaponLocation + (OwnerView.Vector() * UseRange);
+		UWorld* World = GetWorld();
+		FVector TraceEnd = WeaponLocation + (OwnerView.Vector() * UseRange);
 
-	FCollisionQueryParams QueryParams;
-	FHitResult Hit;
+		FCollisionQueryParams QueryParams;
+		FHitResult Hit;
 
-	QueryParams.AddIgnoredActor(this);
-	QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
-	QueryParams.bTraceComplex = true;
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
+		QueryParams.bTraceComplex = true;
 
-	if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_PhysicsBody, QueryParams)) {
-		if (ComponentOwner->GetOwner() && ComponentOwner) {
-			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 0.1f, 0, 1.0f);
-			AActor* HitActor = Hit.GetActor();
-			if (IsValid(HitActor)) {
-				ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
+		if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_PhysicsBody, QueryParams)) {
+			if (ComponentOwner->GetOwner() && ComponentOwner) {
+				DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 0.1f, 0, 1.0f);
+				AActor* HitActor = Hit.GetActor();
+				if (IsValid(HitActor)) {
+					ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
+				}
+				UGameplayStatics::ApplyPointDamage(HitActor, Damage, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
 			}
-			UGameplayStatics::ApplyPointDamage(HitActor, Damage, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
+			else {
+				ULogger::ScreenMessage(FColor::Red, "Owner null");
+			}
 		}
 		else {
-			ULogger::ScreenMessage(FColor::Red, "Owner null");
+			ULogger::ScreenMessage(FColor::Blue, TEXT("LineTrace failed!"));
 		}
-	}
-	else {
-		ULogger::ScreenMessage(FColor::Blue, TEXT("LineTrace failed!"));
-	}
+	}, .25, false);
 }

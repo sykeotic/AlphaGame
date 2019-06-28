@@ -31,6 +31,14 @@ enum class EActorType : uint8 {
 	CONSUMABLE UMETA(DisplayName = "Consumable")
 };
 
+UENUM(BlueprintType)
+enum class ECombatActorState : uint8 {
+	USING UMETA(DisplayName = "Using"),
+	IDLE UMETA(DisplayName = "Idle"),
+	EQUIPPING UMETA(DisplayName = "Equipping"),
+	RELOADING UMETA(DisplayName = "Reloading")
+};
+
 UCLASS()
 class ALPHA_API UCombatUtils : public UBlueprintFunctionLibrary
 {

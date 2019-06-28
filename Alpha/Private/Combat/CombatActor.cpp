@@ -1,18 +1,104 @@
 #include "CombatActor.h"
+#include "TimerManager.h"
+#include "Runtime/Engine/Classes/Engine/StaticMesh.h"
+#include "CombatComponent.h"
+#include "CombatUtils.h"
+#include "PlayableCharacter.h"
+#include "Net/UnrealNetwork.h"
+#include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Logger.h"
 
 ACombatActor::ACombatActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	RootComponent = BoxComponent;
-
+	
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(RootComponent);
+	RootComponent = MeshComp;
+
+	ACTOR_STATE = ECombatActorState::IDLE;
+	bIsEquipped = false;
+
+	TimeBetweenShots = 60.0f / 20;
+}
+
+void ACombatActor::OnEquip(bool bPlayAnimation) {
+	bPendingEquip = true;
+	AssertActorState();
+	ULogger::ScreenMessage(FColor::Green, "Equip");
+	if (bPlayAnimation)
+	{
+		ULogger::ScreenMessage(FColor::Green, "Equip Can Play Anim");
+		float Duration = PlayActorAnimation(EquipAnim);
+		if (Duration <= 0.0f)
+		{
+			Duration = 0.5f;
+		}
+		EquipStartedTime = GetWorld()->TimeSeconds;
+		EquipDuration = Duration;
+
+		GetWorldTimerManager().SetTimer(EquipFinishedTimerHandle, this, &ACombatActor::OnEquipFinished, Duration, false);
+	}
+	else
+	{
+		OnEquipFinished();
+	}
+}
+
+void ACombatActor::AttachMeshToOwner(FName AttachPoint)
+{
+	if (ComponentOwner->CharacterOwner)
+	{
+		DetachMeshFromOwner();
+
+		USkeletalMeshComponent* OwnerMesh = ComponentOwner->CharacterOwner->GetMesh();
+		MeshComp->SetHiddenInGame(false);
+		MeshComp->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
+	}
+}
+
+void ACombatActor::OnUnEquip()
+{
+	bIsEquipped = false;
+	StopUse();
+	DetachMeshFromOwner();
+	if (bPendingEquip)
+	{
+		StopActorAnimation(EquipAnim);
+		bPendingEquip = false;
+
+		GetWorldTimerManager().ClearTimer(EquipFinishedTimerHandle);
+	}
+	AssertActorState();
+}
+
+
+void ACombatActor::DetachMeshFromOwner()
+{
+	MeshComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	MeshComp->SetHiddenInGame(true);
+}
+
+void ACombatActor::OnEquipFinished()
+{
+	AttachMeshToOwner(ComponentOwner->CharacterOwner->WeaponSocketLocation);
+
+	bIsEquipped = true;
+	bPendingEquip = false;
+
+	AssertActorState();
 }
 
 void ACombatActor::OnUse() {
+	if (!bWantsToUse) {
+		bWantsToUse = true;
+		AssertActorState();
+	}	
+}
 
+bool ACombatActor::CanUse() {
+	bool bOwnerCanFire = ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->CharacterCanAttack();
+	bool bStateOK = ACTOR_STATE == ECombatActorState::IDLE || ACTOR_STATE == ECombatActorState::USING;
+	return bOwnerCanFire && bStateOK;
 }
 
 void ACombatActor::SetCombatComponentOwner(UCombatComponent* InComp) {
@@ -34,4 +120,200 @@ void ACombatActor::AssignWeaponValues(float InCooldown, UStaticMesh* InStaticMes
 	ProjectileSpawnLocation = InProjectileSpawnLocation;
 	RANGE_TYPE = IN_RANGE;
 	ACTOR_TYPE = IN_ACTOR_TYPE;
+}
+
+void ACombatActor::AssertActorState()
+{
+	ECombatActorState NewState = ECombatActorState::IDLE;
+
+	if (bIsEquipped)
+	{
+		if (bWantsToUse && CanUse())
+		{
+			NewState = ECombatActorState::USING;
+		}
+	}
+	else if (bPendingEquip)
+	{
+		NewState = ECombatActorState::EQUIPPING;
+	}
+	BoolSpam();
+	SetCombatActorState(NewState);
+}
+
+void ACombatActor::SetCombatActorState(ECombatActorState InState)
+{
+	const ECombatActorState PrevState = ACTOR_STATE;
+
+	if (PrevState == ECombatActorState::USING && InState != ECombatActorState::USING)
+	{
+		OnBurstFinished();
+	}
+
+	ACTOR_STATE = InState;
+
+	if (PrevState != ECombatActorState::USING && InState == ECombatActorState::USING)
+	{
+		OnBurstStarted();
+	}
+}
+
+void ACombatActor::OnBurstStarted()
+{
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	if (LastFireTime > 0 && UseCooldown > 0.0f &&
+		LastFireTime + UseCooldown > GameTime)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ACombatActor::HandleUse, LastFireTime + UseCooldown - GameTime, false);
+	}
+	else
+	{
+		HandleUse();
+	}
+}
+
+
+void ACombatActor::OnBurstFinished()
+{
+	BurstCounter = 0;
+	StopSimulatingActorUse();
+
+	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+	bRefiring = false;
+}
+
+void ACombatActor::OnRep_BurstCounter()
+{
+	if (BurstCounter > 0)
+	{
+		StartSimulatingActorUse();
+	}
+	else
+	{
+		StopSimulatingActorUse();
+	}
+}
+
+void ACombatActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION(ACombatActor, BurstCounter, COND_SkipOwner);
+}
+
+void ACombatActor::HandleUse() {
+	if (CanUse())
+	{
+		if (GetNetMode() != NM_DedicatedServer)
+		{
+			StartSimulatingActorUse();
+		}
+
+		if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
+		{
+			OnUse();
+
+			BurstCounter++;
+		}
+	}
+	else if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
+	{
+		if (BurstCounter > 0)
+		{
+			OnBurstFinished();
+		}
+	}
+
+	if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
+	{
+		bRefiring = (ACTOR_STATE == ECombatActorState::USING && TimeBetweenShots > 0.0f);
+		if (bRefiring)
+		{
+			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ACombatActor::HandleUse, TimeBetweenShots, false);
+		}
+	}
+
+	LastFireTime = GetWorld()->GetTimeSeconds();
+}
+
+
+void ACombatActor::StartSimulatingActorUse()
+{
+	ULogger::ScreenMessage(FColor::Green, "Simulating Use");
+	if (!bPlayingFireAnim)
+	{
+		ULogger::ScreenMessage(FColor::Green, "Branch Simulating Use");
+		PlayActorAnimation(FireAnim);
+		bPlayingFireAnim = true;
+	}
+}
+
+void ACombatActor::StopUse() {
+	if (bWantsToUse)
+	{
+		bWantsToUse = false;
+		AssertActorState();
+	}
+}
+
+void ACombatActor::StopSimulatingActorUse()
+{
+	ULogger::ScreenMessage(FColor::Green, "Stopping Use");
+	if (bPlayingFireAnim)
+	{
+		ULogger::ScreenMessage(FColor::Green, "Branch Stopping Use");
+		StopActorAnimation(FireAnim);
+		bPlayingFireAnim = false;
+	}
+}
+
+float ACombatActor::PlayActorAnimation(UAnimMontage* Animation, float InPlayRate, FName StartSectionName)
+{
+	float Duration = 0.0f;
+	if (ComponentOwner->CharacterOwner)
+	{
+		if (Animation)
+		{
+			Duration = ComponentOwner->CharacterOwner->PlayAnimMontage(Animation, InPlayRate, StartSectionName);
+		}
+	}
+
+	return Duration;
+}
+
+
+void ACombatActor::StopActorAnimation(UAnimMontage* Animation)
+{
+	if (ComponentOwner->CharacterOwner)
+	{
+		if (Animation)
+		{
+			ComponentOwner->CharacterOwner->StopAnimMontage(Animation);
+		}
+	}
+}
+
+void ACombatActor::BoolSpam() {
+	ULogger::ScreenMessage(FColor::Red, "bPlayingFireAnim: ");
+	ULogger::ScreenMessage(FColor::Red, bPlayingFireAnim ? "True" : "False");
+	ULogger::ScreenMessage(FColor::Green, "bWantsToUse");
+	ULogger::ScreenMessage(FColor::Green, bWantsToUse ? "True" : "False");
+	ULogger::ScreenMessage(FColor::Blue, "bRefiring");
+	ULogger::ScreenMessage(FColor::Blue, bRefiring ? "True" : "False");
+	ULogger::ScreenMessage(FColor::Yellow, "bIsEquipped");
+	ULogger::ScreenMessage(FColor::Yellow, bIsEquipped ? "True" : "False");
+	ULogger::ScreenMessage(FColor::Orange, "bPendingEquip");
+	ULogger::ScreenMessage(FColor::Orange, bPendingEquip ? "True" : "False");
+	ULogger::ScreenMessage(FColor::Purple, "ACTOR_STATE");
+	if (ACTOR_STATE == ECombatActorState::EQUIPPING) {
+		ULogger::ScreenMessage(FColor::Purple, "EQUIPPING");
+	} else if (ACTOR_STATE == ECombatActorState::IDLE)
+	{
+		ULogger::ScreenMessage(FColor::Purple, "IDLE");
+	} else if (ACTOR_STATE == ECombatActorState::RELOADING)
+	{
+		ULogger::ScreenMessage(FColor::Purple, "RELOADING");
+	} else if (ACTOR_STATE == ECombatActorState::USING)
+	{
+		ULogger::ScreenMessage(FColor::Purple, "USING");
+	}
 }

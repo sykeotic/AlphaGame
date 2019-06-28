@@ -5,7 +5,7 @@
 
 void ULogger::ScreenMessage(FColor InColor, FString Message) {
 	if (bIsTestRun && GEngine) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, InColor, Message);
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, InColor, Message);
 	}
 }
 

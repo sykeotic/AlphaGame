@@ -14,27 +14,19 @@ UCombatComponent::UCombatComponent()
 }
 
 void UCombatComponent::UseCurrentWeapon() {
-	ULogger::ScreenMessage(FColor::Yellow, "Using Combat Weapon: ");
-	ULogger::ScreenMessage(FColor::Yellow, FString::FromInt(CurrentWeaponIndex));
 	if (CurrentWeapon) {
-		ULogger::ScreenMessage(FColor::Yellow, "Current Weapon Exists");
+		bIsUsingActor = true;
 		CurrentWeapon->OnUse();
 	}
 }
 
 void UCombatComponent::CycleNextWeapon() {
-	ULogger::ScreenMessage(FColor::Red, "Before Curr Weapon Index: ");
-	ULogger::ScreenMessage(FColor::Red, FString::FromInt(CurrentWeaponIndex));
-	ULogger::ScreenMessage(FColor::Blue, "Weapon Array Length: ");
-	ULogger::ScreenMessage(FColor::Blue, FString::FromInt(WeaponCount));
 	if (CurrentWeaponIndex + 1 < WeaponCount) {
 		CurrentWeaponIndex++;
 	}
 	else {
 		CurrentWeaponIndex = 0;
 	}
-	ULogger::ScreenMessage(FColor::Red, "After Curr Weapon Index: ");
-	ULogger::ScreenMessage(FColor::Red, FString::FromInt(CurrentWeaponIndex));
 	SetCurrentWeapon(WeaponArray[CurrentWeaponIndex]);
 }
 
@@ -69,35 +61,24 @@ void UCombatComponent::SpawnWeapon(float InCooldown, FVector InLocation, FRotato
 	AddWeapon(Weapon, SocketLocation);
 }
 
-void UCombatComponent::AddWeapon(ACombatWeapon* InActor, FName SocketLocation) {
+void UCombatComponent::AddWeapon(ACombatWeapon* InActor, FName InSocketLocation) {
 	ULogger::ScreenMessage(FColor::Green, "AddWeapon() Weapon Count:");
 	ULogger::ScreenMessage(FColor::Green, FString::FromInt(WeaponCount));
 	WeaponArray.AddUnique(InActor);
-	CharacterOwner->WeaponSocketLocation = SocketLocation;
+	CharacterOwner->WeaponSocketLocation = InSocketLocation;
 	if (WeaponCount < 1 && InActor) {
 		CurrentWeaponIndex = 0;
 		SetCurrentWeapon(WeaponArray[CurrentWeaponIndex]);
-		InActor->MeshComp->SetVisibility(true);
-	} else {
-		InActor->MeshComp->SetVisibility(false);
 	}
-	FAttachmentTransformRules AttachRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::SnapToTarget, true);
-	InActor->MeshComp->AttachToComponent(CharacterOwner->GetMesh(), AttachRules, CharacterOwner->WeaponSocketLocation);
 	WeaponCount++;
 }
 
 void UCombatComponent::SetCurrentWeapon(ACombatWeapon* InActor) {
 	if (CurrentWeapon) {
-		CurrentWeapon->MeshComp->SetVisibility(false);
-	}
+		CurrentWeapon->OnUnEquip();
+	} 
 	CurrentWeapon = InActor;
-	if (CurrentWeapon->RANGE_TYPE == ERange::RANGED) {
-		CharacterOwner->bWeaponIsRanged = true;
-	}
-	else if (CurrentWeapon->RANGE_TYPE == ERange::MELEE) {
-		CharacterOwner->bWeaponIsRanged = false;
-	}
-	CurrentWeapon->MeshComp->SetVisibility(true);
+	CurrentWeapon->OnEquip(true);
 	ULogger::ScreenMessage(FColor::Red,CurrentWeapon->WeaponRotation.ToString());
 	CurrentWeapon->AddActorLocalRotation(CurrentWeapon->WeaponRotation);
 }

@@ -64,6 +64,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* CursorToWorld;
 
+	bool CharacterCanAttack();
 	void CharacterAttackStart();
 	void CharacterAttackStop();
 	bool IsCharacterAttacking();
@@ -80,9 +81,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	bool bCanAttack;
+	bool bWantsToUse;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	bool bWeaponIsRanged;
+	bool bCanAttack;
 };

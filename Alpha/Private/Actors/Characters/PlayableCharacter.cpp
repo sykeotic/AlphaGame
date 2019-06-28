@@ -128,39 +128,31 @@ void APlayableCharacter::MoveRight(float Value)
 }
 
 void APlayableCharacter::CharacterAttackStart() {
-	ULogger::ScreenMessage(FColor::Green, "Character Attacking");
-	if (!bIsAttacking && bCanAttack) {
-		ULogger::ScreenMessage(FColor::Green, "Character Can Attack");
+	if (!bIsAttacking) {
 		bIsAttacking = true;
-		bCanAttack = false;
-		FTimerHandle Handle;
-		FTimerHandle DelayHandle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, [this]() {
+		if (CombatComponent->CurrentWeapon) {
 			CombatComponent->UseCurrentWeapon();
-		}, .25, false);
-		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]() {
-			bCanAttack = true;
-		}, CombatComponent->CurrentWeapon->UseCooldown, false);
-	}
-	else if (bIsAttacking && bCanAttack) {
-		bCanAttack = false;
-		FTimerHandle Handle;
-		FTimerHandle DelayHandle;
-		CombatComponent->UseCurrentWeapon();
-		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]() {
-			bCanAttack = true;
-		}, CombatComponent->CurrentWeapon->UseCooldown, false);
+		}
 	}
 }
 
 void APlayableCharacter::CharacterAttackStop() {
-	if (bIsAttacking == true) {
+	if (bIsAttacking)
+	{
 		bIsAttacking = false;
+		if (CombatComponent->CurrentWeapon)
+		{
+			CombatComponent->CurrentWeapon->StopUse();
+		}
 	}
 }
 
 bool APlayableCharacter::IsCharacterAttacking() {
 	return bIsAttacking;
+}
+
+bool APlayableCharacter::CharacterCanAttack() {
+	return StatsComponent->IsAlive();
 }
 
 void APlayableCharacter::SetBaseTurnRate(float InRate) {
