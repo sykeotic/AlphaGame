@@ -4,23 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CombatAbility.h"
 #include "SingleTargetCombatAbility.generated.h"
 
 UCLASS()
-class ALPHA_API ASingleTargetCombatAbility : public AActor
+class ALPHA_API ASingleTargetCombatAbility : public ACombatAbility
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASingleTargetCombatAbility();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void OnUse() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void FireObjectInDirection(FVector InLocation, FRotator InRotation, FVector TraceEnd);
 };

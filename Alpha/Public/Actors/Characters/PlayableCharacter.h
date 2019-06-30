@@ -34,10 +34,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	class UStatsComponent* StatsComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Instanced, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UCombatComponent* CombatComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -49,34 +49,42 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
 	void ReceiveOnCharacterDeath();
 
+	void InitCombatComponent();
+
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform);
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation);
+	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation);
 
 	UFUNCTION(BlueprintCallable)
-	void AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh);
-
-	UFUNCTION(BlueprintCallable)
-	void AssignCombatMesh(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange);
+	void AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMes, FName WeaponSocketLocation_In);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UDecalComponent* CursorToWorld;
 
+	virtual void BeginPlay() override;
+
 	bool CharacterCanAttack();
 	void CharacterAttackStart();
 	void CharacterAttackStop();
+	void CharacterAbilityStart();
+	void CharacterAbilityStop();
 	bool IsCharacterAttacking();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
 	virtual FVector GetPawnViewLocation() const override;
 	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
 	float BaseLookUpRate;
 	float BaseTurnRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	FName WeaponSocketLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	FName AbilitySocketLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;

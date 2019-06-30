@@ -21,67 +21,49 @@ class UCombatComponent : public UActorComponent
 public:	
 	UCombatComponent();
 
-	void UseCurrentWeapon();
-
 	UFUNCTION(BlueprintCallable)
 	void CycleNextWeapon();
 
+	void UseCurrentWeapon();
 	void CyclePreviousWeapon();
 	void GetWeaponAt(uint8 WeaponIndex);
+	void SetCurrentWeapon(ACombatWeapon* InActor, bool bEquipAnim);
 
-	void UseCurrentAbility(FVector InLocation, FRotator InRotation);
+	UFUNCTION(BlueprintCallable)
 	void CycleNextAbility();
+
+	void UseCurrentAbility();
 	void CyclePreviousAbility();
 	void GetAbilityAt(uint8 AbilityIndex);
-
-	void SetCurrentWeapon(ACombatWeapon* InActor);
-
-	void DestroyThisComponent();
+	void SetCurrentAbility(ACombatAbility* InActor, bool bEquipAnim);
 
 	void SetCharacterOwner(APlayableCharacter* InChar);
+
 	TArray<ACombatWeapon*> WeaponArray;
 	TArray<ACombatAbility*> AbilityArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	ACombatWeapon* CurrentWeapon;
-
-
-	APlayableCharacter* CharacterOwner;
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	TSubclassOf<class AMeleeCombatWeapon > MeleeWeaponClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	TSubclassOf<class ARangedCombatWeapon > RangedWeaponClass;
-
-	ACombatAbility* CurrentAbility;
-
+	uint8 CurrentWeaponIndex;
+	uint8 CurrentAbilityIndex;
 	uint8 AbilityCount;
 	uint8 WeaponCount;
-	uint8 CurrentWeaponIndex;
+
+	ACombatWeapon* CurrentWeapon;
+	ACombatAbility* CurrentAbility;
+	
+	APlayableCharacter* CharacterOwner;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray < TSubclassOf<class ACombatWeapon >> WeaponClassArray;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray < TSubclassOf<class ACombatAbility >> AbilityClassArray;
+
+protected:
 
 	bool bCanUseActor;
 	bool bIsUsingActor;
 
 public:	
-	UFUNCTION(BlueprintCallable)
-		void AddWeapon(ACombatWeapon* InActor, FName SocketLocation);
-
-	UFUNCTION(BlueprintCallable)
-		void SpawnWeapon(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName SocketLocation, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjectileSpawnLocation, float Dmg, float InRange);
-
-	UFUNCTION(BlueprintCallable)
-		void RemoveWeapon(uint8 WeaponIndex);
-
-	UFUNCTION(BlueprintCallable, Category = "Game")
-		void AssignCombatActors();
-
-	UFUNCTION(BlueprintCallable)
-		void AddAbility(ACombatAbility* InActor);
-
-	UFUNCTION(BlueprintCallable)
-		void RemoveAbility(uint8 AbilityIndex);
 
 	UFUNCTION(BlueprintCallable)
 	APlayableCharacter* GetCharacterOwner();

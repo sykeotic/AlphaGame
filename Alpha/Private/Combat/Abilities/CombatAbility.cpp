@@ -1,19 +1,19 @@
 #include "CombatAbility.h"
+#include "PlayableCharacter.h"
+#include "Logger.h"
+#include "CombatComponent.h"
 
 ACombatAbility::ACombatAbility()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ACombatAbility::BeginPlay()
 {
 	Super::BeginPlay();
+	MeshComp->SetVisibility(false);
 }
 
-void ACombatAbility::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+void ACombatAbility::OnUse() {
+	ULogger::ScreenMessage(FColor::Red, "ACA Use");
 }
-

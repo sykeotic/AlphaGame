@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "CombatComponent.h"
 #include "Runtime/Engine/Classes/Animation/AnimMontage.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
 #include "CombatActor.generated.h"
 
@@ -15,7 +16,7 @@ class ACombatActor : public AActor
 public:	
 	ACombatActor();
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Instanced, Category = "Mesh")
+	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -36,7 +37,26 @@ public:
 	UFUNCTION()
 	void OnRep_BurstCounter();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	FName ProjectileSpawnLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	FRotator WeaponRotation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	FVector WeaponLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	USoundCue* UseSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	USoundCue* EquipSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "SFX")
+	UParticleSystem* ActorFX;
+
+	UPROPERTY(Transient)
+	UParticleSystemComponent* UsePSC;
 
 	bool bPlayingFireAnim;
 	bool bWantsToUse;
@@ -44,12 +64,23 @@ public:
 	bool bIsEquipped;
 	bool bPendingEquip;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float UseRange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float UseCooldown;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stats")
 	float Damage;
+
 	float EquipStartedTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float EquipDuration;
+
 	float LastFireTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float TimeBetweenShots;
 
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_BurstCounter)
@@ -57,6 +88,8 @@ public:
 
 	FTimerHandle TimerHandle_HandleFiring;
 	FTimerHandle EquipFinishedTimerHandle;
+
+	FName ActorSocketLocation;
 
 	UCombatComponent* ComponentOwner;
 
@@ -73,7 +106,11 @@ public:
 
 	bool CanUse();
 
+	virtual void BeginPlay() override;
+
 	void AssertActorState();
+
+	UAudioComponent* PlayActorSound(USoundCue* SoundToPlay);
 
 	void OnBurstStarted();
 
@@ -85,7 +122,7 @@ public:
 
 	void StartSimulatingActorUse();
 
-	void AttachMeshToOwner(FName AttachPoint);
+	virtual void AttachMeshToOwner(FName AttachPoint);
 
 	void OnUnEquip();
 

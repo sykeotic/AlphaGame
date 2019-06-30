@@ -4,6 +4,8 @@
 #include "CombatComponent.h"
 #include "CombatUtils.h"
 #include "PlayableCharacter.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Logger.h"
@@ -17,8 +19,13 @@ ACombatActor::ACombatActor()
 
 	ACTOR_STATE = ECombatActorState::IDLE;
 	bIsEquipped = false;
+	EquipDuration = 1.0f;
 
-	TimeBetweenShots = 60.0f / 20;
+	TimeBetweenShots = 60.0f / 128.5f;
+}
+
+void ACombatActor::BeginPlay() {
+	Super::BeginPlay();
 }
 
 void ACombatActor::OnEquip(bool bPlayAnimation) {
@@ -53,6 +60,8 @@ void ACombatActor::AttachMeshToOwner(FName AttachPoint)
 		USkeletalMeshComponent* OwnerMesh = ComponentOwner->CharacterOwner->GetMesh();
 		MeshComp->SetHiddenInGame(false);
 		MeshComp->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
+		MeshComp->AddLocalRotation(WeaponRotation);
+		MeshComp->AddLocalOffset(WeaponLocation);
 	}
 }
 
@@ -80,7 +89,7 @@ void ACombatActor::DetachMeshFromOwner()
 
 void ACombatActor::OnEquipFinished()
 {
-	AttachMeshToOwner(ComponentOwner->CharacterOwner->WeaponSocketLocation);
+	AttachMeshToOwner(ActorSocketLocation);
 
 	bIsEquipped = true;
 	bPendingEquip = false;
@@ -117,7 +126,6 @@ void ACombatActor::AssignWeaponValues(float InCooldown, UStaticMesh* InStaticMes
 	Damage = InDmg;
 	UseRange = InRange;
 	UseCooldown = InCooldown;
-	ProjectileSpawnLocation = InProjectileSpawnLocation;
 	RANGE_TYPE = IN_RANGE;
 	ACTOR_TYPE = IN_ACTOR_TYPE;
 }
@@ -128,7 +136,7 @@ void ACombatActor::AssertActorState()
 
 	if (bIsEquipped)
 	{
-		if (bWantsToUse && CanUse())
+		if (bWantsToUse && CanUse() && !bPendingEquip)
 		{
 			NewState = ECombatActorState::USING;
 		}
@@ -137,7 +145,7 @@ void ACombatActor::AssertActorState()
 	{
 		NewState = ECombatActorState::EQUIPPING;
 	}
-	BoolSpam();
+	//BoolSpam();
 	SetCombatActorState(NewState);
 }
 
@@ -205,6 +213,7 @@ void ACombatActor::HandleUse() {
 	{
 		if (GetNetMode() != NM_DedicatedServer)
 		{
+			ULogger::ScreenMessage(FColor::Green, "HANDLE USE Simulating Actor Use");
 			StartSimulatingActorUse();
 		}
 
@@ -225,6 +234,7 @@ void ACombatActor::HandleUse() {
 
 	if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
 	{
+
 		bRefiring = (ACTOR_STATE == ECombatActorState::USING && TimeBetweenShots > 0.0f);
 		if (bRefiring)
 		{
@@ -235,9 +245,27 @@ void ACombatActor::HandleUse() {
 	LastFireTime = GetWorld()->GetTimeSeconds();
 }
 
-
-void ACombatActor::StartSimulatingActorUse()
+UAudioComponent* ACombatActor::PlayActorSound(USoundCue* SoundToPlay)
 {
+	UAudioComponent* AC = nullptr;
+	if (SoundToPlay && ComponentOwner->CharacterOwner)
+	{
+		AC = UGameplayStatics::SpawnSoundAttached(SoundToPlay, ComponentOwner->CharacterOwner->GetRootComponent());
+	}
+
+	return AC;
+}
+
+
+
+void ACombatActor::StartSimulatingActorUse(){
+
+	if (ActorFX)
+	{
+		ULogger::ScreenMessage(FColor::Red, ProjectileSpawnLocation.ToString());
+		UsePSC = UGameplayStatics::SpawnEmitterAttached(ActorFX, MeshComp, ProjectileSpawnLocation);
+	}
+
 	ULogger::ScreenMessage(FColor::Green, "Simulating Use");
 	if (!bPlayingFireAnim)
 	{
@@ -245,6 +273,8 @@ void ACombatActor::StartSimulatingActorUse()
 		PlayActorAnimation(FireAnim);
 		bPlayingFireAnim = true;
 	}
+
+	PlayActorSound(UseSound);
 }
 
 void ACombatActor::StopUse() {

@@ -1,27 +1,35 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SingleTargetCombatAbility.h"
+#include "CombatComponent.h"
+#include "Logger.h"
+#include "PlayableCharacter.h"
 
-// Sets default values
 ASingleTargetCombatAbility::ASingleTargetCombatAbility()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
-// Called when the game starts or when spawned
-void ASingleTargetCombatAbility::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ASingleTargetCombatAbility::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+void ASingleTargetCombatAbility::OnUse() {
+	Super::OnUse();
+	ULogger::ScreenMessage(FColor::Red, "ASTCA Use");
+	/*
+	Super::OnUse();
+	FRotator OwnerView;
+	FVector OwnerLoc;
+	ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
+	FVector From = ComponentOwner->CharacterOwner->GetMesh()->GetSocketLocation(ActorSocketLocation);
+	FVector TraceEnd = From + (OwnerView.Vector() * UseRange);
+	UTimelineComponent Timeline;
+	Timeline = NewObject<UTimelineComponent>(this, FName("TimelineAnimation"));
+	FMath::Lerp(From, TraceEnd, )
+	*/
+	Super::OnUse();
+	FRotator RotationFrom;
+	FVector OwnerLoc;
+	ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
+	FVector LocationFrom = ComponentOwner->CharacterOwner->GetMesh()->GetSocketLocation(ActorSocketLocation);
+	FVector TraceEnd = LocationFrom + (RotationFrom.Vector() * UseRange);
+	DetachMeshFromOwner();
+	MeshComp->DetachFromParent();
+	FireObjectInDirection(LocationFrom, RotationFrom, TraceEnd);
 }
 

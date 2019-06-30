@@ -17,8 +17,9 @@ public:
 
 	virtual void OnUse() override;
 
-	FRotator WeaponRotation;
-	FVector WeaponLocation;
+	virtual void BeginPlay() override;
+
+	virtual void AttachMeshToOwner(FName AttachPoint) override;
 
 protected:
 

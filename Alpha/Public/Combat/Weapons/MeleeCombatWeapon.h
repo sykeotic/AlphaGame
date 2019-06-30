@@ -16,6 +16,15 @@ public:
 	AMeleeCombatWeapon();
 	virtual void OnUse() override;
 
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	virtual void AttachMeshToOwner(FName AttachPoint) override;
+
 protected:
 
+	UPROPERTY(EditDefaultsOnly)
+	UBoxComponent* MeleeBoxComponent;
 };

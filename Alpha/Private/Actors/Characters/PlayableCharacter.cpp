@@ -6,6 +6,7 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "RangedCombatWeapon.h"
+#include "CombatAbility.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -41,6 +42,11 @@ APlayableCharacter::APlayableCharacter()
 	bIsAttacking = false;
 }
 
+void APlayableCharacter::BeginPlay() {
+	Super::BeginPlay();
+	InitCombatComponent();
+}
+
 void APlayableCharacter::SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation) {
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
@@ -72,6 +78,9 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &APlayableCharacter::CharacterAttackStart);
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Released, this, &APlayableCharacter::CharacterAttackStop);
+
+	PlayerInputComponent->BindAction("RightMouseClick", IE_Pressed, this, &APlayableCharacter::CharacterAbilityStart);
+	PlayerInputComponent->BindAction("RightMouseClick", IE_Released, this, &APlayableCharacter::CharacterAbilityStop);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -147,6 +156,26 @@ void APlayableCharacter::CharacterAttackStop() {
 	}
 }
 
+void APlayableCharacter::CharacterAbilityStart() {
+	if (!bIsAttacking) {
+		bIsAttacking = true;
+		if (CombatComponent->CurrentAbility) {
+			CombatComponent->UseCurrentAbility();
+		}
+	}
+}
+
+void APlayableCharacter::CharacterAbilityStop() {
+	if (bIsAttacking)
+	{
+		bIsAttacking = false;
+		if (CombatComponent->CurrentAbility)
+		{
+			CombatComponent->CurrentAbility->StopUse();
+		}
+	}
+}
+
 bool APlayableCharacter::IsCharacterAttacking() {
 	return bIsAttacking;
 }
@@ -186,7 +215,7 @@ void APlayableCharacter::AssignCameraValues(float InBaseTurnRate, float InBaseLo
 	CameraBoom->SetRelativeTransform(RelTransform);
 }
 
-void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationRate, float MaxHealth, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation) {
+void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationRate, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation) {
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	GetCharacterMovement()->RotationRate = RotationRate;
@@ -195,12 +224,42 @@ void APlayableCharacter::AssignStatValues(float JumpVelocity, FRotator RotationR
 	GetMesh()->SetRelativeLocation(MeshRotation);
 }
 
-void APlayableCharacter::AssignCombatMesh(float InCooldown, FVector InLocation, FRotator InRotation, UMaterial* InWeaponMaterial, UStaticMesh* InStaticMesh, FName InSocket, ERange IN_RANGE, EActorType IN_ACTOR_TYPE, FName ProjSpawn, float InDmg, float InRange) {
-	CombatComponent->SpawnWeapon(InCooldown, InLocation, InRotation, InWeaponMaterial, InStaticMesh, InSocket, IN_RANGE, IN_ACTOR_TYPE, ProjSpawn, InDmg, InRange);
-}
 
-void APlayableCharacter::AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh) {
+
+void APlayableCharacter::AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMesh, FName WeaponSocketLocation_In) {
 	GetMesh()->SetSkeletalMesh(InMesh);
 	GetMesh()->SetMaterial(0, InMaterial_0);
 	GetMesh()->SetMaterial(1, InMaterial_1);
+}
+
+void APlayableCharacter::InitCombatComponent() {
+	for (int i = 0; i < CombatComponent->WeaponClassArray.Num(); i++) {
+		FActorSpawnParameters SpawnInfo;
+		ACombatWeapon* Weapon;
+		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<ACombatWeapon>(CombatComponent->WeaponClassArray[i], FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Weapon->SetCombatComponentOwner(CombatComponent);
+		Weapon->ActorSocketLocation = WeaponSocketLocation;
+		CombatComponent->WeaponArray.AddUnique(Weapon);
+		Weapon->MeshComp->IgnoreActorWhenMoving(this, true);
+		if (i == 0) {
+			CombatComponent->CurrentWeaponIndex = 0;
+			CombatComponent->SetCurrentWeapon(Weapon, true);
+		}
+		CombatComponent->WeaponCount++;
+	}
+
+	for (int i = 0; i < CombatComponent->AbilityClassArray.Num(); i++) {
+		FActorSpawnParameters SpawnInfo;
+		ACombatAbility* Ability;
+		Ability = Cast<ACombatAbility>(GetWorld()->SpawnActor<ACombatAbility>(CombatComponent->AbilityClassArray[i], FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Ability->SetCombatComponentOwner(CombatComponent);
+		Ability->ActorSocketLocation = AbilitySocketLocation;
+		CombatComponent->AbilityArray.AddUnique(Ability);
+		Ability->MeshComp->IgnoreActorWhenMoving(this, true);
+		if (i == 0) {
+			CombatComponent->CurrentWeaponIndex = 0;
+			CombatComponent->SetCurrentAbility(Ability, true);
+		}
+		CombatComponent->WeaponCount++;
+	}
 }
