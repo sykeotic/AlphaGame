@@ -22,8 +22,12 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* EquipAnim;
 
+	UAnimMontage* CurrentAnim;
+
+	USoundCue* CurrentSound;
+
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* FireAnim;
+	TArray<UAnimMontage*> FireAnim;
 
 	UPROPERTY(EditDefaultsOnly)
 	UMaterial* WeaponMaterial;
@@ -33,6 +37,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray < TSubclassOf<class ACombatWeapon >> WeaponClassArray;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ACombatProjectile> ProjectileClass;
 
 	UFUNCTION()
 	void OnRep_BurstCounter();
@@ -47,12 +57,15 @@ public:
 	FVector WeaponLocation;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-	USoundCue* UseSound;
+	TArray<USoundCue*> UseSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	TArray<USoundCue*> ImpactSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
 	USoundCue* EquipSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "SFX")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
 	UParticleSystem* ActorFX;
 
 	UPROPERTY(Transient)

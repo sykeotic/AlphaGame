@@ -20,5 +20,4 @@ void ACombatWeapon::AttachMeshToOwner(FName AttachPoint) {
 
 void ACombatWeapon::OnUse() {
 	Super::OnUse();
-	ULogger::ScreenMessage(FColor::Yellow, "ACombatWeapon");
 }

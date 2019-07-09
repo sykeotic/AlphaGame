@@ -4,6 +4,7 @@
 #include "CombatComponent.h"
 #include "CombatUtils.h"
 #include "PlayableCharacter.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -42,7 +43,6 @@ void ACombatActor::OnEquip(bool bPlayAnimation) {
 		}
 		EquipStartedTime = GetWorld()->TimeSeconds;
 		EquipDuration = Duration;
-
 		GetWorldTimerManager().SetTimer(EquipFinishedTimerHandle, this, &ACombatActor::OnEquipFinished, Duration, false);
 	}
 	else
@@ -213,7 +213,6 @@ void ACombatActor::HandleUse() {
 	{
 		if (GetNetMode() != NM_DedicatedServer)
 		{
-			ULogger::ScreenMessage(FColor::Green, "HANDLE USE Simulating Actor Use");
 			StartSimulatingActorUse();
 		}
 
@@ -262,19 +261,18 @@ void ACombatActor::StartSimulatingActorUse(){
 
 	if (ActorFX)
 	{
-		ULogger::ScreenMessage(FColor::Red, ProjectileSpawnLocation.ToString());
 		UsePSC = UGameplayStatics::SpawnEmitterAttached(ActorFX, MeshComp, ProjectileSpawnLocation);
 	}
 
-	ULogger::ScreenMessage(FColor::Green, "Simulating Use");
 	if (!bPlayingFireAnim)
 	{
-		ULogger::ScreenMessage(FColor::Green, "Branch Simulating Use");
-		PlayActorAnimation(FireAnim);
+		int8 AnimIndex = FMath::RandRange(0, FireAnim.Num() - 1);
+		CurrentAnim = FireAnim[AnimIndex];
+		PlayActorAnimation(CurrentAnim);
 		bPlayingFireAnim = true;
 	}
-
-	PlayActorSound(UseSound);
+	int8 SoundIndex = FMath::RandRange(0, UseSound.Num() - 1);
+	PlayActorSound(UseSound[SoundIndex]);
 }
 
 void ACombatActor::StopUse() {
@@ -291,7 +289,7 @@ void ACombatActor::StopSimulatingActorUse()
 	if (bPlayingFireAnim)
 	{
 		ULogger::ScreenMessage(FColor::Green, "Branch Stopping Use");
-		StopActorAnimation(FireAnim);
+		StopActorAnimation(CurrentAnim);
 		bPlayingFireAnim = false;
 	}
 }

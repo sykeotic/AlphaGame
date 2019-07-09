@@ -4,7 +4,6 @@
 #include "Logger.h"
 #include "CombatComponent.h"
 #include "PlayableCharacter.h"
-#include "Logger.h"
 
 AMeleeCombatWeapon::AMeleeCombatWeapon()
 {
@@ -15,14 +14,12 @@ AMeleeCombatWeapon::AMeleeCombatWeapon()
 
 void AMeleeCombatWeapon::BeginPlay() {
 	Super::BeginPlay();
-	ULogger::ScreenMessage(FColor::Blue, "Melee Begin Play");
 	MeleeBoxComponent->SetGenerateOverlapEvents(true);
 	MeleeBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMeleeCombatWeapon::WeaponBeginOverlap);
 }
 
 void AMeleeCombatWeapon::OnUse() {
 	Super::OnUse();
-	ULogger::ScreenMessage(FColor::Red, "Melee Swinging");
 }
 
 void AMeleeCombatWeapon::AttachMeshToOwner(FName AttachPoint) {
@@ -34,13 +31,14 @@ void AMeleeCombatWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp,
 	if (ComponentOwner != nullptr) {
 		if ((OtherActor != nullptr) && (OtherActor != ComponentOwner->CharacterOwner) && (OtherComp != nullptr) && (OtherActor != this) && ACTOR_STATE == ECombatActorState::USING)
 		{
-			ULogger::ScreenMessage(FColor::Red, "Overlap called");
 			FRotator OwnerView;
 			FVector OwnerLoc;
 			ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
 			FHitResult Hit;
 			FVector ShotDirection = OwnerView.Vector();
 			UGameplayStatics::ApplyPointDamage(OtherActor, Damage, ShotDirection, Hit, ComponentOwner->CharacterOwner->GetInstigatorController(), this, DamageType);
+			int8 SoundIndex = FMath::RandRange(0, ImpactSound.Num() - 1);
+			PlayActorSound(ImpactSound[SoundIndex]);
 		}
 	}
 }

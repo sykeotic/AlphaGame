@@ -66,10 +66,6 @@ void APlayableCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsAttacking && bCanAttack) {
-		CharacterAttackStart();
-	}
-
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -137,7 +133,7 @@ void APlayableCharacter::MoveRight(float Value)
 }
 
 void APlayableCharacter::CharacterAttackStart() {
-	if (!bIsAttacking) {
+	if (!bIsAttacking && GetWorld()->GetTimeSeconds() - CombatComponent->CurrentWeapon->LastFireTime > CombatComponent->CurrentWeapon->TimeBetweenShots) {
 		bIsAttacking = true;
 		if (CombatComponent->CurrentWeapon) {
 			CombatComponent->UseCurrentWeapon();

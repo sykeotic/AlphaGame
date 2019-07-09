@@ -15,5 +15,5 @@ void ACombatAbility::BeginPlay()
 }
 
 void ACombatAbility::OnUse() {
-	ULogger::ScreenMessage(FColor::Red, "ACA Use");
+	Super::OnUse();
 }

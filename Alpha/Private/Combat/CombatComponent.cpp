@@ -18,13 +18,12 @@ UCombatComponent::UCombatComponent()
 
 void UCombatComponent::UseCurrentWeapon() {
 	if (CurrentWeapon) {
-		bIsUsingActor = true;
 		CurrentWeapon->HandleUse();
 	}
 }
 
 void UCombatComponent::CycleNextWeapon() {
-	if (CurrentWeaponIndex + 1 < WeaponCount) {
+	if (CurrentWeaponIndex + 2 < WeaponCount) {
 		CurrentWeaponIndex++;
 	}
 	else {
@@ -66,7 +65,7 @@ void UCombatComponent::UseCurrentAbility() {
 }
 
 void UCombatComponent::CycleNextAbility() {
-	if (CurrentAbilityIndex + 1 < AbilityCount) {
+	if (CurrentAbilityIndex + 2 < AbilityCount) {
 		CurrentAbilityIndex++;
 	}
 	else {

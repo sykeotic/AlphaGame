@@ -1,6 +1,7 @@
 #include "RangedCombatWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logger.h"
+#include "CombatProjectile.h"
 #include "CombatComponent.h"
 #include "PlayableCharacter.h"
 #include "Engine.h"
@@ -12,44 +13,27 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 }
 
 void ARangedCombatWeapon::OnUse() {
-	Super::OnUse();
-	FRotator OwnerView;
-	FVector OwnerLoc;
-	ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, OwnerView);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-
-	FVector WeaponLocation = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
-	FRotator WeaponRotation = MeshComp->GetSocketRotation(ProjectileSpawnLocation);
-
-	FVector ShotDirection = OwnerView.Vector();
-	FRotator HybridRotator(OwnerView.Pitch, OwnerView.Yaw, WeaponRotation.Roll);
-
-	UWorld* World = GetWorld();
-	FVector TraceEnd = WeaponLocation + (HybridRotator.Vector() * UseRange);
-
-	FCollisionQueryParams QueryParams;
-	FHitResult Hit;
-
-	QueryParams.AddIgnoredActor(this);
-	QueryParams.AddIgnoredActor(ComponentOwner->GetOwner());
-	QueryParams.bTraceComplex = true;
-
-	if (World->LineTraceSingleByChannel(Hit, WeaponLocation, TraceEnd, ECC_PhysicsBody, QueryParams)) {
-		if (ComponentOwner->GetOwner() && ComponentOwner) {
-			DrawDebugLine(GetWorld(), WeaponLocation, TraceEnd, FColor::White, false, 0.1f, 0, 1.0f);
-			AActor* HitActor = Hit.GetActor();
-			if (IsValid(HitActor)) {
-				ULogger::ScreenMessage(FColor::Red, "HitActor Valid!");
+	FTimerHandle DelayAnimHandle;
+	if (ProjectileClass != NULL) {
+		Super::OnUse();
+		FRotator RotationFrom;
+		FVector OwnerLoc;
+		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
+		FVector LocationFrom = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
+		RotationFrom.Pitch += 10.0f;
+		UWorld* const World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = Instigator;
+			ACombatProjectile* const Projectile = World->SpawnActor<ACombatProjectile>(ProjectileClass, LocationFrom, RotationFrom, SpawnParams);
+			Projectile->CombatActorOwner = this;
+			if (Projectile)
+			{
+				FVector const LaunchDir = RotationFrom.Vector();
+				Projectile->Fire(LaunchDir);
 			}
-			UGameplayStatics::ApplyPointDamage(HitActor, Damage, ShotDirection, Hit, ComponentOwner->GetOwner()->GetInstigatorController(), this, DamageType);
 		}
-		else {
-			ULogger::ScreenMessage(FColor::Red, "Owner null");
-		}
-	}
-	else {
-		ULogger::ScreenMessage(FColor::Blue, TEXT("LineTrace failed!"));
 	}
 }

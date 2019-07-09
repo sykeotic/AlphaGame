@@ -18,6 +18,6 @@ public:
 	virtual void OnUse() override;
 
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void FireObjectInDirection(FVector InLocation, FRotator InRotation, FVector TraceEnd);
+	//UFUNCTION(BlueprintImplementableEvent)
+		//void FireObjectInDirection(FVector InLocation, FRotator InRotation, FVector TraceEnd);
 };

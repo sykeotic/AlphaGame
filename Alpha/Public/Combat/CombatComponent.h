@@ -49,6 +49,8 @@ public:
 
 	ACombatWeapon* CurrentWeapon;
 	ACombatAbility* CurrentAbility;
+
+	bool bIsUsingActor;
 	
 	APlayableCharacter* CharacterOwner;
 
@@ -61,7 +63,6 @@ public:
 protected:
 
 	bool bCanUseActor;
-	bool bIsUsingActor;
 
 public:	
 
