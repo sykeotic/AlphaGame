@@ -13,5 +13,14 @@ UCLASS()
 class ALPHA_API ABasePlayerState : public APlayerState
 {
 	GENERATED_BODY()
-	
+
+public:
+	FName PlayerName;
+	int32 HeroKills;
+	int32 PawnKills;
+	int32 Ping;
+
+	virtual void CopyProperties(class APlayerState* PlayerState);
+
+	virtual void OverrideWith(class APlayerState* PlayerState);
 };

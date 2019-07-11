@@ -32,7 +32,10 @@ public:
 	APlayableCharacter* GetOwner();
 
 	bool bIsAlive;
+
+	UPROPERTY(Replicated)
 	float CurrentHealth;
+
 	float MaxHealth;
 	APlayableCharacter* Owner;
 

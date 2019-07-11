@@ -259,3 +259,12 @@ void APlayableCharacter::InitCombatComponent() {
 		CombatComponent->WeaponCount++;
 	}
 }
+
+void APlayableCharacter::UnPossessed() {
+	Super::UnPossessed();
+	Multicast_HideMesh();
+}
+
+void APlayableCharacter::Multicast_HideMesh_Implementation() {
+	GetMesh()->SetVisibility(false);
+}
