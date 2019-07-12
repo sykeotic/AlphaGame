@@ -11,14 +11,15 @@ ATestGameMode::ATestGameMode() {
 void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
 
-	//MaxNumPlayers = FCString::Atoi(*(UGameplayStatics::ParseOption(OptionsString, "MaxNumPlayers")));
+	//MaxNumPlayers = FCString::Atoi(*(UGameplayStatics::ParseOption(OptionsString, "MaxNumPlayers
 	MaxNumPlayers = 1;
+
+
 }
 
-bool ATestGameMode::ReadyToStartMatch_Implementation() {
-	Super::ReadyToStartMatch();
-
-	return MaxNumPlayers == NumPlayers;
+bool ATestGameMode::MyReadyToStartMatch()
+{
+	return (ReadyToStartMatch() && NumPlayers == MaxNumPlayers);
 }
 
 void ATestGameMode::PostLogin(APlayerController* NewPlayer) {

@@ -16,9 +16,9 @@ protected:
 
 	TArray<class APlayerController*> HumanPlayerControllerClass;
 
-	virtual bool ReadyToStartMatch_Implementation() override;
+	uint32 MaxNumPlayers;
 
-	int32 MaxNumPlayers;
+	bool MyReadyToStartMatch();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

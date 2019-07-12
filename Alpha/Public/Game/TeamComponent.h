@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "HumanPlayerController.h"
 #include "PlayablePawn.h"
+#include "ObjectiveOverlapActor.h"
 #include "SpawnLocationActor.h"
 #include "TeamComponent.generated.h"
 
@@ -24,7 +25,7 @@ public:
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;
-	TArray<AObjectiveOverlapActor*> OwnedObjectives;
+	TArray<class AObjectiveOverlapActor*> OwnedObjectives;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray < TSubclassOf<class APlayableCharacter >> PlayableCharacterClassArray;

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Actors/NonPlayableActors/OverlapTriggerActor.h"
-#include "TeamComponent.h"
 #include "ObjectiveOverlapActor.generated.h"
 
 /**
@@ -16,5 +15,19 @@ class ALPHA_API AObjectiveOverlapActor : public AOverlapTriggerActor
 	GENERATED_BODY()
 
 public:
-	UTeamComponent* OwningTeam;	
+
+	AObjectiveOverlapActor();
+
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	USphereComponent* SphereComponent;
+
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
+	class UTeamComponent* OwningTeam;
 };

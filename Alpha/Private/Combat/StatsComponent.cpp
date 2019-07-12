@@ -1,4 +1,5 @@
 #include "StatsComponent.h"
+#include "UnrealNetwork.h"
 #include "Logger.h"
 
 UStatsComponent::UStatsComponent()
@@ -61,4 +62,9 @@ APlayableCharacter* UStatsComponent::GetOwner() {
 
 float UStatsComponent::GetMaxHealth() {
 	return MaxHealth;
+}
+
+void UStatsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UStatsComponent, CurrentHealth);
 }

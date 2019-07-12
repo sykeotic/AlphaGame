@@ -260,11 +260,11 @@ void APlayableCharacter::InitCombatComponent() {
 	}
 }
 
-void APlayableCharacter::UnPossessed() {
-	Super::UnPossessed();
-	Multicast_HideMesh();
-}
-
-void APlayableCharacter::Multicast_HideMesh_Implementation() {
-	GetMesh()->SetVisibility(false);
-}
+//void APlayableCharacter::UnPossessed() {
+//	Super::UnPossessed();
+//	Multicast_HideMesh();
+//}
+//
+//void APlayableCharacter::Multicast_HideMesh_Implementation() {
+//	GetMesh()->SetVisibility(false);
+//}

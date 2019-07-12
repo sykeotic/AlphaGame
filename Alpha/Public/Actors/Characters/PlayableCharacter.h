@@ -27,10 +27,10 @@ public:
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
 
-	virtual void UnPossessed() override;
+	//virtual void UnPossessed() override;
 
-	UFUNCTION(NetMulticast, unreliable)
-	void Multicast_HideMesh();
+	//UFUNCTION(NetMulticast, unreliable)
+	//void Multicast_HideMesh();
 
 	UFUNCTION(BlueprintCallable)
 	void SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation);

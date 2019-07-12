@@ -19,6 +19,10 @@ class ALPHA_API ATestGameState : public AGameState
 
 public:
 
+	ATestGameState();
+
+	virtual void BeginPlay() override;
+
 	UPROPERTY(Replicated)
 	TArray<UTeamComponent*> ActiveTeams;
 
