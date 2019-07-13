@@ -23,7 +23,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
 	TArray<UTeamComponent*> ActiveTeams;
 
 	UPROPERTY(Replicated)

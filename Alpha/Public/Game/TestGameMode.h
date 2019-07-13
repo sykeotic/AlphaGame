@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "ObjectiveOverlapActor.h"
 #include "TestGameMode.generated.h"
 
 UCLASS()

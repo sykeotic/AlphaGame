@@ -1,4 +1,6 @@
 #include "ObjectiveOverlapActor.h"
+#include "PlayableCharacter.h"
+#include "TestGameState.h"
 #include "Logger.h"
 
 AObjectiveOverlapActor::AObjectiveOverlapActor() {
@@ -17,6 +19,12 @@ void AObjectiveOverlapActor::BeginPlay(){
 void AObjectiveOverlapActor::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	if ((OtherActor != nullptr) && (OtherComp != nullptr) && (OtherActor != this))
 	{
-		ULogger::ScreenMessage(FColor::Red, "Objective overlapped");
+		ATestGameState* GameState = Cast<ATestGameState>(GetWorld()->GetGameState());
+		for (UTeamComponent* CurrTeam : GameState->ActiveTeams) {
+			if (CurrTeam->TeamHeroes.Contains(OtherActor) && CurrTeam != OwningTeam) {
+				ULogger::ScreenMessage(FColor::Red, "Objective taken");
+				OwningTeam = CurrTeam;
+			}
+		}
 	}
 }

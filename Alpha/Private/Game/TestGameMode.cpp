@@ -2,6 +2,7 @@
 
 #include "TestGameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "TestGameState.h"
 #include "Logger.h"
 
 ATestGameMode::ATestGameMode() {
@@ -10,11 +11,8 @@ ATestGameMode::ATestGameMode() {
 
 void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
-
 	//MaxNumPlayers = FCString::Atoi(*(UGameplayStatics::ParseOption(OptionsString, "MaxNumPlayers
 	MaxNumPlayers = 1;
-
-
 }
 
 bool ATestGameMode::MyReadyToStartMatch()

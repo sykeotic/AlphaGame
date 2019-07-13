@@ -22,6 +22,8 @@ protected:
 
 public:
 	TArray<AHumanPlayerController*> HumanPlayerControllerArray;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;
@@ -34,6 +36,6 @@ public:
 	TArray < TSubclassOf<class APlayablePawn >> PlayablePawnClassArray;
 
 	void SpawnTeamPawn();
-	void SpawnTeamCharacter();
+	void SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation);
 		
 };
