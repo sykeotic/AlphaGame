@@ -9,7 +9,7 @@
 #include "TeamComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ALPHA_API UTeamComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -27,7 +27,7 @@ public:
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;
-	TArray<class AObjectiveOverlapActor*> OwnedObjectives;
+	TArray<AObjectiveOverlapActor*> OwnedObjectives;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray < TSubclassOf<class APlayableCharacter >> PlayableCharacterClassArray;
@@ -36,6 +36,8 @@ public:
 	TArray < TSubclassOf<class APlayablePawn >> PlayablePawnClassArray;
 
 	void SpawnTeamPawn();
-	void SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation);
+
+
+	APlayableCharacter* SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation);
 		
 };

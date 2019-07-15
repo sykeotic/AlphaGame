@@ -23,12 +23,14 @@ void UCombatComponent::UseCurrentWeapon() {
 }
 
 void UCombatComponent::CycleNextWeapon() {
-	if (CurrentWeaponIndex + 2 < WeaponCount) {
-		CurrentWeaponIndex++;
-	}
-	else {
+	ULogger::ScreenMessage(FColor::Red, "Weapon Count: " + FString::FromInt(WeaponCount));
+	if (CurrentWeaponIndex + 1 >= WeaponCount) {
 		CurrentWeaponIndex = 0;
 	}
+	else {
+		CurrentWeaponIndex++;
+	}
+	ULogger::ScreenMessage(FColor::Red, "Current Weapon Index: " + FString::FromInt(CurrentWeaponIndex));
 	SetCurrentWeapon(WeaponArray[CurrentWeaponIndex], true);
 }
 
@@ -65,11 +67,11 @@ void UCombatComponent::UseCurrentAbility() {
 }
 
 void UCombatComponent::CycleNextAbility() {
-	if (CurrentAbilityIndex + 2 < AbilityCount) {
-		CurrentAbilityIndex++;
+	if (CurrentAbilityIndex + 1 >= AbilityCount) {
+		CurrentAbilityIndex = 0;		
 	}
 	else {
-		CurrentAbilityIndex = 0;
+		CurrentAbilityIndex++;
 	}
 	SetCurrentAbility(AbilityArray[CurrentAbilityIndex], true);
 }

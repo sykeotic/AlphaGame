@@ -12,7 +12,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ALPHA_API ATestGameState : public AGameState
 {
 	GENERATED_BODY()
@@ -23,13 +23,19 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated)
 	TArray<UTeamComponent*> ActiveTeams;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UTeamComponent> DefaultTeam;
 
 	UPROPERTY(Replicated)
 	TArray<AObjectiveOverlapActor*> ActiveObjectives;
 
 	bool bTeamOwnsAllObjectives;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisplayEndGameWidget();
 
 	void ObjectiveCaptured(UTeamComponent* InTeam, AObjectiveOverlapActor* InObjective);
 };

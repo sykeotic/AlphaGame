@@ -6,7 +6,7 @@
 #include "Logger.h"
 
 ATestGameMode::ATestGameMode() {
-	ULogger::SetIsTestRun(true);
+	ULogger::SetIsTestRun(false);
 }
 
 void ATestGameMode::BeginPlay() {

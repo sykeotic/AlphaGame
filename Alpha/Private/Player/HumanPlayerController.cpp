@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "PlayableGeneralPawn.h"
 #include "NavigationSystem.h"
+#include "TeamComponent.h"
 #include "GeneralHUD.h"
 #include "Logger.h"
 
@@ -19,7 +20,7 @@ void AHumanPlayerController::HeroSelect(FString& InKey, FVector InLoc, FRotator 
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = GetWorld()->SpawnActor<APlayableCharacter>(CharacterBlueprint, InLoc, InRot, SpawnInfo);
+	HeroChar = ControllerTeam->SpawnTeamCharacter(CharacterBlueprint, InLoc, InRot);
 	Possess(HeroChar);
 	Unbind();
 	HeroChar->SetupPlayerInputComponent(InputComponent);

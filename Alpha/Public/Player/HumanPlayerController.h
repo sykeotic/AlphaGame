@@ -16,6 +16,7 @@ enum class EPlayerType : uint8 {
 /**
  * 
  */
+class UTeamComponent;
 class APlayableCharacter;
 class APlayableGeneralPawn;
 
@@ -54,6 +55,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		APlayableGeneralPawn* GeneralChar;
+
+	UTeamComponent* ControllerTeam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
 		TSubclassOf<class APlayableCharacter> CharacterBlueprint;

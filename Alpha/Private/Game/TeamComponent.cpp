@@ -1,4 +1,5 @@
 #include "TeamComponent.h"
+#include "Logger.h"
 #include "PlayableCharacter.h"
 
 UTeamComponent::UTeamComponent()
@@ -11,8 +12,18 @@ void UTeamComponent::BeginPlay()
 	Super::BeginPlay();	
 }
 
-void UTeamComponent::SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation) {
+APlayableCharacter* UTeamComponent::SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation) {
 	FActorSpawnParameters SpawnInfo;
-	APlayableCharacter* SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(CharClass, SpawnLocation, SpawnRotation, SpawnInfo);
+	APlayableCharacter* SpawnChar;
+	if (OwnedObjectives.Num() > 0) {
+		ULogger::ScreenMessage(FColor::Red, "Spawn Char +1 Obj");
+		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(CharClass, OwnedObjectives.Last()->GetActorLocation(), OwnedObjectives.Last()->GetActorRotation(), SpawnInfo);
+	}
+	else {
+		ULogger::ScreenMessage(FColor::Red, "Spawn Char 0 Obj");
+		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(CharClass, SpawnLocation, SpawnRotation, SpawnInfo);
+	}
+	SpawnChar->OwnerTeam = this;
 	TeamHeroes.Add(SpawnChar);
+	return SpawnChar;
 }

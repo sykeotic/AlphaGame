@@ -253,10 +253,10 @@ void APlayableCharacter::InitCombatComponent() {
 		CombatComponent->AbilityArray.AddUnique(Ability);
 		Ability->MeshComp->IgnoreActorWhenMoving(this, true);
 		if (i == 0) {
-			CombatComponent->CurrentWeaponIndex = 0;
+			CombatComponent->CurrentAbilityIndex = 0;
 			CombatComponent->SetCurrentAbility(Ability, true);
 		}
-		CombatComponent->WeaponCount++;
+		CombatComponent->AbilityCount++;
 	}
 }
 
