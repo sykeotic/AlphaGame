@@ -80,6 +80,7 @@ public:
 
 	FTimerHandle ResetTimer;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<AActor*> InZoneActors;
 
 	EObjectiveState OBJECTIVE_STATE;

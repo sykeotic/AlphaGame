@@ -21,6 +21,9 @@ protected:
 
 	bool MyReadyToStartMatch();
 
+	UPROPERTY(EditDefaultsOnly)
+		bool bDisplayLogs;
+
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:

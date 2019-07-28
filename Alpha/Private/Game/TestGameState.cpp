@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "TestGameMode.h"
 #include "PlayableCharacter.h"
+#include "AIController.h"
 #include "EngineUtils.h"
 #include "ObjectiveOverlapActor.h"
 #include "TeamComponent.h"
@@ -12,9 +13,15 @@ ATestGameState::ATestGameState() {
 }
 
 void ATestGameState::BeginPlay() {
-	UTeamComponent* AITeam = NewObject<UTeamComponent>(this, DefaultTeam);
-	UTeamComponent* PlayerTeam = NewObject<UTeamComponent>(this, DefaultTeam);
-	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, DefaultTeam);
+	UTeamComponent* AITeam = NewObject<UTeamComponent>(this, DefaultAITeam);
+	AITeam->TeamName = "AI Team";
+	AITeam->TeamIndex = 0;
+	UTeamComponent* PlayerTeam = NewObject<UTeamComponent>(this, DefaultPlayerTeam);
+	PlayerTeam->TeamName = "Player Team";
+	PlayerTeam->TeamIndex = 1;
+	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, DefaultNeutralTeam);
+	NeutralTeam->TeamName = "Neutral Team";
+	NeutralTeam->TeamIndex = 2;
 	ActiveTeams.AddUnique(AITeam);
 	ActiveTeams.AddUnique(PlayerTeam);
 	ActiveTeams.AddUnique(NeutralTeam);
@@ -26,6 +33,9 @@ void ATestGameState::BeginPlay() {
 			if (PlayerController)
 			{
 				PlayerController->ControllerTeam = ActiveTeams[1];
+			}
+			else {
+				ULogger::ScreenMessage(FColor::Blue, "Player Controller Not Valid");
 			}
 		}
 
@@ -39,8 +49,12 @@ void ATestGameState::BeginPlay() {
 		for (TActorIterator<APlayableCharacter> ObjectiveActorIter(GetWorld()); ObjectiveActorIter; ++ObjectiveActorIter)
 		{
 			APlayableCharacter* CurrObj = *ObjectiveActorIter;
+			CurrObj->OwnerTeam = AITeam;
 			ActiveTeams[0]->TeamHeroes.Add(CurrObj);
 		}
+	}
+	else {
+		ULogger::ScreenMessage(FColor::Red, "At least one Team isnt valid");
 	}
 }
 
@@ -52,14 +66,16 @@ void ATestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 }
 
 void ATestGameState::ObjectiveCaptured(UTeamComponent* InTeam, AObjectiveOverlapActor* InObjective) {
-	if (InTeam == NULL || InTeam == nullptr || !InTeam->IsValidLowLevel())
-		ULogger::ScreenMessage(FColor::Red, "Team Not Valid");
 	if (!InObjective)
 		ULogger::ScreenMessage(FColor::Red, "Obj Not Valid");
-	InTeam->OwnedObjectives.AddUnique(InObjective);
-	ULogger::ScreenMessage(FColor::Red, "Num Objectives: " + FString::FromInt(ActiveObjectives.Num()));
-	ULogger::ScreenMessage(FColor::Red, "Team Objectives: " + FString::FromInt(InTeam->OwnedObjectives.Num()));
-	if (InTeam->OwnedObjectives.Num() >= ActiveObjectives.Num()) {
-		DisplayEndGameWidget();
+	if (InTeam == NULL || InTeam == nullptr || !InTeam->IsValidLowLevel())
+		ULogger::ScreenMessage(FColor::Red, "Team Not Valid");
+	else {
+		InTeam->OwnedObjectives.AddUnique(InObjective);
+		ULogger::ScreenMessage(FColor::Red, InTeam->TeamName + " Objectives: " + FString::FromInt(ActiveObjectives.Num()));
+		ULogger::ScreenMessage(FColor::Red, InTeam->TeamName + " Objectives: " + FString::FromInt(InTeam->OwnedObjectives.Num()));
+		if (InTeam->OwnedObjectives.Num() >= ActiveObjectives.Num()) {
+			DisplayEndGameWidget(InTeam->TeamName);
+		}
 	}
 }

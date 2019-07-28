@@ -31,7 +31,6 @@ void ASingleTargetCombatAbility::OnUse() {
 				Projectile->Fire(LaunchDir);
 			}
 		}
-		BoolSpam();
 	}
 	else {
 		ULogger::ScreenMessage(FColor::Red, "Proj Null");

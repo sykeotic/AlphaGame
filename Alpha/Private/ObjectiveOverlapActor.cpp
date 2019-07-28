@@ -35,7 +35,7 @@ void AObjectiveOverlapActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			InZoneActors.AddUnique(OtherActor);
 			if (ContestingTeam == NULL || ContestingTeam == nullptr)
 				ContestingTeam = Cast<APlayableCharacter>(OtherActor)->OwnerTeam;
-			if(OwningTeam != Cast<APlayableCharacter>(OtherActor)->OwnerTeam)
+			if(OwningTeam != Cast<APlayableCharacter>(OtherActor)->OwnerTeam && ContestingTeam != NULL && ContestingTeam != nullptr)
 				AssertObjectiveState();
 		}
 	}
@@ -79,6 +79,10 @@ void AObjectiveOverlapActor::AssertObjectiveState() {
 				}
 			}
 		}
+		else if (OBJECTIVE_STATE == EObjectiveState::CAPTURING) {
+			AdjustModifier();
+			ULogger::ScreenMessage(FColor::Blue, "Capturing Obj");
+		}
 	}
 	else {
 		ULogger::ScreenMessage(FColor::Blue, "Resetting Obj");
@@ -90,11 +94,9 @@ void AObjectiveOverlapActor::StartCapturing() {
 	ChangeState(EObjectiveState::CAPTURING);
 	APlayableCharacter* FirstChar = Cast<APlayableCharacter>(InZoneActors.Last());
 	CreateCaptureDisplay();
-	ULogger::ScreenMessage(FColor::Blue, "StartCapturing()");
 	if (FirstChar) {
 		ContestingTeam = FirstChar->OwnerTeam;
 		CurrentCaptureScore += CaptureModifier;
-		ULogger::ScreenMessage(FColor::Blue, "Starting to Capture");
 		GetWorldTimerManager().SetTimer(CaptureTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 	}
 	else {
@@ -103,12 +105,12 @@ void AObjectiveOverlapActor::StartCapturing() {
 }
 
 void AObjectiveOverlapActor::TimerTick() {
-	if (CurrentCaptureScore <= 0 && bResetting) {
+	if (CurrentCaptureScore <= 0) {
 		ResetObjectiveFinished();
 	}
 	else if (CurrentCaptureScore >= RequiredCaptureScore && !bResetting) {
-		ULogger::ScreenMessage(FColor::Yellow, "Required Score: " + FString::FromInt(RequiredCaptureScore));
-		ULogger::ScreenMessage(FColor::Yellow, "Current Score: " + FString::FromInt(CurrentCaptureScore));
+		//ULogger::ScreenMessage(FColor::Yellow, "Required Score: " + FString::FromInt(RequiredCaptureScore));
+		//ULogger::ScreenMessage(FColor::Yellow, "Current Score: " + FString::FromInt(CurrentCaptureScore));
 		HandleCapture();
 	}
 	else {
@@ -117,15 +119,15 @@ void AObjectiveOverlapActor::TimerTick() {
 		if (CurrentCaptureScore <= 0)
 			CurrentCaptureScore = 0;
 		if (!bResetting) {
-			ULogger::ScreenMessage(FColor::Green, "Capture Timer");
+			//ULogger::ScreenMessage(FColor::Green, "Capture Timer");
 			GetWorldTimerManager().SetTimer(CaptureTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 		}
 		else {
-			ULogger::ScreenMessage(FColor::Green,  "Reset Timer");
+			//ULogger::ScreenMessage(FColor::Green,  "Reset Timer");
 			GetWorldTimerManager().SetTimer(ResetTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 		}
 	}
-	ULogger::ScreenMessage(FColor::Green, "Timer Tick: " + FString::FromInt(CurrentCaptureScore));
+	//ULogger::ScreenMessage(FColor::Green, "Timer Tick: " + FString::FromInt(CurrentCaptureScore));
 }
 
 void AObjectiveOverlapActor::AdjustModifier() {
@@ -167,7 +169,7 @@ void AObjectiveOverlapActor::HandleCapture() {
 	OwningTeam = ContestingTeam;
 	ResetObjectiveFinished();
 	PlayActorSound(CapturedSound);
-	ULogger::ScreenMessage(FColor::Yellow, "Objective Captured");
+	ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);
 	ATestGameState* CurrGameState = Cast<ATestGameState>(GetWorld()->GetGameState());
 	CurrGameState->ObjectiveCaptured(OwningTeam, this);
 }
@@ -180,7 +182,7 @@ void AObjectiveOverlapActor::ResetObjective() {
 
 void AObjectiveOverlapActor::ResetObjectiveFinished() {
 	ContestingTeam = nullptr;
-	ChangeState(PREV_STATE);
+	ChangeState(EObjectiveState::CAPTURED);
 	DestroyCaptureDisplay();
 	CurrentCaptureScore = 0;
 	PercentProgress = 0.0f;

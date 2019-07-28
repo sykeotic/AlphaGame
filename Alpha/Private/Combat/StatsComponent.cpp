@@ -8,7 +8,7 @@ UStatsComponent::UStatsComponent()
 }
 
 void UStatsComponent::DisplayCurrentHealth() {
-	ULogger::ScreenMessage(FColor::Red, FString::SanitizeFloat(CurrentHealth));
+	ULogger::ScreenMessage(FColor::Red, "Health After: " + FString::SanitizeFloat(CurrentHealth));
 }
 
 float UStatsComponent::GetCurrentHealth() {
@@ -28,6 +28,7 @@ bool UStatsComponent::IsAlive() {
 }
 
 void UStatsComponent::TakeDamage(float Damage) {
+	ULogger::ScreenMessage(FColor::Red, "Health Before: " + FString::SanitizeFloat(CurrentHealth));
 	CurrentHealth -= Damage;
 	if (CurrentHealth <= 0) {
 		bIsAlive = false;

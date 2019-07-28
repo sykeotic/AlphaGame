@@ -4,11 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "StatsComponent.h"
-#include "CombatComponent.h"
-#include "CombatActor.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "PlayableCharacter.generated.h"
+
+class UCombatUtils;
+class ACombatActor;
+class UCombatComponent;
+class UStatsComponent;
+
+UENUM(BlueprintType)
+enum class EArmorType : uint8 {
+	NO_ARMOR UMETA(DisplayName = "No Armor"),
+	LIGHT_ARMOR UMETA(DisplayName = "Light Armor"),
+	MEDIUM_ARMOR UMETA(DisplayName = "Medium Armor"),
+	HEAVY_ARMOR UMETA(DisplayName = "Heavy Armor"),
+	INVULNERABLE UMETA(DisplayName = "Invulnerable")
+};
 
 UCLASS(Blueprintable)
 class APlayableCharacter : public ACharacter
@@ -27,15 +38,16 @@ public:
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
 
-	//virtual void UnPossessed() override;
-
-	//UFUNCTION(NetMulticast, unreliable)
-	//void Multicast_HideMesh();
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	EArmorType ARMOR_TYPE;
 
 	UFUNCTION(BlueprintCallable)
 	void SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation);
 	void SwitchOnDecal();
 	void SwitchOffDecal();
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHPPercent();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -77,6 +89,7 @@ public:
 	void CharacterAttackStop();
 	void CharacterAbilityStart();
 	void CharacterAbilityStop();
+	void SetAttackingFalse();
 	bool IsCharacterAttacking();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -86,6 +99,10 @@ public:
 
 	float BaseLookUpRate;
 	float BaseTurnRate;
+
+
+
+	FTimerHandle AttackStopTimer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	FName WeaponSocketLocation;

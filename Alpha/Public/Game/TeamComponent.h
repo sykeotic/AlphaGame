@@ -29,6 +29,9 @@ public:
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;
 	TArray<AObjectiveOverlapActor*> OwnedObjectives;
 
+	uint8 TeamIndex;
+	FString TeamName;
+
 	UPROPERTY(EditDefaultsOnly)
 	TArray < TSubclassOf<class APlayableCharacter >> PlayableCharacterClassArray;
 

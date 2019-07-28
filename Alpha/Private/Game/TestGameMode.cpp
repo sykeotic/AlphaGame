@@ -6,13 +6,13 @@
 #include "Logger.h"
 
 ATestGameMode::ATestGameMode() {
-	ULogger::SetIsTestRun(false);
 }
 
 void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
 	//MaxNumPlayers = FCString::Atoi(*(UGameplayStatics::ParseOption(OptionsString, "MaxNumPlayers
 	MaxNumPlayers = 1;
+	ULogger::SetIsTestRun(bDisplayLogs);
 }
 
 bool ATestGameMode::MyReadyToStartMatch()

@@ -36,6 +36,7 @@ public:
 	UPROPERTY(Replicated)
 	float CurrentHealth;
 
+	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth;
 	APlayableCharacter* Owner;
 

@@ -4,6 +4,7 @@
 #include "StatsComponent.h"
 #include "Logger.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "TimerManager.h"
 #include "Camera/CameraComponent.h"
 #include "RangedCombatWeapon.h"
 #include "CombatAbility.h"
@@ -11,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MeleeCombatWeapon.h"
+#include "CombatUtils.h"
 #include "Components/InputComponent.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "Engine.h"
@@ -45,6 +47,11 @@ APlayableCharacter::APlayableCharacter()
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
 	InitCombatComponent();
+	StatsComponent->CurrentHealth = StatsComponent->MaxHealth;
+}
+
+float APlayableCharacter::GetCurrentHPPercent() {
+	return StatsComponent->CurrentHealth / StatsComponent->MaxHealth;
 }
 
 void APlayableCharacter::SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation) {
@@ -133,7 +140,8 @@ void APlayableCharacter::MoveRight(float Value)
 }
 
 void APlayableCharacter::CharacterAttackStart() {
-	if (!bIsAttacking && GetWorld()->GetTimeSeconds() - CombatComponent->CurrentWeapon->LastFireTime > CombatComponent->CurrentWeapon->TimeBetweenShots) {
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	if (!bIsAttacking && CombatComponent->CurrentWeapon->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
 		bIsAttacking = true;
 		if (CombatComponent->CurrentWeapon) {
 			CombatComponent->UseCurrentWeapon();
@@ -142,9 +150,15 @@ void APlayableCharacter::CharacterAttackStart() {
 }
 
 void APlayableCharacter::CharacterAttackStop() {
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	float StopAttackTime = CombatComponent->CurrentWeapon->NextValidFireTime - GameTime;
 	if (bIsAttacking)
 	{
-		bIsAttacking = false;
+		if (StopAttackTime > 0)
+			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+		else {
+			SetAttackingFalse();
+		}
 		if (CombatComponent->CurrentWeapon)
 		{
 			CombatComponent->CurrentWeapon->StopUse();
@@ -153,7 +167,8 @@ void APlayableCharacter::CharacterAttackStop() {
 }
 
 void APlayableCharacter::CharacterAbilityStart() {
-	if (!bIsAttacking) {
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	if (!bIsAttacking && CombatComponent->CurrentAbility->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
 		bIsAttacking = true;
 		if (CombatComponent->CurrentAbility) {
 			CombatComponent->UseCurrentAbility();
@@ -162,14 +177,24 @@ void APlayableCharacter::CharacterAbilityStart() {
 }
 
 void APlayableCharacter::CharacterAbilityStop() {
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	float StopAttackTime = CombatComponent->CurrentAbility->NextValidFireTime - GameTime;
 	if (bIsAttacking)
 	{
-		bIsAttacking = false;
+		if(StopAttackTime > 0)
+			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+		else {
+			SetAttackingFalse();
+		}
 		if (CombatComponent->CurrentAbility)
 		{
 			CombatComponent->CurrentAbility->StopUse();
 		}
 	}
+}
+
+void APlayableCharacter::SetAttackingFalse() {
+	bIsAttacking = false;
 }
 
 bool APlayableCharacter::IsCharacterAttacking() {
@@ -199,7 +224,6 @@ float APlayableCharacter::TakeDamage(float Damage, struct FDamageEvent const& Da
 }
 
 void APlayableCharacter::AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform) {
-	ULogger::ScreenMessage(FColor::Red, "Assigning Camera Stats");
 	SetBaseTurnRate(InBaseTurnRate);
 	SetBaseLookUpRate(InBaseLookupRate);
 	bUseControllerRotationPitch = bUsePitch;

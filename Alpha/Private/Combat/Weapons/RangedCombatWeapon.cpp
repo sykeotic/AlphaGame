@@ -20,7 +20,7 @@ void ARangedCombatWeapon::OnUse() {
 		FVector OwnerLoc;
 		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
 		FVector LocationFrom = MeshComp->GetSocketLocation(ProjectileSpawnLocation);
-		RotationFrom.Pitch += 10.0f;
+		RotationFrom.Pitch += 5.0f;
 		UWorld* const World = GetWorld();
 		if (World)
 		{

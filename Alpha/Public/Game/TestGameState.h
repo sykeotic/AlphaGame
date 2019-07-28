@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIController.h"
 #include "GameFramework/GameState.h"
 #include "TeamComponent.h"
 #include "UnrealNetwork.h"
@@ -27,7 +28,13 @@ public:
 	TArray<UTeamComponent*> ActiveTeams;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UTeamComponent> DefaultTeam;
+	TSubclassOf<class UTeamComponent> DefaultPlayerTeam;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UTeamComponent> DefaultAITeam;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UTeamComponent> DefaultNeutralTeam;
 
 	UPROPERTY(Replicated)
 	TArray<AObjectiveOverlapActor*> ActiveObjectives;
@@ -35,7 +42,7 @@ public:
 	bool bTeamOwnsAllObjectives;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void DisplayEndGameWidget();
+	void DisplayEndGameWidget(const FString& TeamName);
 
 	void ObjectiveCaptured(UTeamComponent* InTeam, AObjectiveOverlapActor* InObjective);
 };

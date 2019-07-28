@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CombatUtils.h"
 #include "Runtime/Engine/Classes/Materials/Material.h"
 #include "CombatComponent.generated.h"
 
+class UCombatUtils;
 class ACombatActor;
 class ACombatAbility;
 class ACombatWeapon;
+class ABuffEffect;
+class ADebuffEffect;
+class ACrowdControlEffect;
 class APlayableCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -41,6 +44,9 @@ public:
 
 	TArray<ACombatWeapon*> WeaponArray;
 	TArray<ACombatAbility*> AbilityArray;
+	TArray<ABuffEffect*> ActiveBuffs;
+	TArray<ADebuffEffect*> ActiveDebuffs;
+	TArray<ACrowdControlEffect*> ActiveCrowdControl;
 
 	uint8 CurrentWeaponIndex;
 	uint8 CurrentAbilityIndex;

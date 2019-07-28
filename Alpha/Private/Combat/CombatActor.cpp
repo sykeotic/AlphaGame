@@ -21,8 +21,7 @@ ACombatActor::ACombatActor()
 	ACTOR_STATE = ECombatActorState::IDLE;
 	bIsEquipped = false;
 	EquipDuration = 1.0f;
-
-	TimeBetweenShots = 60.0f / 128.5f;
+	NextValidFireTime = 0.0f;
 }
 
 void ACombatActor::BeginPlay() {
@@ -32,10 +31,8 @@ void ACombatActor::BeginPlay() {
 void ACombatActor::OnEquip(bool bPlayAnimation) {
 	bPendingEquip = true;
 	AssertActorState();
-	ULogger::ScreenMessage(FColor::Green, "Equip");
 	if (bPlayAnimation)
 	{
-		ULogger::ScreenMessage(FColor::Green, "Equip Can Play Anim");
 		float Duration = PlayActorAnimation(EquipAnim);
 		if (Duration <= 0.0f)
 		{
@@ -145,7 +142,6 @@ void ACombatActor::AssertActorState()
 	{
 		NewState = ECombatActorState::EQUIPPING;
 	}
-	//BoolSpam();
 	SetCombatActorState(NewState);
 }
 
@@ -169,6 +165,7 @@ void ACombatActor::SetCombatActorState(ECombatActorState InState)
 void ACombatActor::OnBurstStarted()
 {
 	const float GameTime = GetWorld()->GetTimeSeconds();
+	NextValidFireTime = GameTime + UseCooldown;
 	if (LastFireTime > 0 && UseCooldown > 0.0f &&
 		LastFireTime + UseCooldown > GameTime)
 	{
@@ -176,6 +173,7 @@ void ACombatActor::OnBurstStarted()
 	}
 	else
 	{
+		NextValidFireTime = GameTime + UseCooldown;
 		HandleUse();
 	}
 }
@@ -234,10 +232,10 @@ void ACombatActor::HandleUse() {
 	if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
 	{
 
-		bRefiring = (ACTOR_STATE == ECombatActorState::USING && TimeBetweenShots > 0.0f);
+		bRefiring = (ACTOR_STATE == ECombatActorState::USING && UseCooldown > 0.0f);
 		if (bRefiring)
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ACombatActor::HandleUse, TimeBetweenShots, false);
+			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ACombatActor::HandleUse, UseCooldown, false);
 		}
 	}
 
@@ -247,23 +245,23 @@ void ACombatActor::HandleUse() {
 UAudioComponent* ACombatActor::PlayActorSound(USoundCue* SoundToPlay)
 {
 	UAudioComponent* AC = nullptr;
-	if (SoundToPlay && ComponentOwner->CharacterOwner)
-	{
-		AC = UGameplayStatics::SpawnSoundAttached(SoundToPlay, ComponentOwner->CharacterOwner->GetRootComponent());
+	if (!bPlayingSound || bPlaySoundEveryTime) {
+		if (SoundToPlay && ComponentOwner->CharacterOwner)
+		{
+			bPlayingSound = true;
+			AC = UGameplayStatics::SpawnSoundAttached(SoundToPlay, ComponentOwner->CharacterOwner->GetRootComponent());
+			GetWorldTimerManager().SetTimer(SoundTimer, this, &ACombatActor::SetSoundPlayingFalse, SoundToPlay->GetDuration(), false);
+		}
 	}
-
 	return AC;
 }
 
-
+void ACombatActor::SetSoundPlayingFalse() {
+	bPlayingSound = false;
+}
 
 void ACombatActor::StartSimulatingActorUse(){
-
-	if (ActorFX)
-	{
-		UsePSC = UGameplayStatics::SpawnEmitterAttached(ActorFX, MeshComp, ProjectileSpawnLocation);
-	}
-
+	GetWorldTimerManager().SetTimer(SFXTimer, this, &ACombatActor::StartSFX, SFXBuffer, false);
 	if (!bPlayingFireAnim)
 	{
 		int8 AnimIndex = FMath::RandRange(0, FireAnim.Num() - 1);
@@ -273,6 +271,13 @@ void ACombatActor::StartSimulatingActorUse(){
 	}
 	int8 SoundIndex = FMath::RandRange(0, UseSound.Num() - 1);
 	PlayActorSound(UseSound[SoundIndex]);
+}
+
+void ACombatActor::StartSFX() {
+	if (ActorFX)
+	{
+		UsePSC = UGameplayStatics::SpawnEmitterAttached(ActorFX, MeshComp, ProjectileSpawnLocation);
+	}
 }
 
 void ACombatActor::StopUse() {
@@ -285,10 +290,8 @@ void ACombatActor::StopUse() {
 
 void ACombatActor::StopSimulatingActorUse()
 {
-	ULogger::ScreenMessage(FColor::Green, "Stopping Use");
 	if (bPlayingFireAnim)
 	{
-		ULogger::ScreenMessage(FColor::Green, "Branch Stopping Use");
 		StopActorAnimation(CurrentAnim);
 		bPlayingFireAnim = false;
 	}
@@ -304,7 +307,7 @@ float ACombatActor::PlayActorAnimation(UAnimMontage* Animation, float InPlayRate
 			Duration = ComponentOwner->CharacterOwner->PlayAnimMontage(Animation, InPlayRate, StartSectionName);
 		}
 	}
-
+	GetWorldTimerManager().SetTimer(AnimationTimer, this, &ACombatActor::StopSimulatingActorUse, Duration, false);
 	return Duration;
 }
 
@@ -318,6 +321,12 @@ void ACombatActor::StopActorAnimation(UAnimMontage* Animation)
 			ComponentOwner->CharacterOwner->StopAnimMontage(Animation);
 		}
 	}
+}
+
+float ACombatActor::ResolveDamageModifiers(APlayableCharacter* OffensiveCharacter, APlayableCharacter* DefensiveCharacter, ACombatActor* OffensiveCombatActor) {
+	float DamageReturn = UCombatUtils::CalculateDamage(Damage, DefensiveCharacter, OffensiveCharacter, this);
+	ULogger::ScreenMessage(FColor::Red, "Did This Much Damage: " + FString::SanitizeFloat(DamageReturn));
+	return DamageReturn;
 }
 
 void ACombatActor::BoolSpam() {

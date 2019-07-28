@@ -2,10 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CombatActor.h"
 #include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "CombatProjectile.generated.h"
+
+class ACombatActor;
+class UCombatComponent;
 
 UCLASS()
 class ALPHA_API ACombatProjectile : public AActor
