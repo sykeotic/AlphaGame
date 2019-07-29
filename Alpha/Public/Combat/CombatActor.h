@@ -92,7 +92,7 @@ public:
 	TArray<USoundCue*> UseSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-	TArray<USoundCue*> ImpactSound;
+		TArray<USoundCue*> ImpactSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
 	USoundCue* EquipSound;

@@ -27,13 +27,27 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	USoundCue* PickRandomSound();
+
 	ACombatActor* CombatActorOwner;
+
+	UPROPERTY(EditDefaultsOnly)
+		FVector FXScaleTransform;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 		UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 		USphereComponent* CollisionComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+		TArray<USoundCue*> ImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
+		UParticleSystem* ImpactFX;
+
+	UPROPERTY(Transient)
+		UParticleSystemComponent* UsePSC;
 
 	UPROPERTY(EditDefaultsOnly)
 		float MaxSpeed;

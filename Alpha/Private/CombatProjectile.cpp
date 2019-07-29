@@ -4,6 +4,8 @@
 #include "CombatActor.h"
 #include "Logger.h"
 #include "PlayableCharacter.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "CombatComponent.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 
@@ -24,11 +26,20 @@ ACombatProjectile::ACombatProjectile()
 
 void ACombatProjectile::BeginPlay() {
 	Super::BeginPlay();
-	CollisionComp->SetGenerateOverlapEvents(true);
-	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACombatProjectile::OnHit);
+
 }
 
 void ACombatProjectile::Fire(const FVector& ShootDirection) {
+	CollisionComp->SetGenerateOverlapEvents(true);/*
+	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner, true);
+	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->MeshComp, true);
+	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CharacterOwner, true);
+	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CharacterOwner->GetMesh(), true);
+	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CurrentAbility, true);
+	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CurrentAbility->MeshComp, true);
+	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CurrentWeapon, true);
+	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CurrentWeapon->MeshComp, true);*/
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACombatProjectile::OnHit);
 	if (ProjectileMovement)
 	{
 		ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
@@ -37,7 +48,7 @@ void ACombatProjectile::Fire(const FVector& ShootDirection) {
 
 void ACombatProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && (OtherActor != this) && OtherComp && CombatActorOwner != nullptr && OtherActor != CombatActorOwner->ComponentOwner->CharacterOwner)
+	if (OtherActor && (OtherActor != this) && OtherComp && CombatActorOwner != nullptr && OtherActor != CombatActorOwner && OtherActor != CombatActorOwner->ComponentOwner->CharacterOwner && OtherActor != CombatActorOwner->ComponentOwner->CurrentWeapon && OtherComp != CombatActorOwner->ComponentOwner->CharacterOwner->GetMesh())
 	{
 		FRotator OwnerView;
 		FVector OwnerLoc;
@@ -46,15 +57,25 @@ void ACombatProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* Other
 		FVector ShotDirection = OwnerView.Vector();
 		APlayableCharacter* DamagedChar = Cast<APlayableCharacter>(OtherActor);
 		if (DamagedChar) {
+			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, OtherActor->GetActorTransform(), true);
+			UGameplayStatics::SpawnSoundAttached(PickRandomSound(), OtherActor->GetRootComponent());
 			ULogger::ScreenMessage(FColor::Red, "Damaged Char Is Character");
 			UGameplayStatics::ApplyPointDamage(OtherActor, this->CombatActorOwner->ResolveDamageModifiers(this->CombatActorOwner->ComponentOwner->CharacterOwner, DamagedChar, this->CombatActorOwner), ShotDirection, Hit, CombatActorOwner->ComponentOwner->CharacterOwner->GetInstigatorController(), this, CombatActorOwner->DamageType);
 		} else {
+			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, OtherActor->GetActorTransform(), true);
+			UGameplayStatics::SpawnSoundAttached(PickRandomSound(), OtherActor->GetRootComponent());
 			UGameplayStatics::ApplyPointDamage(OtherActor, CombatActorOwner->Damage, ShotDirection, Hit, CombatActorOwner->ComponentOwner->CharacterOwner->GetInstigatorController(), this, CombatActorOwner->DamageType);
 		}
+		UsePSC->SetRelativeScale3D(FXScaleTransform);
 		if (bDiesUponCollision) {
 			this->Destroy();
 		}
 	}
+}
+
+USoundCue* ACombatProjectile::PickRandomSound() {
+	int8 Index = FMath::RandRange(0, ImpactSound.Num() - 1);
+	return ImpactSound[Index];
 }
 
 void ACombatProjectile::SetCombatActorOwner(ACombatActor* NewOwner) {

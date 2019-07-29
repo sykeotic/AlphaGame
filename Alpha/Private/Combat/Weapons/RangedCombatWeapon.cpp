@@ -13,9 +13,9 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 }
 
 void ARangedCombatWeapon::OnUse() {
+	Super::OnUse();
 	FTimerHandle DelayAnimHandle;
 	if (ProjectileClass != NULL) {
-		Super::OnUse();
 		FRotator RotationFrom;
 		FVector OwnerLoc;
 		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);

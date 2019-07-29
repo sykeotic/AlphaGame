@@ -11,6 +11,7 @@ ASingleTargetCombatAbility::ASingleTargetCombatAbility()
 
 void ASingleTargetCombatAbility::OnUse() {
 	Super::OnUse();
+	ULogger::ScreenMessage(FColor::Red, "FIRING SPELL");
 	if (ProjectileClass != NULL) {
 		FRotator RotationFrom;
 		FVector OwnerLoc;

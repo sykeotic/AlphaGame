@@ -10,7 +10,6 @@ ATestGameMode::ATestGameMode() {
 
 void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
-	//MaxNumPlayers = FCString::Atoi(*(UGameplayStatics::ParseOption(OptionsString, "MaxNumPlayers
 	MaxNumPlayers = 1;
 	ULogger::SetIsTestRun(bDisplayLogs);
 }
