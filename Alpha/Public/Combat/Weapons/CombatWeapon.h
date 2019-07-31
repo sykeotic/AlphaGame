@@ -17,6 +17,8 @@ public:
 
 	virtual void OnUse() override;
 
+	virtual void ExecuteUse() override;
+
 	virtual void BeginPlay() override;
 
 	virtual void AttachMeshToOwner(FName AttachPoint) override;

@@ -18,7 +18,7 @@ UCombatComponent::UCombatComponent()
 
 void UCombatComponent::UseCurrentWeapon() {
 	if (CurrentWeapon) {
-		CurrentWeapon->HandleUse();
+		CurrentWeapon->OnUse();
 	}
 }
 
@@ -62,7 +62,7 @@ void UCombatComponent::SetCurrentAbility(ACombatAbility* InActor, bool bEquipAni
 void UCombatComponent::UseCurrentAbility() {
 	ULogger::ScreenMessage(FColor::Red, "Using Combat Ability");
 	if (CurrentAbility) {
-		CurrentAbility->HandleUse();
+		CurrentAbility->OnUse();
 	}
 }
 

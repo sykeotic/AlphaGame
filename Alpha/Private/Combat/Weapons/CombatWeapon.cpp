@@ -21,3 +21,7 @@ void ACombatWeapon::AttachMeshToOwner(FName AttachPoint) {
 void ACombatWeapon::OnUse() {
 	Super::OnUse();
 }
+
+void ACombatWeapon::ExecuteUse() {
+
+}

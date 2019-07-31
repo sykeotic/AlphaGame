@@ -14,6 +14,9 @@ ARangedCombatWeapon::ARangedCombatWeapon()
 
 void ARangedCombatWeapon::OnUse() {
 	Super::OnUse();
+}
+
+void ARangedCombatWeapon::ExecuteUse() {
 	FTimerHandle DelayAnimHandle;
 	if (ProjectileClass != NULL) {
 		FRotator RotationFrom;

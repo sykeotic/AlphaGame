@@ -15,6 +15,7 @@ class ALPHA_API AMeleeCombatWeapon : public ACombatWeapon
 public:	
 	AMeleeCombatWeapon();
 	virtual void OnUse() override;
+	virtual void ExecuteUse() override;
 
 	virtual void BeginPlay() override;
 

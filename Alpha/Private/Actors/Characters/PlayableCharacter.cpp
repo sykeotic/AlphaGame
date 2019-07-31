@@ -159,10 +159,6 @@ void APlayableCharacter::CharacterAttackStop() {
 		else {
 			SetAttackingFalse();
 		}
-		if (CombatComponent->CurrentWeapon)
-		{
-			CombatComponent->CurrentWeapon->StopUse();
-		}
 	}
 }
 
@@ -186,15 +182,15 @@ void APlayableCharacter::CharacterAbilityStop() {
 		else {
 			SetAttackingFalse();
 		}
-		if (CombatComponent->CurrentAbility)
-		{
-			CombatComponent->CurrentAbility->StopUse();
-		}
 	}
 }
 
 void APlayableCharacter::SetAttackingFalse() {
 	bIsAttacking = false;
+	if (CombatComponent->CurrentAbility)
+		CombatComponent->CurrentAbility->StopUse();
+	if (CombatComponent->CurrentWeapon)
+		CombatComponent->CurrentWeapon->StopUse();
 }
 
 bool APlayableCharacter::IsCharacterAttacking() {

@@ -17,6 +17,8 @@ public:
 
 	virtual void OnUse() override;
 
+	virtual void ExecuteUse() override;
+
 
 	//UFUNCTION(BlueprintImplementableEvent)
 		//void FireObjectInDirection(FVector InLocation, FRotator InRotation, FVector TraceEnd);

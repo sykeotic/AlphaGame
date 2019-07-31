@@ -10,7 +10,12 @@ ASingleTargetCombatAbility::ASingleTargetCombatAbility()
 }
 
 void ASingleTargetCombatAbility::OnUse() {
-	Super::OnUse();
+	if (!bFirstUse) {
+		Super::OnUse();
+	}
+}
+
+void ASingleTargetCombatAbility::ExecuteUse() {
 	ULogger::ScreenMessage(FColor::Red, "FIRING SPELL");
 	if (ProjectileClass != NULL) {
 		FRotator RotationFrom;
@@ -37,4 +42,3 @@ void ASingleTargetCombatAbility::OnUse() {
 		ULogger::ScreenMessage(FColor::Red, "Proj Null");
 	}
 }
-

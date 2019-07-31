@@ -23,6 +23,10 @@ void AMeleeCombatWeapon::OnUse() {
 	Super::OnUse();
 }
 
+void AMeleeCombatWeapon::ExecuteUse() {
+
+}
+
 void AMeleeCombatWeapon::AttachMeshToOwner(FName AttachPoint) {
 	Super::AttachMeshToOwner(AttachPoint);
 }

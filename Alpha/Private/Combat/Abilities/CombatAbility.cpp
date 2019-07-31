@@ -17,3 +17,7 @@ void ACombatAbility::BeginPlay()
 void ACombatAbility::OnUse() {
 	Super::OnUse();
 }
+
+void ACombatAbility::ExecuteUse() {
+
+}

@@ -109,6 +109,7 @@ public:
 	bool bIsEquipped;
 	bool bPendingEquip;
 	bool bPlayingSound;
+	bool bFirstUse;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	bool bPlaySoundEveryTime;
@@ -196,6 +197,8 @@ public:
 	void OnEquip(bool bPlayAnimation);
 
 	virtual void OnUse();
+
+	virtual void ExecuteUse();
 
 	void StopUse();
 

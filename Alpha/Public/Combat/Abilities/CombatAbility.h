@@ -20,5 +20,5 @@ protected:
 
 public:	
 	virtual void OnUse() override;
-
+	virtual void ExecuteUse() override;
 };

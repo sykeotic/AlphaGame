@@ -98,7 +98,7 @@ void ACombatActor::OnUse() {
 	if (!bWantsToUse) {
 		bWantsToUse = true;
 		AssertActorState();
-	}	
+	}
 }
 
 bool ACombatActor::CanUse() {
@@ -206,6 +206,10 @@ void ACombatActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION(ACombatActor, BurstCounter, COND_SkipOwner);
 }
 
+void ACombatActor::ExecuteUse() {
+
+}
+
 void ACombatActor::HandleUse() {
 	if (CanUse())
 	{
@@ -216,8 +220,8 @@ void ACombatActor::HandleUse() {
 
 		if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
 		{
-			OnUse();
-
+			//OnUse();
+			ExecuteUse();
 			BurstCounter++;
 		}
 	}
