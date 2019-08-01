@@ -1,23 +1,22 @@
-#include "SingleTargetCombatAbility.h"
+#include "ThrowableCombatAbility.h"
 #include "CombatComponent.h"
 #include "Logger.h"
-#include "CombatProjectile.h"
+#include "ThrowableProjectile.h"
 #include "PlayableCharacter.h"
 
-ASingleTargetCombatAbility::ASingleTargetCombatAbility()
-{
-	PrimaryActorTick.bCanEverTick = false;
+AThrowableCombatAbility::AThrowableCombatAbility() {
+
 }
 
-void ASingleTargetCombatAbility::OnUse() {
+void AThrowableCombatAbility::OnUse() {
 	if (!bFirstUse) {
 		Super::OnUse();
 	}
 }
 
-void ASingleTargetCombatAbility::ExecuteUse() {
+void AThrowableCombatAbility::ExecuteUse() {
 	ULogger::ScreenMessage(FColor::Red, "FIRING SPELL");
-	if (ProjectileClass != NULL) {
+	if (ThrowableProjectileClass != NULL) {
 		FRotator RotationFrom;
 		FVector OwnerLoc;
 		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
@@ -29,12 +28,16 @@ void ASingleTargetCombatAbility::ExecuteUse() {
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = Instigator;
-			ACombatProjectile* const Projectile = World->SpawnActor<ACombatProjectile>(ProjectileClass, LocationFrom, RotationFrom, SpawnParams);
+			AThrowableProjectile* const Projectile = World->SpawnActor<AThrowableProjectile>(ThrowableProjectileClass, LocationFrom, RotationFrom, SpawnParams);
 			Projectile->SetCombatActorOwner(this);
 			if (Projectile)
 			{
 				FVector const LaunchDir = RotationFrom.Vector();
 				Projectile->Fire(LaunchDir);
+				ULogger::ScreenMessage(FColor::Red, "Spawned Proj Firing");
+			}
+			else {
+				ULogger::ScreenMessage(FColor::Red, "Spawned Proj Null");
 			}
 		}
 	}

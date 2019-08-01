@@ -220,7 +220,6 @@ void ACombatActor::HandleUse() {
 
 		if (ComponentOwner->CharacterOwner && ComponentOwner->CharacterOwner->IsLocallyControlled())
 		{
-			//OnUse();
 			ExecuteUse();
 			BurstCounter++;
 		}
@@ -356,5 +355,25 @@ void ACombatActor::BoolSpam() {
 	} else if (ACTOR_STATE == ECombatActorState::USING)
 	{
 		ULogger::ScreenMessage(FColor::Purple, "USING");
+	}
+}
+
+USoundCue* ACombatActor::PickRandomSound(TArray<USoundCue*> InSoundArray) {
+	if (InSoundArray.Num() > 0) {
+		int8 Index = FMath::RandRange(0, InSoundArray.Num() - 1);
+		return InSoundArray[Index];
+	}
+	else {
+		return nullptr;
+	}
+}
+
+UAnimMontage* ACombatActor::PickRandomAnim(TArray<UAnimMontage*> InAnimArray) {
+	if (InAnimArray.Num() > 0) {
+		int8 Index = FMath::RandRange(0, InAnimArray.Num() - 1);
+		return InAnimArray[Index];
+	}
+	else {
+		return nullptr;
 	}
 }

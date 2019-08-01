@@ -4,6 +4,7 @@
 #include "CombatActor.h"
 #include "Logger.h"
 #include "PlayableCharacter.h"
+#include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "CombatComponent.h"
@@ -14,6 +15,8 @@ ACombatProjectile::ACombatProjectile()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(15.0f);
 	RootComponent = CollisionComp;
+
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
@@ -30,15 +33,7 @@ void ACombatProjectile::BeginPlay() {
 }
 
 void ACombatProjectile::Fire(const FVector& ShootDirection) {
-	CollisionComp->SetGenerateOverlapEvents(true);/*
-	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner, true);
-	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->MeshComp, true);
-	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CharacterOwner, true);
-	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CharacterOwner->GetMesh(), true);
-	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CurrentAbility, true);
-	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CurrentAbility->MeshComp, true);
-	CollisionComp->IgnoreActorWhenMoving(CombatActorOwner->ComponentOwner->CurrentWeapon, true);
-	CollisionComp->IgnoreComponentWhenMoving(CombatActorOwner->ComponentOwner->CurrentWeapon->MeshComp, true);*/
+	CollisionComp->SetGenerateOverlapEvents(true);
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACombatProjectile::OnHit);
 	if (ProjectileMovement)
 	{

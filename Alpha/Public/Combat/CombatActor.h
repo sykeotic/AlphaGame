@@ -76,6 +76,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class ACombatProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AThrowableProjectile> ThrowableProjectileClass;
+
 	UFUNCTION()
 	void OnRep_BurstCounter();
 
@@ -169,6 +172,10 @@ public:
 	void AssertActorState();
 
 	UAudioComponent* PlayActorSound(USoundCue* SoundToPlay);
+
+	USoundCue* PickRandomSound(TArray<USoundCue*> InSoundArray);
+
+	UAnimMontage* PickRandomAnim(TArray < UAnimMontage*> InAnimArray);
 
 	void OnBurstStarted();
 
