@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		FVector FXScaleTransform;
 
+	UPROPERTY(EditDefaultsOnly)
+		FVector FXLocationTransform;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
 		UProjectileMovementComponent* ProjectileMovement;
 
@@ -68,6 +71,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		float Bounciness;
+
+	UPROPERTY(EditDefaultsOnly)
+		float BlastRadius;
 
 	UPROPERTY(EditDefaultsOnly)
 		bool bShouldBounce;
