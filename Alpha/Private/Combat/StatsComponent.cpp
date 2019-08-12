@@ -1,5 +1,6 @@
 #include "StatsComponent.h"
 #include "UnrealNetwork.h"
+#include "GameplayUtils.h"
 #include "Logger.h"
 
 UStatsComponent::UStatsComponent()
@@ -25,6 +26,10 @@ void UStatsComponent::SetCurrentHealth(float InHealth) {
 
 bool UStatsComponent::IsAlive() {
 	return bIsAlive;
+}
+
+EArmorType UStatsComponent::GetArmorType() {
+	return ArmorType;
 }
 
 void UStatsComponent::TakeDamage(float Damage) {

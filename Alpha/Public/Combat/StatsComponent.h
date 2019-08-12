@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayUtils.h"
 #include "StatsComponent.generated.h"
 
 class APlayableCharacter;
@@ -19,29 +20,33 @@ public:
 	void TakeDamage(float Damage);
 	void Heal(float HealAmount);
 
+	bool IsAlive();
 	void SetAlive(bool IsAlive);
-	void SetCurrentHealth(float InCurrHealth);
-	void SetMaxHealth(float InMaxHealth);
-	void DisplayCurrentHealth();
 
 	float GetCurrentHealth();
+	void SetCurrentHealth(float InCurrHealth);
+
 	float GetMaxHealth();
-	bool IsAlive();
+	void SetMaxHealth(float InMaxHealth);
+
+	void DisplayCurrentHealth();
+
+	EArmorType GetArmorType();
 
 	void SetOwner(APlayableCharacter* InChar);
 	APlayableCharacter* GetOwner();
 
-	bool bIsAlive;
+protected:
 
+private:	
+	bool bIsAlive;
+	float MaxHealth;
+
+	APlayableCharacter* Owner;
+			
 	UPROPERTY(Replicated)
 	float CurrentHealth;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MaxHealth;
-	APlayableCharacter* Owner;
-
-protected:
-
-public:	
-			
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	EArmorType ArmorType;
 };

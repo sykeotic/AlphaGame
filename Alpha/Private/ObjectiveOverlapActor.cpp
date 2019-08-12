@@ -34,8 +34,8 @@ void AObjectiveOverlapActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp,
 		if (!InZoneActors.Contains(OtherActor)) {
 			InZoneActors.AddUnique(OtherActor);
 			if (ContestingTeam == NULL || ContestingTeam == nullptr)
-				ContestingTeam = Cast<APlayableCharacter>(OtherActor)->OwnerTeam;
-			if(OwningTeam != Cast<APlayableCharacter>(OtherActor)->OwnerTeam && ContestingTeam != NULL && ContestingTeam != nullptr)
+				ContestingTeam = Cast<APlayableCharacter>(OtherActor)->GetOwnerTeam();
+			if(OwningTeam != Cast<APlayableCharacter>(OtherActor)->GetOwnerTeam() && ContestingTeam != NULL && ContestingTeam != nullptr)
 				AssertObjectiveState();
 		}
 	}
@@ -46,7 +46,7 @@ void AObjectiveOverlapActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 	{
 		if (InZoneActors.Contains(OtherActor)) {
 			InZoneActors.Remove(OtherActor);
-			if (OwningTeam != Cast<APlayableCharacter>(OtherActor)->OwnerTeam)
+			if (OwningTeam != Cast<APlayableCharacter>(OtherActor)->GetOwnerTeam())
 				AssertObjectiveState();
 		}
 	}
@@ -64,7 +64,7 @@ void AObjectiveOverlapActor::AssertObjectiveState() {
 			for (AActor* CurrActor : InZoneActors) {
 				APlayableCharacter* CurrChar = Cast<APlayableCharacter>(CurrActor);
 				if (CurrChar->IsValidLowLevel()) {
-					if (OwningTeam != CurrChar->OwnerTeam) {
+					if (OwningTeam != CurrChar->GetOwnerTeam()) {
 						ULogger::ScreenMessage(FColor::Blue, "Char valid, Captured Obj");
 						StartCapturing();
 					}
@@ -95,7 +95,7 @@ void AObjectiveOverlapActor::StartCapturing() {
 	APlayableCharacter* FirstChar = Cast<APlayableCharacter>(InZoneActors.Last());
 	CreateCaptureDisplay();
 	if (FirstChar) {
-		ContestingTeam = FirstChar->OwnerTeam;
+		ContestingTeam = FirstChar->GetOwnerTeam();
 		CurrentCaptureScore += CaptureModifier;
 		GetWorldTimerManager().SetTimer(CaptureTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 	}
@@ -136,7 +136,7 @@ void AObjectiveOverlapActor::AdjustModifier() {
 	for (AActor* CurrActor : InZoneActors) {
 		APlayableCharacter* CurrChar = Cast<APlayableCharacter>(CurrActor);
 		if (CurrChar) {
-			if (CurrChar->OwnerTeam == ContestingTeam) {
+			if (CurrChar->GetOwnerTeam() == ContestingTeam) {
 				NumHeroes++;
 			}
 			else {

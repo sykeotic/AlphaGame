@@ -19,10 +19,10 @@ float UCombatUtils::CalculateDamage(float InDamage, APlayableCharacter* Defendin
 
 float UCombatUtils::ResolveAttackModifier(APlayableCharacter* InChar, float InDamage) {
 	float TempDamage = InDamage;
-	for (ABuffEffect* Buff : InChar->CombatComponent->ActiveBuffs) {
+	for (ABuffEffect* Buff : InChar->GetCombatComponent()->ActiveBuffs) {
 		TempDamage = Buff->AttackModifier(TempDamage);
 	}
-	for (ADebuffEffect* Debuff : InChar->CombatComponent->ActiveDebuffs) {
+	for (ADebuffEffect* Debuff : InChar->GetCombatComponent()->ActiveDebuffs) {
 		TempDamage = Debuff->AttackModifier(TempDamage);
 	}
 	return TempDamage;
@@ -30,10 +30,10 @@ float UCombatUtils::ResolveAttackModifier(APlayableCharacter* InChar, float InDa
 
 float UCombatUtils::ResolveDefenseModifier(APlayableCharacter* InChar, float InDamage) {
 	float TempDamage = InDamage;
-	for (ABuffEffect* Buff : InChar->CombatComponent->ActiveBuffs) {
+	for (ABuffEffect* Buff : InChar->GetCombatComponent()->ActiveBuffs) {
 		TempDamage = Buff->DefenseModifier(TempDamage);
 	}
-	for (ADebuffEffect* Debuff : InChar->CombatComponent->ActiveDebuffs) {
+	for (ADebuffEffect* Debuff : InChar->GetCombatComponent()->ActiveDebuffs) {
 		TempDamage = Debuff->DefenseModifier(TempDamage);
 	}
 	return TempDamage;
@@ -46,7 +46,8 @@ float UCombatUtils::ResolveArmorModifier(float InDamage, APlayableCharacter* Def
 float UCombatUtils::ResolveReducedDamageFromArmor(float InDamage, float ArmorPierce, APlayableCharacter* DefendingCharacter) {
 	float TempDamage = InDamage;
 	ULogger::ScreenMessage(FColor::Blue, "ResolveReducedDamaged TempDamage Before: " + FString::SanitizeFloat(TempDamage));
-	switch (DefendingCharacter->ARMOR_TYPE)
+	EArmorType ArmorType = DefendingCharacter->GetStatsComponent()->GetArmorType();
+	switch (ArmorType)
 	{
 		case EArmorType::NO_ARMOR: {
 			ULogger::ScreenMessage(FColor::Green, "NO ARMOR");

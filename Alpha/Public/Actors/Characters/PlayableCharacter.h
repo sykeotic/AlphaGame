@@ -5,32 +5,28 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
+#include "Engine/DataTable.h"
 #include "PlayableCharacter.generated.h"
 
 class UCombatUtils;
 class ACombatActor;
 class UCombatComponent;
 class UStatsComponent;
-
-UENUM(BlueprintType)
-enum class EArmorType : uint8 {
-	NO_ARMOR UMETA(DisplayName = "No Armor"),
-	LIGHT_ARMOR UMETA(DisplayName = "Light Armor"),
-	MEDIUM_ARMOR UMETA(DisplayName = "Medium Armor"),
-	HEAVY_ARMOR UMETA(DisplayName = "Heavy Armor"),
-	INVULNERABLE UMETA(DisplayName = "Invulnerable")
-};
+class UTeamComponent;
+class USpringArmComponent;
 
 UCLASS(Blueprintable)
 class APlayableCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
 	APlayableCharacter();
 
-	void JumpStarted(ETouchIndex::Type FingerIndex, FVector Location);
-	void JumpStopped(ETouchIndex::Type FingerIndex, FVector Location);
+public:
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void BeginPlay() override;
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void TurnAtRate(float Rate);
@@ -38,71 +34,50 @@ public:
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	EArmorType ARMOR_TYPE;
+	void AbilityNext();
+	void AbilityPrevious();
+	void WeaponNext();
+	void WeaponPrevious();
 
-	UFUNCTION(BlueprintCallable)
-	void SetDecal(UMaterial* InMaterial, FVector InSize, FRotator RelRotation);
 	void SwitchOnDecal();
 	void SwitchOffDecal();
 
-	UFUNCTION(BlueprintCallable)
-	float GetCurrentHPPercent();
-
-	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	class UStatsComponent* StatsComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UCombatComponent* CombatComponent;
-
-	class UTeamComponent* OwnerTeam;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
-	void ReceiveOnCharacterDeath();
-
-	void InitCombatComponent();
-
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignCameraValues(float InBaseTurnRate, float InBaseLookupRate, bool bUseYaw, bool bUsePitch, bool bUseRoll, float BoomArmLength, bool bInUseControlRotation, FTransform RelTransform);
-
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void AssignStatValues(float JumpVelocity, FRotator RotationRate, float MoveSpeed, float CapsuleRadius, float CapsuleHeight, FVector MeshRotation);
-
-	UFUNCTION(BlueprintCallable)
-	void AssignCharacterMesh(UMaterial* InMaterial_0, UMaterial* InMaterial_1, USkeletalMesh* InMes, FName WeaponSocketLocation_In);
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UDecalComponent* CursorToWorld;
-
-	virtual void BeginPlay() override;
-
-	bool CharacterCanAttack();
 	void CharacterAttackStart();
 	void CharacterAttackStop();
 	void CharacterAbilityStart();
 	void CharacterAbilityStop();
+
 	void SetAttackingFalse();
-	bool IsCharacterAttacking();
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UCombatComponent* GetCombatComponent();
+	UTeamComponent* GetOwnerTeam();
+	UStatsComponent* GetStatsComponent();
+	UDecalComponent* GetDecal();
+	USpringArmComponent* GetCameraSpringArm();
+
+	void SetOwnerTeam(UTeamComponent* InTeam);
+
+	bool CharacterCanAttack();
+
+	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHPPercent();
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetPawnViewLocation() const override;
-	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
-	float BaseLookUpRate;
-	float BaseTurnRate;
+protected:	
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
+		void ReceiveOnCharacterDeath();
 
+	void InitCombatComponent();
 
+	void InitCharacterData(FName CharacterString);
 
-	FTimerHandle AttackStopTimer;
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	bool bIsAttacking;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	FName WeaponSocketLocation;
@@ -111,10 +86,28 @@ public:
 	FName AbilitySocketLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	bool bIsAttacking;
-
-	bool bWantsToUse;
+	UDecalComponent* CursorToWorld;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	bool bCanAttack;
+	USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	class UStatsComponent* StatsComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UCombatComponent* CombatComponent;
+
+private:
+	FTimerHandle AttackStopTimer;
+
+	float BaseLookUpRate;
+	float BaseTurnRate;
+
+	class UTeamComponent* OwnerTeam;
+
+	class UDataTable* CharacterDataTable;
+	class UDataTable* PawnStatsTable;
 };

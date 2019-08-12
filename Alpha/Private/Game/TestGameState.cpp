@@ -49,7 +49,7 @@ void ATestGameState::BeginPlay() {
 		for (TActorIterator<APlayableCharacter> ObjectiveActorIter(GetWorld()); ObjectiveActorIter; ++ObjectiveActorIter)
 		{
 			APlayableCharacter* CurrObj = *ObjectiveActorIter;
-			CurrObj->OwnerTeam = AITeam;
+			CurrObj->SetOwnerTeam(AITeam);
 			ActiveTeams[0]->TeamHeroes.Add(CurrObj);
 		}
 	}

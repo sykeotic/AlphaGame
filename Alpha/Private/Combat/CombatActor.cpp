@@ -2,6 +2,7 @@
 #include "TimerManager.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "CombatComponent.h"
+#include "GameplayUtils.h"
 #include "CombatUtils.h"
 #include "PlayableCharacter.h"
 #include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"

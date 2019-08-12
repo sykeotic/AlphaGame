@@ -52,12 +52,12 @@ void ACombatProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* Other
 		FVector ShotDirection = OwnerView.Vector();
 		APlayableCharacter* DamagedChar = Cast<APlayableCharacter>(OtherActor);
 		if (DamagedChar) {
-			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, OtherActor->GetActorTransform(), true);
+			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, SweepResult.ImpactPoint, OtherActor->GetActorRotation(), true);
 			UGameplayStatics::SpawnSoundAttached(PickRandomSound(), OtherActor->GetRootComponent());
 			ULogger::ScreenMessage(FColor::Red, "Damaged Char Is Character");
 			UGameplayStatics::ApplyPointDamage(OtherActor, this->CombatActorOwner->ResolveDamageModifiers(this->CombatActorOwner->ComponentOwner->CharacterOwner, DamagedChar, this->CombatActorOwner), ShotDirection, Hit, CombatActorOwner->ComponentOwner->CharacterOwner->GetInstigatorController(), this, CombatActorOwner->DamageType);
 		} else {
-			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, OtherActor->GetActorTransform(), true);
+			UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactFX, SweepResult.ImpactPoint, OtherActor->GetActorRotation(), true);
 			UGameplayStatics::SpawnSoundAttached(PickRandomSound(), OtherActor->GetRootComponent());
 			UGameplayStatics::ApplyPointDamage(OtherActor, CombatActorOwner->Damage, ShotDirection, Hit, CombatActorOwner->ComponentOwner->CharacterOwner->GetInstigatorController(), this, CombatActorOwner->DamageType);
 		}

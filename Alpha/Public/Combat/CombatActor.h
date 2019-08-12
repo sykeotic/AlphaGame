@@ -5,40 +5,11 @@
 #include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
+#include "GameplayUtils.h"
 #include "CombatActor.generated.h"
 
 class UCombatComponent;
 class APlayableCharacter;
-
-UENUM(BlueprintType)
-enum class EValidTargets : uint8 {
-	ALLIES UMETA(DisplayName = "Allies"),
-	ENEMIES UMETA(DisplayName = "Enemies"),
-	ALL UMETA(DisplayName = "All"),
-	SELF UMETA(DisplayName = "Self")
-};
-
-UENUM(BlueprintType)
-enum class ERange : uint8 {
-	MELEE UMETA(DisplayName = "Melee"),
-	RANGED UMETA(DisplayName = "Ranged"),
-	THROWN UMETA(DisplayName = "Thrown")
-};
-
-UENUM(BlueprintType)
-enum class EActorType : uint8 {
-	WEAPON UMETA(DisplayName = "Weapon"),
-	SPELL UMETA(DisplayName = "Spell"),
-	CONSUMABLE UMETA(DisplayName = "Consumable")
-};
-
-UENUM(BlueprintType)
-enum class ECombatActorState : uint8 {
-	USING UMETA(DisplayName = "Using"),
-	IDLE UMETA(DisplayName = "Idle"),
-	EQUIPPING UMETA(DisplayName = "Equipping"),
-	RELOADING UMETA(DisplayName = "Reloading")
-};
 
 UCLASS(ABSTRACT)
 class ACombatActor : public AActor
