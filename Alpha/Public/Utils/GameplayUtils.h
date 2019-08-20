@@ -10,15 +10,7 @@
 #include "GameplayUtils.generated.h"
 
 class ACombatActor;
-
-UENUM(BlueprintType)
-enum class EArmorType : uint8 {
-	NO_ARMOR UMETA(DisplayName = "No Armor"),
-	LIGHT_ARMOR UMETA(DisplayName = "Light Armor"),
-	MEDIUM_ARMOR UMETA(DisplayName = "Medium Armor"),
-	HEAVY_ARMOR UMETA(DisplayName = "Heavy Armor"),
-	INVULNERABLE UMETA(DisplayName = "Invulnerable")
-};
+class APlayableCharacter;
 
 UENUM(BlueprintType)
 enum class EValidTargets : uint8 {
@@ -50,163 +42,6 @@ enum class ECombatActorState : uint8 {
 	RELOADING UMETA(DisplayName = "Reloading")
 };
 
-USTRUCT(BlueprintType)
-struct FPlayerCameraData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseTurnRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BaseLookupRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bUseControllerYaw;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bUseControllerPitch;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bUseControllerRoll;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BoomArmLength;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bUsePawnControlRotation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FTransform RelTransform;
-};
-
-USTRUCT(BlueprintType)
-struct FCombatActorData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* MeshComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterial* WeaponMaterial;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator ActorRotation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector ActorLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ActorSocketLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UParticleSystem* ActorFX;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UAnimMontage*> FireAnim;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage* EquipAnim;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<USoundCue*> UseSound;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<USoundCue*> ImpactSound;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USoundCue* EquipSound;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ProjectileSpawnLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UDamageType> DamageType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray < TSubclassOf<class ACombatWeapon >> WeaponClassArray;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ACombatProjectile> ProjectileClass;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AThrowableProjectile> ThrowableProjectileClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bPlaySoundEveryTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UseRange;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UseCooldown;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Damage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float SFXBuffer;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ArmorPierce;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float EquipDuration;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float LastFireTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EActorType ACTOR_TYPE;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EValidTargets VALID_TARGETS;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ERange RANGE_TYPE;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECombatActorState ACTOR_STATE;
-};
-
-USTRUCT(BlueprintType)
-struct FPawnGraphicsData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector MeshRotation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterial* Material_0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterial* Material_1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USkeletalMesh* SkeletalMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName WeaponSocketLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CapsuleRadius;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CapsuleHeight;
-
-	//Decal
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterial* DecalMaterial;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector DecalSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator DecalRotation;
-};
-
-USTRUCT(BlueprintType)
-struct FPawnStatsData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MaxHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EArmorType ArmorType;
-};
-
-USTRUCT(BlueprintType)
-struct FCharacterData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float JumpVelocity;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MoveSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator RotationRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FPlayerCameraData CameraData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FPawnGraphicsData GraphicsData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FPawnStatsData StatsData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FCombatActorData> WeaponData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FCombatActorData> AbilityData;
-};
 
 USTRUCT(BlueprintType)
 struct FRaceData : public FTableRowBase
@@ -237,10 +72,14 @@ public:
 /**
  *
  */
-class APlayableCharacter;
 class UCombatComponent;
 class UStatsComponent;
+class UDataTable;
 class ACombatActor;
+struct FCharacterData;
+struct FPlayerCameraData;
+struct FPawnGraphicsData;
+struct FPawnStatsData;
 
 UCLASS()
 class ALPHA_API UGameplayUtils : public UBlueprintFunctionLibrary
@@ -249,9 +88,22 @@ class ALPHA_API UGameplayUtils : public UBlueprintFunctionLibrary
 
 public:
 
-	static void ConstructPlayableCharacter(APlayableCharacter* InChar, FCharacterData* InRow);
-	static void ConstructCombatComponent(UCombatComponent* InComp, FCharacterData* InRow);
-	static void ConstructStatsComponent(UStatsComponent* InStats, FPawnStatsData* InRow);
-	static void ConstructCombatActor(ACombatActor* InActor, FCombatActorData* InRow);
+	static UDataTable* CharacterDataTable;
+	static UDataTable* PawnStatsDataTable;
+	static UDataTable* PawnGraphicsDataTable;
+	static UDataTable* PlayerCameraDataTable;
 
+	static UDataTable* GameModeDataTable;
+
+	static FCharacterData* RetrieveCharacterDataRow(FName InKey);
+	static FPlayerCameraData* RetrieveCameraDataRow(FName InKey);
+	static FPawnGraphicsData* RetrievePawnGraphicsDataRow(FName InKey);
+	static FPawnStatsData* RetrievePawnStatsDataRow(FName InKey);
+
+	static void LoadDataTables();
 };
+
+UDataTable* UGameplayUtils::CharacterDataTable = nullptr;
+UDataTable* UGameplayUtils::PawnStatsDataTable = nullptr;
+UDataTable* UGameplayUtils::PawnGraphicsDataTable = nullptr;
+UDataTable* UGameplayUtils::PlayerCameraDataTable = nullptr;

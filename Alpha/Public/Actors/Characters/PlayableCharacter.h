@@ -8,6 +8,119 @@
 #include "Engine/DataTable.h"
 #include "PlayableCharacter.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EArmorType : uint8 {
+	NO_ARMOR UMETA(DisplayName = "No Armor"),
+	LIGHT_ARMOR UMETA(DisplayName = "Light Armor"),
+	MEDIUM_ARMOR UMETA(DisplayName = "Medium Armor"),
+	HEAVY_ARMOR UMETA(DisplayName = "Heavy Armor"),
+	INVULNERABLE UMETA(DisplayName = "Invulnerable")
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerCameraData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BaseTurnRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BaseLookupRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUseControllerYaw;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUseControllerPitch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUseControllerRoll;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BoomArmLength;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUsePawnControlRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FTransform RelTransform;
+};
+
+USTRUCT(BlueprintType)
+struct FPawnGraphicsData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector MeshRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMaterial* Material_0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMaterial* Material_1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* SkeletalMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName WeaponSocketLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CapsuleRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CapsuleHeight;
+
+	//Decal
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMaterial* DecalMaterial;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector DecalSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator DecalRotation;
+};
+
+USTRUCT(BlueprintType)
+struct FPawnStatsData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		EArmorType ArmorType;
+};
+
+USTRUCT(BlueprintType)
+struct FCharacterData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float JumpVelocity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MoveSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator RotationRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName GraphicsDataKey;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName PawnStatsDataKey;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName PlayerCameraDataKey;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FName> WeaponDataKeys;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FName> AbilityDataKeys;
+	/*
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FPlayerCameraData CameraData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FPawnGraphicsData GraphicsData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FPawnStatsData StatsData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FCombatActorData> WeaponData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FCombatActorData> AbilityData;
+	*/
+};
+
+
 class UCombatUtils;
 class ACombatActor;
 class UCombatComponent;
@@ -23,6 +136,14 @@ class APlayableCharacter : public ACharacter
 	APlayableCharacter();
 
 public:
+	FCharacterData* CharacterData;
+	FPlayerCameraData* CameraData;
+	FPawnStatsData* PawnStatsData;
+	FPawnGraphicsData* GraphicsData;
+
+	FCharacterData* GetCharacterDataStruct();
+	void SetCharacterValues();
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
@@ -107,7 +228,4 @@ private:
 	float BaseTurnRate;
 
 	class UTeamComponent* OwnerTeam;
-
-	class UDataTable* CharacterDataTable;
-	class UDataTable* PawnStatsTable;
 };

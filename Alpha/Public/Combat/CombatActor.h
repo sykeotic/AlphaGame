@@ -8,6 +8,74 @@
 #include "GameplayUtils.h"
 #include "CombatActor.generated.h"
 
+USTRUCT(BlueprintType)
+struct FCombatActorData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UStaticMeshComponent* MeshComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMaterial* WeaponMaterial;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator ActorRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector ActorLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ActorSocketLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* ActorFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UAnimMontage*> FireAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* EquipAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundCue*> UseSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<USoundCue*> ImpactSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USoundCue* EquipSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ProjectileSpawnLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UDamageType> DamageType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray < TSubclassOf<class ACombatWeapon >> WeaponClassArray;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class ACombatProjectile> ProjectileClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class AThrowableProjectile> ThrowableProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bPlaySoundEveryTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float UseRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float UseCooldown;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SFXBuffer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ArmorPierce;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float EquipDuration;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float LastFireTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		EActorType ACTOR_TYPE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		EValidTargets VALID_TARGETS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ERange RANGE_TYPE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatActorState ACTOR_STATE;
+};
+
 class UCombatComponent;
 class APlayableCharacter;
 

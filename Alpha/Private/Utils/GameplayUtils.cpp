@@ -2,41 +2,37 @@
 #include "CombatActor.h"
 #include "CombatComponent.h"
 #include "StatsComponent.h"
+#include "Runtime/Engine/Classes/Engine/DataTable.h"
 #include "PlayableCharacter.h"
 
-void UGameplayUtils::ConstructPlayableCharacter(APlayableCharacter* InChar, FCharacterData* InRow) {
-	InChar->SetBaseTurnRate(InRow->CameraData.BaseTurnRate);
-	InChar->SetBaseLookUpRate(InRow->CameraData.BaseLookupRate);
-	InChar->bUseControllerRotationPitch = InRow->CameraData.bUseControllerPitch;
-	InChar->bUseControllerRotationRoll = InRow->CameraData.bUseControllerRoll;
-	InChar->bUseControllerRotationYaw = InRow->CameraData.bUseControllerYaw;
-	InChar->GetCameraSpringArm()->bEnableCameraLag = true;
-	InChar->GetCameraSpringArm()->bUsePawnControlRotation = InRow->CameraData.bUsePawnControlRotation;
-	InChar->GetCameraSpringArm()->TargetArmLength = InRow->CameraData.BoomArmLength;
-	InChar->GetCameraSpringArm()->SetRelativeTransform(InRow->CameraData.RelTransform);
-	InChar->GetCharacterMovement()->bOrientRotationToMovement = true;
-	InChar->GetCharacterMovement()->JumpZVelocity = InRow->JumpVelocity;
-	InChar->GetCharacterMovement()->RotationRate = InRow->RotationRate;
-	InChar->GetCharacterMovement()->MaxWalkSpeed = InRow->MoveSpeed;
-	InChar->GetCapsuleComponent()->InitCapsuleSize(InRow->GraphicsData.CapsuleRadius, InRow->GraphicsData.CapsuleHeight);
-	InChar->GetMesh()->SetRelativeLocation(InRow->GraphicsData.MeshRotation);
-	InChar->GetMesh()->SetSkeletalMesh(InRow->GraphicsData.SkeletalMesh);
-	InChar->GetMesh()->SetMaterial(0, InRow->GraphicsData.Material_0);
-	InChar->GetMesh()->SetMaterial(1, InRow->GraphicsData.Material_1);
-	InChar->GetDecal()->DecalSize = InRow->GraphicsData.DecalSize;
-	InChar->GetDecal()->SetRelativeRotation(InRow->GraphicsData.DecalRotation.Quaternion());
-	InChar->GetDecal()->SetVisibility(false);
-	InChar->GetDecal()->SetDecalMaterial(InRow->GraphicsData.DecalMaterial);
+FCharacterData* UGameplayUtils::RetrieveCharacterDataRow(FName InKey) {
+	FCharacterData* CharData = UGameplayUtils::CharacterDataTable->FindRow<FCharacterData>(InKey, "Finding Character Data");
+	return CharData;
 }
 
-void UGameplayUtils::ConstructCombatComponent(UCombatComponent* InComp, FCharacterData* InRow) {
-
+FPlayerCameraData* UGameplayUtils::RetrieveCameraDataRow(FName InKey) {
+	FPlayerCameraData* CamData = UGameplayUtils::PlayerCameraDataTable->FindRow<FPlayerCameraData>(InKey, "Finding Character Data");
+	return CamData;
 }
 
-void UGameplayUtils::ConstructStatsComponent(UStatsComponent* InStats, FPawnStatsData* InRow) {
-
+FPawnGraphicsData* UGameplayUtils::RetrievePawnGraphicsDataRow(FName InKey) {
+	FPawnGraphicsData* PawnGraphicsData = UGameplayUtils::PawnGraphicsDataTable->FindRow<FPawnGraphicsData>(InKey, "Finding Character Data");
+	return PawnGraphicsData;
 }
 
-void UGameplayUtils::ConstructCombatActor(ACombatActor* InActor, FCombatActorData* InRow) {
+FPawnStatsData* UGameplayUtils::RetrievePawnStatsDataRow(FName InKey) {
+	FPawnStatsData*  PawnStatsData = UGameplayUtils::PawnStatsDataTable->FindRow<FPawnStatsData>(InKey, "Finding Character Data");
+	return PawnStatsData;
+}
 
+void UGameplayUtils::LoadDataTables() {
+	static::ConstructorHelpers::FObjectFinder<UDataTable>InputCharacterDataTable(TEXT("DataTable'/Game/Data/DataTables/CharacterData.CharacterData'"));
+	if (InputCharacterDataTable.Succeeded()) {
+		CharacterDataTable = InputCharacterDataTable.Object;
+	}
+
+	static::ConstructorHelpers::FObjectFinder<UDataTable>InputStatsTable(TEXT("DataTable'/Game/Data/DataTables/PawnStatsData.PawnStatsData'"));
+	if (InputStatsTable.Succeeded()) {
+		PawnStatsDataTable = InputStatsTable.Object; 
+	}
 }
