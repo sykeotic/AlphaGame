@@ -80,18 +80,21 @@ struct FCharacterData;
 struct FPlayerCameraData;
 struct FPawnGraphicsData;
 struct FPawnStatsData;
-
 UCLASS()
 class ALPHA_API UGameplayUtils : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
+	UGameplayUtils();
+
+	static UDataTable* CombatActorDataTable;
 
 	static UDataTable* CharacterDataTable;
 	static UDataTable* PawnStatsDataTable;
 	static UDataTable* PawnGraphicsDataTable;
 	static UDataTable* PlayerCameraDataTable;
+	static UDataTable* RaceDataTable;
 
 	static UDataTable* GameModeDataTable;
 
@@ -107,3 +110,6 @@ UDataTable* UGameplayUtils::CharacterDataTable = nullptr;
 UDataTable* UGameplayUtils::PawnStatsDataTable = nullptr;
 UDataTable* UGameplayUtils::PawnGraphicsDataTable = nullptr;
 UDataTable* UGameplayUtils::PlayerCameraDataTable = nullptr;
+UDataTable* UGameplayUtils::RaceDataTable = nullptr;
+UDataTable* UGameplayUtils::GameModeDataTable = nullptr;
+UDataTable* UGameplayUtils::CombatActorDataTable = nullptr;

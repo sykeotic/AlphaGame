@@ -2,6 +2,7 @@
 
 #include "TestGameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "GameplayUtils.h"
 #include "TestGameState.h"
 #include "Logger.h"
 
@@ -12,6 +13,7 @@ void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
 	MaxNumPlayers = 1;
 	ULogger::SetIsTestRun(bDisplayLogs);
+	UGameplayUtils::LoadDataTables();
 }
 
 bool ATestGameMode::MyReadyToStartMatch()

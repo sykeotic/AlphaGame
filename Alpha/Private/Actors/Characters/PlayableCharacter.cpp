@@ -46,7 +46,7 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
-	InitCombatComponent();
+	InitCharacterData("TestBoi");
 	StatsComponent->SetCurrentHealth(StatsComponent->GetMaxHealth());
 }
 
@@ -55,6 +55,7 @@ void APlayableCharacter::InitCharacterData(FName CharacterDataString) {
 	CameraData = UGameplayUtils::RetrieveCameraDataRow(CharacterDataString);
 	PawnStatsData = UGameplayUtils::RetrievePawnStatsDataRow(CharacterDataString);
 	GraphicsData = UGameplayUtils::RetrievePawnGraphicsDataRow(CharacterDataString);
+	SetCharacterValues();
 }
 
 //void APlayableCharacter::InitCombatComponent() {
