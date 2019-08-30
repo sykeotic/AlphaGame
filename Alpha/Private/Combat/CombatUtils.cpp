@@ -1,8 +1,6 @@
 #include "CombatUtils.h"
-#include "BuffEffect.h"
 #include "CombatActor.h"
 #include "Logger.h"
-#include "DebuffEffect.h"
 #include "PlayableCharacter.h"
 
 float UCombatUtils::CalculateDamage(float InDamage, APlayableCharacter* DefendingCharacter, APlayableCharacter* AttackingCharacter, ACombatActor* AttackingCombatActor) {
@@ -19,23 +17,11 @@ float UCombatUtils::CalculateDamage(float InDamage, APlayableCharacter* Defendin
 
 float UCombatUtils::ResolveAttackModifier(APlayableCharacter* InChar, float InDamage) {
 	float TempDamage = InDamage;
-	for (ABuffEffect* Buff : InChar->GetCombatComponent()->ActiveBuffs) {
-		TempDamage = Buff->AttackModifier(TempDamage);
-	}
-	for (ADebuffEffect* Debuff : InChar->GetCombatComponent()->ActiveDebuffs) {
-		TempDamage = Debuff->AttackModifier(TempDamage);
-	}
 	return TempDamage;
 }
 
 float UCombatUtils::ResolveDefenseModifier(APlayableCharacter* InChar, float InDamage) {
 	float TempDamage = InDamage;
-	for (ABuffEffect* Buff : InChar->GetCombatComponent()->ActiveBuffs) {
-		TempDamage = Buff->DefenseModifier(TempDamage);
-	}
-	for (ADebuffEffect* Debuff : InChar->GetCombatComponent()->ActiveDebuffs) {
-		TempDamage = Debuff->DefenseModifier(TempDamage);
-	}
 	return TempDamage;
 }
 

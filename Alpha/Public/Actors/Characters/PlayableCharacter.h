@@ -21,7 +21,7 @@ enum class EArmorType : uint8 {
 USTRUCT(BlueprintType)
 struct FPlayerCameraData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -40,16 +40,20 @@ public:
 		bool bUsePawnControlRotation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTransform RelTransform;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CameraLagSpeed;
 };
 
 USTRUCT(BlueprintType)
 struct FPawnGraphicsData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector MeshRotation;
+		FVector MeshLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator MeshRotation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UMaterial* Material_0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -62,6 +66,8 @@ public:
 		float CapsuleRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CapsuleHeight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UAnimInstance> AnimInstanceClass;
 
 	//Decal
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -75,7 +81,7 @@ public:
 USTRUCT(BlueprintType)
 struct FPawnStatsData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -87,7 +93,7 @@ public:
 USTRUCT(BlueprintType)
 struct FCharacterData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -96,6 +102,8 @@ public:
 		float MoveSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FRotator RotationRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString CollisionProfile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName GraphicsDataKey;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

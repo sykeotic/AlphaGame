@@ -13,12 +13,35 @@ enum class EPlayerType : uint8 {
 	HERO UMETA(DisplayName = "Hero"),
 	GENERAL UMETA(DisplayName = "General")
 };
+
+USTRUCT(BlueprintType)
+struct FPlayerControllerData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> HeroWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> GeneralWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> RoleSelectWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName HeroRoleLabel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName GeneralRoleLabel;
+};
 /**
  * 
  */
 class UTeamComponent;
 class APlayableCharacter;
 class APlayableGeneralPawn;
+class UWidgetComponent;
 
 UCLASS()
 class ALPHA_API AHumanPlayerController : public APlayerController
@@ -31,17 +54,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void HeroSelect(FString& InKey, FVector InLoc, FRotator InRot);
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void AssignMesh(const FString& InKey);
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void GetValues(const FString& InKey);
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Game")
-		void SetupHero(const FString& InKey);
-
 	UFUNCTION(BlueprintCallable)
 		void GeneralSelect(FVector InLoc, FRotator InRot);
+
+	void BeginPlay() override;
 
 	void Unbind();
 
@@ -66,6 +82,11 @@ public:
 
 	bool bHeroChosen;
 	bool bGeneralChosen;
+
+	UWidgetComponent* WidgetComponent;
+	UUserWidget* UserWidget;
+
+	FPlayerControllerData* PlayerControllerData;
 
 private:
 	EPlayerType PlayerType;

@@ -11,7 +11,7 @@
 USTRUCT(BlueprintType)
 struct FCombatActorData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -78,6 +78,7 @@ public:
 
 class UCombatComponent;
 class APlayableCharacter;
+class UConditionTree;
 
 UCLASS(ABSTRACT)
 class ACombatActor : public AActor
@@ -86,6 +87,9 @@ class ACombatActor : public AActor
 	
 public:	
 	ACombatActor();
+
+	UPROPERTY(EditDefaultsOnly)
+	UConditionTree* Conditions;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* MeshComp;

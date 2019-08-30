@@ -56,7 +56,7 @@ void AThrowableProjectile::Fire(const FVector& ShootDirection) {
 
 void AThrowableProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && (OtherActor != this) && OtherComp && CombatActorOwner != nullptr && OtherActor != CombatActorOwner && OtherActor != CombatActorOwner->ComponentOwner->CharacterOwner && OtherActor != CombatActorOwner->ComponentOwner->CurrentWeapon && OtherComp != CombatActorOwner->ComponentOwner->CharacterOwner->GetMesh())
+	if (OtherActor && (OtherActor != this) && OtherComp && CombatActorOwner != nullptr && OtherActor != CombatActorOwner && OtherActor != CombatActorOwner->ComponentOwner->CharacterOwner && OtherActor != CombatActorOwner->ComponentOwner->GetCurrentWeapon() && OtherComp != CombatActorOwner->ComponentOwner->CharacterOwner->GetMesh())
 	{
 		UGameplayStatics::SpawnSoundAttached(PickRandomSound(ImpactSound), OtherActor->GetRootComponent());
 		if (bDiesUponCollision) {

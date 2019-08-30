@@ -52,7 +52,6 @@ public:
 
 	bool AreConditionsTrue();
 	bool IsActive();
-
 };
 
 UCLASS()

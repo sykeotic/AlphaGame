@@ -220,57 +220,62 @@ void APlayableCharacter::MoveRight(float Value)
 }
 
 void APlayableCharacter::CharacterAttackStart() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	if (!bIsAttacking && CombatComponent->CurrentWeapon->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
-		bIsAttacking = true;
-		if (CombatComponent->CurrentWeapon) {
+	if (CombatComponent->GetCurrentWeapon()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		if (!bIsAttacking && CombatComponent->GetCurrentWeapon()->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
+			bIsAttacking = true;
 			CombatComponent->UseCurrentWeapon();
 		}
 	}
 }
 
 void APlayableCharacter::CharacterAttackStop() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->CurrentWeapon->NextValidFireTime - GameTime;
-	if (bIsAttacking)
-	{
-		if (StopAttackTime > 0)
-			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-		else {
-			SetAttackingFalse();
+	if (CombatComponent->GetCurrentWeapon()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		float StopAttackTime = CombatComponent->GetCurrentWeapon()->NextValidFireTime - GameTime;
+		if (bIsAttacking)
+		{
+			if (StopAttackTime > 0)
+				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+			else {
+				SetAttackingFalse();
+			}
 		}
 	}
 }
 
 void APlayableCharacter::CharacterAbilityStart() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	if (!bIsAttacking && CombatComponent->CurrentAbility->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
-		bIsAttacking = true;
-		if (CombatComponent->CurrentAbility) {
+	if (CombatComponent->GetCurrentAbility()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
+			bIsAttacking = true;
+
 			CombatComponent->UseCurrentAbility();
 		}
 	}
 }
 
 void APlayableCharacter::CharacterAbilityStop() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->CurrentAbility->NextValidFireTime - GameTime;
-	if (bIsAttacking)
-	{
-		if(StopAttackTime > 0)
-			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-		else {
-			SetAttackingFalse();
+	if (CombatComponent->GetCurrentAbility()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		float StopAttackTime = CombatComponent->GetCurrentAbility()->NextValidFireTime - GameTime;
+		if (bIsAttacking)
+		{
+			if (StopAttackTime > 0)
+				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+			else {
+				SetAttackingFalse();
+			}
 		}
 	}
 }
 
 void APlayableCharacter::SetAttackingFalse() {
 	bIsAttacking = false;
-	if (CombatComponent->CurrentAbility)
-		CombatComponent->CurrentAbility->StopUse();
-	if (CombatComponent->CurrentWeapon)
-		CombatComponent->CurrentWeapon->StopUse();
+	if (CombatComponent->GetCurrentAbility())
+		CombatComponent->GetCurrentAbility()->StopUse();
+	if (CombatComponent->GetCurrentWeapon())
+		CombatComponent->GetCurrentWeapon()->StopUse();
 }
 
 bool APlayableCharacter::CharacterCanAttack() {
@@ -330,10 +335,12 @@ void APlayableCharacter::SetCharacterValues() {
 		GetCharacterMovement()->RotationRate = CharacterData->RotationRate;
 		GetCharacterMovement()->MaxWalkSpeed = CharacterData->MoveSpeed;
 		GetCapsuleComponent()->InitCapsuleSize(GraphicsData->CapsuleRadius, GraphicsData->CapsuleHeight);
-		GetMesh()->SetRelativeLocation(GraphicsData->MeshRotation);
+		GetMesh()->SetRelativeLocation(GraphicsData->MeshLocation);
+		GetMesh()->SetRelativeRotation(GraphicsData->MeshRotation);
 		GetMesh()->SetSkeletalMesh(GraphicsData->SkeletalMesh);
 		GetMesh()->SetMaterial(0, GraphicsData->Material_0);
 		GetMesh()->SetMaterial(1, GraphicsData->Material_1);
+		GetMesh()->SetAnimInstanceClass(GraphicsData->AnimInstanceClass);
 		GetDecal()->DecalSize = GraphicsData->DecalSize;
 		GetDecal()->SetRelativeRotation(GraphicsData->DecalRotation.Quaternion());
 		GetDecal()->SetVisibility(false);

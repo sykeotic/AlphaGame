@@ -16,6 +16,10 @@ UCombatComponent::UCombatComponent()
 	CurrentAbility = nullptr;
 }
 
+ACombatActor* UCombatComponent::GetCurrentWeapon() {
+	return CurrentWeapon;
+}
+
 void UCombatComponent::UseCurrentWeapon() {
 	if (CurrentWeapon) {
 		CurrentWeapon->OnUse();
@@ -49,7 +53,7 @@ void UCombatComponent::GetWeaponAt(uint8 WeaponIndex) {
 
 }
 
-void UCombatComponent::SetCurrentWeapon(ACombatWeapon* InActor, bool bEquipAnim) {
+void UCombatComponent::SetCurrentWeapon(ACombatActor* InActor, bool bEquipAnim) {
 	if (CurrentWeapon) {
 		CurrentWeapon->OnUnEquip();
 	} 
@@ -58,7 +62,7 @@ void UCombatComponent::SetCurrentWeapon(ACombatWeapon* InActor, bool bEquipAnim)
 	CurrentWeapon->AddActorLocalRotation(CurrentWeapon->WeaponRotation);
 }
 
-void UCombatComponent::SetCurrentAbility(ACombatAbility* InActor, bool bEquipAnim) {
+void UCombatComponent::SetCurrentAbility(ACombatActor* InActor, bool bEquipAnim) {
 	if (CurrentAbility) {
 		CurrentAbility->OnUnEquip();
 	}
@@ -95,6 +99,10 @@ void UCombatComponent::CyclePreviousAbility() {
 
 void UCombatComponent::GetAbilityAt(uint8 AbilityIndex) {
 
+}
+
+ACombatActor* UCombatComponent::GetCurrentAbility() {
+	return CurrentAbility;
 }
 
 APlayableCharacter* UCombatComponent::GetCharacterOwner() {

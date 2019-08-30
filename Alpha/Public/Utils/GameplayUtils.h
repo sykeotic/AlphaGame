@@ -46,7 +46,7 @@ enum class ECombatActorState : uint8 {
 USTRUCT(BlueprintType)
 struct FRaceData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -62,11 +62,21 @@ public:
 USTRUCT(BlueprintType)
 struct FGameModeData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName GameModeName;
+};
+
+USTRUCT(BlueprintType)
+struct FDataTablePaths : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName DataTablePath;
 };
 
 /**
@@ -80,6 +90,8 @@ struct FCharacterData;
 struct FPlayerCameraData;
 struct FPawnGraphicsData;
 struct FPawnStatsData;
+struct FPlayerControllerData;
+
 UCLASS()
 class ALPHA_API UGameplayUtils : public UBlueprintFunctionLibrary
 {
@@ -97,11 +109,14 @@ public:
 	static UDataTable* RaceDataTable;
 
 	static UDataTable* GameModeDataTable;
+	static UDataTable* PlayerControllerDataTable;
+
 
 	static FCharacterData* RetrieveCharacterDataRow(FName InKey);
 	static FPlayerCameraData* RetrieveCameraDataRow(FName InKey);
 	static FPawnGraphicsData* RetrievePawnGraphicsDataRow(FName InKey);
 	static FPawnStatsData* RetrievePawnStatsDataRow(FName InKey);
+	static FPlayerControllerData* RetrievePlayerControllerDataRow(FName InKey);
 
 	static void LoadDataTables();
 };
@@ -113,3 +128,4 @@ UDataTable* UGameplayUtils::PlayerCameraDataTable = nullptr;
 UDataTable* UGameplayUtils::RaceDataTable = nullptr;
 UDataTable* UGameplayUtils::GameModeDataTable = nullptr;
 UDataTable* UGameplayUtils::CombatActorDataTable = nullptr;
+UDataTable* UGameplayUtils::PlayerControllerDataTable = nullptr;

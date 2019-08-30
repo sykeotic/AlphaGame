@@ -25,27 +25,44 @@ public:
 	UCombatComponent();
 
 	UFUNCTION(BlueprintCallable)
-	void CycleNextWeapon();
+	APlayableCharacter* GetCharacterOwner();
 
-	void UseCurrentWeapon();
+	UFUNCTION(BlueprintCallable)
+	void CycleNextWeapon();
+	void UseCurrentWeapon();	
 	void CyclePreviousWeapon();
 	void GetWeaponAt(uint8 WeaponIndex);
-	void SetCurrentWeapon(ACombatWeapon* InActor, bool bEquipAnim);
+	void SetCurrentWeapon(ACombatActor* InActor, bool bEquipAnim);
+	ACombatActor* GetCurrentWeapon();
 
 	UFUNCTION(BlueprintCallable)
 	void CycleNextAbility();
-
 	void UseCurrentAbility();
 	void CyclePreviousAbility();
 	void GetAbilityAt(uint8 AbilityIndex);
-	void SetCurrentAbility(ACombatAbility* InActor, bool bEquipAnim);
+	void SetCurrentAbility(ACombatActor* InActor, bool bEquipAnim);
+	ACombatActor* GetCurrentAbility();
 
 	void SetCharacterOwner(APlayableCharacter* InChar);
 
-	TArray<ACombatWeapon*> WeaponArray;
-	TArray<ACombatAbility*> AbilityArray;
+	APlayableCharacter* CharacterOwner;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray < TSubclassOf<class ACombatActor >> WeaponClassArray;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray < TSubclassOf<class ACombatActor >> AbilityClassArray;
+
 	TArray<ABuffEffect*> ActiveBuffs;
 	TArray<ADebuffEffect*> ActiveDebuffs;
+
+protected:
+
+	bool bCanUseActor;
+
+private:
+	TArray<ACombatActor*> WeaponArray;
+	TArray<ACombatActor*> AbilityArray;
 	TArray<ACrowdControlEffect*> ActiveCrowdControl;
 
 	uint8 CurrentWeaponIndex;
@@ -53,26 +70,9 @@ public:
 	uint8 AbilityCount;
 	uint8 WeaponCount;
 
-	ACombatWeapon* CurrentWeapon;
-	ACombatAbility* CurrentAbility;
+	ACombatActor* CurrentWeapon;
+	ACombatActor* CurrentAbility;
 
 	bool bIsUsingActor;
-	
-	APlayableCharacter* CharacterOwner;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray < TSubclassOf<class ACombatWeapon >> WeaponClassArray;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray < TSubclassOf<class ACombatAbility >> AbilityClassArray;
-
-protected:
-
-	bool bCanUseActor;
-
-public:	
-
-	UFUNCTION(BlueprintCallable)
-	APlayableCharacter* GetCharacterOwner();
 		
 };

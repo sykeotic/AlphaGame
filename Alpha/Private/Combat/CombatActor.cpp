@@ -9,6 +9,7 @@
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ConditionTree.h"
 #include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Logger.h"
 
@@ -27,6 +28,7 @@ ACombatActor::ACombatActor()
 
 void ACombatActor::BeginPlay() {
 	Super::BeginPlay();
+	ULogger::ScreenMessage(FColor::Green, "Conditions are: " + Conditions->IsConditionTreeTrue());
 }
 
 void ACombatActor::OnEquip(bool bPlayAnimation) {

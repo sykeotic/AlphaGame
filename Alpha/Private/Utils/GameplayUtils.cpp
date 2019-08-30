@@ -40,6 +40,11 @@ UGameplayUtils::UGameplayUtils() {
 	if (InputCombatActorDataTable.Succeeded()) {
 		CombatActorDataTable = InputCombatActorDataTable.Object;
 	}
+
+	static::ConstructorHelpers::FObjectFinder<UDataTable>InputPlayerControllerDataTable(TEXT("DataTable'/Game/Data/DataTables/PlayerControllerData.PlayerControllerData'"));
+	if (InputPlayerControllerDataTable.Succeeded()) {
+		PlayerControllerDataTable = InputPlayerControllerDataTable.Object;
+	}
 }
 
 FCharacterData* UGameplayUtils::RetrieveCharacterDataRow(FName InKey) {
@@ -48,18 +53,23 @@ FCharacterData* UGameplayUtils::RetrieveCharacterDataRow(FName InKey) {
 }
 
 FPlayerCameraData* UGameplayUtils::RetrieveCameraDataRow(FName InKey) {
-	FPlayerCameraData* CamData = UGameplayUtils::PlayerCameraDataTable->FindRow<FPlayerCameraData>(InKey, "Finding Character Data");
+	FPlayerCameraData* CamData = UGameplayUtils::PlayerCameraDataTable->FindRow<FPlayerCameraData>(InKey, "Finding Player Camera Data");
 	return CamData;
 }
 
 FPawnGraphicsData* UGameplayUtils::RetrievePawnGraphicsDataRow(FName InKey) {
-	FPawnGraphicsData* PawnGraphicsData = UGameplayUtils::PawnGraphicsDataTable->FindRow<FPawnGraphicsData>(InKey, "Finding Character Data");
+	FPawnGraphicsData* PawnGraphicsData = UGameplayUtils::PawnGraphicsDataTable->FindRow<FPawnGraphicsData>(InKey, "Finding Pawn Graphics Data");
 	return PawnGraphicsData;
 }
 
 FPawnStatsData* UGameplayUtils::RetrievePawnStatsDataRow(FName InKey) {
-	FPawnStatsData*  PawnStatsData = UGameplayUtils::PawnStatsDataTable->FindRow<FPawnStatsData>(InKey, "Finding Character Data");
+	FPawnStatsData*  PawnStatsData = UGameplayUtils::PawnStatsDataTable->FindRow<FPawnStatsData>(InKey, "Finding Pawn Stats Data");
 	return PawnStatsData;
+}
+
+FPlayerControllerData* UGameplayUtils::RetrievePlayerControllerDataRow(FName InKey) {
+	FPlayerControllerData* PlayerControllerData = UGameplayUtils::PlayerControllerDataTable->FindRow<FPlayerControllerData>(InKey, "Finding Player Controller Data");
+	return PlayerControllerData;
 }
 
 void UGameplayUtils::LoadDataTables() {
