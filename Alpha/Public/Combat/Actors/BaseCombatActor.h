@@ -28,6 +28,9 @@ public:
 
 	FBaseCombatActorDataStruct BaseCombatActorData;
 
+	UPROPERTY(Transient)
+		UParticleSystemComponent* UsePSC;
+
 	void SetCombatActorData(FBaseCombatActorDataStruct InData);
 	void SetCombatComponentOwner(UCombatComponent* InComponent);
 
@@ -50,6 +53,15 @@ public:
 
 	void AssertActorState();
 	void SetCombatActorState(ECombatActorState InState);
+
+	void StartSimulatingActorUse();
+	void StopSimulatingActorUse();
+	void PlayVisualFX();
+	UAudioComponent* PlaySoundFX(USoundCue* InSound);
+	void SetSoundPlayingToFalse();
+	float PlayActorAnimation(UAnimMontage* Animation, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
+	void StopActorAnimation(UAnimMontage* InAnim);
+
 
 	UFUNCTION()
 	void OnRep_BurstCounter();
@@ -75,9 +87,17 @@ private:
 	bool bIsEquipped;
 	bool bWantsToUse;
 	bool bRefiring;
+	bool bPlayingUseAnimation;
+	bool bPlayingSound;
+	bool bPlaySoundEveryTime;
+
+	UAnimMontage* CurrentAnim;
 
 	FTimerHandle EquipFinishedTimerHandle;
 	FTimerHandle TimerHandle_HandleFiring;
+	FTimerHandle AnimationTimerHandle;
+	FTimerHandle VisualFXTimerHandle;
+	FTimerHandle SoundTimerHandle;
 
 	ECombatActorState ACTOR_STATE;
 };

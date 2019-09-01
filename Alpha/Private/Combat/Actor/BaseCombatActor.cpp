@@ -1,6 +1,8 @@
 #include "BaseCombatActor.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
+#include "Logger.h"
 #include "TimerManager.h"
+#include "Feedback.h"
 #include "PlayableCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Combat/Components/CombatComponent.h"
@@ -91,8 +93,7 @@ void ABaseCombatActor::HandleUse()
 	{
 		if (GetNetMode() != NM_DedicatedServer)
 		{
-			// TODO
-			// StartSimulatingActorUse();
+			StartSimulatingActorUse();
 		}
 
 		if (ComponentOwner->GetCharacterOwner() && ComponentOwner->GetCharacterOwner()->IsLocallyControlled())
@@ -128,9 +129,7 @@ void ABaseCombatActor::OnEquip(bool bPlayEquipAnim)
 	AssertActorState();
 	if (bPlayEquipAnim)
 	{
-		// float Duration = PlayActorAnimation(EquipAnim);
-		// TODO
-		float Duration = 0.0f;
+		float Duration = PlayActorAnimation(BaseCombatActorData.EquipAnim);
 		if (Duration <= 0.0f)
 		{
 			Duration = 0.5f;
@@ -162,8 +161,7 @@ void ABaseCombatActor::OnUnEquip()
 	DetachMeshFromOwner();
 	if (bPendingEquip)
 	{
-		// StopActorAnimation(EquipAnim);
-		// TODO
+		StopActorAnimation(BaseCombatActorData.EquipAnim);
 
 		bPendingEquip = false;
 
@@ -208,6 +206,84 @@ void ABaseCombatActor::SetCombatActorState(ECombatActorState InState)
 	}
 }
 
+void ABaseCombatActor::StartSimulatingActorUse()
+{
+	ULogger::ScreenMessage(FColor::Blue, "Simulating Actor Use AFter Seconds: " + FString::SanitizeFloat(BaseCombatActorData.Feedback->VisualFXBuffer));
+	GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.Feedback->VisualFXBuffer, false);
+	if (!bPlayingUseAnimation)
+	{
+		int8 AnimIndex = FMath::RandRange(0, BaseCombatActorData.UseAnim.Num() - 1);
+		CurrentAnim = BaseCombatActorData.UseAnim[AnimIndex];
+		PlayActorAnimation(CurrentAnim);
+		bPlayingUseAnimation = true;
+	}
+	int8 SoundIndex = FMath::RandRange(0, BaseCombatActorData.Feedback->SoundFX.Num() - 1);
+	PlaySoundFX(BaseCombatActorData.Feedback->SoundFX[SoundIndex]);
+}
+
+void ABaseCombatActor::StopSimulatingActorUse()
+{
+	if (bPlayingUseAnimation)
+	{
+		StopActorAnimation(CurrentAnim);
+		bPlayingUseAnimation = false;
+	}
+}
+
+void ABaseCombatActor::PlayVisualFX()
+{
+	ULogger::ScreenMessage(FColor::Blue, "Playing Visual FX");
+	if (BaseCombatActorData.Feedback->VisualFX)
+	{
+		ULogger::ScreenMessage(FColor::Blue, "Visual FX True");
+		UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
+	}
+}
+
+UAudioComponent* ABaseCombatActor::PlaySoundFX(USoundCue* InSound)
+{
+	UAudioComponent* AC = nullptr;
+	if (!bPlayingSound || bPlaySoundEveryTime) {
+		if (InSound && ComponentOwner->GetCharacterOwner())
+		{
+			bPlayingSound = true;
+			AC = UGameplayStatics::SpawnSoundAttached(InSound, ComponentOwner->GetCharacterOwner()->GetRootComponent());
+			GetWorldTimerManager().SetTimer(SoundTimerHandle, this, &ABaseCombatActor::SetSoundPlayingToFalse, InSound->GetDuration(), false);
+		}
+	}
+	return AC;
+}
+
+void ABaseCombatActor::SetSoundPlayingToFalse()
+{
+	bPlayingSound = false;
+}
+
+float ABaseCombatActor::PlayActorAnimation(UAnimMontage* Animation, float InPlayRate, FName StartSectionName)
+{
+	float Duration = 0.0f;
+	if (ComponentOwner->GetCharacterOwner())
+	{
+		if (Animation)
+		{
+			Duration = ComponentOwner->GetCharacterOwner()->PlayAnimMontage(Animation, InPlayRate, StartSectionName);
+		}
+	}
+	GetWorldTimerManager().SetTimer(AnimationTimerHandle, this, &ABaseCombatActor::StopSimulatingActorUse, Duration, false);
+	return Duration;
+}
+
+void ABaseCombatActor::StopActorAnimation(UAnimMontage* InAnim)
+{
+	if (ComponentOwner->GetCharacterOwner())
+	{
+		if (InAnim)
+		{
+			ComponentOwner->GetCharacterOwner()->StopAnimMontage(InAnim);
+		}
+	}
+}
+
 void ABaseCombatActor::OnBurstStarted()
 {
 	const float GameTime = GetWorld()->GetTimeSeconds();
@@ -228,7 +304,7 @@ void ABaseCombatActor::OnBurstStarted()
 void ABaseCombatActor::OnBurstFinished()
 {
 	BurstCounter = 0;
-	// StopSimulatingActorUse();
+	StopSimulatingActorUse();
 
 	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 	bRefiring = false;

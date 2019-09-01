@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Animation/AnimMontage.h"
 #include "Engine/DataAsset.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "BaseCombatActorData.generated.h"
+
+class UFeedback;
 
 UENUM(BlueprintType)
 enum class ECombatActorTypeSpecifier : uint8 {
@@ -26,8 +29,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName AttachToSocket;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystem* ActorFX;
+	UPROPERTY(EditDefaultsOnly)
+		FName VisualFXSpawnLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundCue*> UseSound;
@@ -37,6 +40,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float UseCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UFeedback* Feedback;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UAnimMontage*> UseAnim;
+
+	UPROPERTY(EditDefaultsOnly)
+		UAnimMontage* EquipAnim;
 };
 
 /**
