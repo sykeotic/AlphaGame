@@ -54,6 +54,8 @@ public:
 	bool IsActive();
 };
 
+class APlayableCharacter;
+
 UCLASS()
 class ALPHA_API AModifier : public AActor
 {
@@ -61,6 +63,8 @@ class ALPHA_API AModifier : public AActor
 	
 public:	
 	AModifier();
+
+	// UHandlerComponent* Owner
 
 protected:
 	virtual void BeginPlay() override;

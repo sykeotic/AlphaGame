@@ -16,3 +16,13 @@ bool UConditionTree::IsConditionTreeTrue()
 	}
 	return true;
 }
+
+AModifier* UConditionTree::GetModifierOwner()
+{
+	return ModifierOwner;
+}
+
+void UConditionTree::SetModifierOwner(AModifier* InModifier)
+{
+	ModifierOwner = InModifier;
+}

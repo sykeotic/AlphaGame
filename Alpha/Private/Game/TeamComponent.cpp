@@ -24,6 +24,7 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(TSubclassOf<class APlayab
 		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(CharClass, SpawnLocation, SpawnRotation, SpawnInfo);
 	}
 	SpawnChar->SetOwnerTeam(this);
+	// SpawnChar->InitCharacterData();
 	TeamHeroes.Add(SpawnChar);
-	return SpawnChar;
+	return SpawnChar; 
 }

@@ -28,9 +28,9 @@ bool UStatsComponent::IsAlive() {
 	return bIsAlive;
 }
 
-EArmorType UStatsComponent::GetArmorType() {
-	return ArmorType;
-}
+//EArmorType UStatsComponent::GetArmorType() {
+//	return ArmorType;
+//}
 
 void UStatsComponent::TakeDamage(float Damage) {
 	ULogger::ScreenMessage(FColor::Red, "Health Before: " + FString::SanitizeFloat(CurrentHealth));

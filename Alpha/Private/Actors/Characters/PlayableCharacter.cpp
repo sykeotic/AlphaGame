@@ -1,19 +1,16 @@
 #include "PlayableCharacter.h"
-#include "CombatComponent.h"
-#include "CombatActor.h"
 #include "StatsComponent.h"
 #include "Logger.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "TimerManager.h"
 #include "Camera/CameraComponent.h"
-#include "RangedCombatWeapon.h"
-#include "CombatAbility.h"
 #include "Engine/DataTable.h"
+#include "Combat/Components/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "MeleeCombatWeapon.h"
 #include "CombatUtils.h"
+#include "Combat/Actors/BaseCombatActor.h"
 #include "GameplayUtils.h"
 #include "Components/InputComponent.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
@@ -36,7 +33,7 @@ APlayableCharacter::APlayableCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);	
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
@@ -46,56 +43,39 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
-	InitCharacterData("TestBoi");
+	UBasePawnData* BasePawnData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
+	InitCharacterData(BasePawnData);
+	InitCombatComponent();
 	StatsComponent->SetCurrentHealth(StatsComponent->GetMaxHealth());
 }
 
-void APlayableCharacter::InitCharacterData(FName CharacterDataString) {
-	CharacterData = UGameplayUtils::RetrieveCharacterDataRow(CharacterDataString);
-	CameraData = UGameplayUtils::RetrieveCameraDataRow(CharacterDataString);
-	PawnStatsData = UGameplayUtils::RetrievePawnStatsDataRow(CharacterDataString);
-	GraphicsData = UGameplayUtils::RetrievePawnGraphicsDataRow(CharacterDataString);
-	SetCharacterValues();
+void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
+	if (BaseData) {
+		CharacterData = BaseData->CharacterData;
+		CameraData = BaseData->CharacterData.PlayerCameraData;
+		PawnStatsData = BaseData->CharacterData.PawnStatsData;
+		GraphicsData = BaseData->CharacterData.PawnGraphicsData;
+		SetCharacterValues();
+	}
 }
 
-//void APlayableCharacter::InitCombatComponent() {
-//	for (int i = 0; i < CombatComponent->WeaponClassArray.Num(); i++) {
-//		FActorSpawnParameters SpawnInfo;
-//		ACombatWeapon* Weapon;
-//		Weapon = Cast<ACombatWeapon>(GetWorld()->SpawnActor<ACombatWeapon>(CombatComponent->WeaponClassArray[i], FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
-//		Weapon->SetCombatComponentOwner(CombatComponent);
-//		Weapon->ActorSocketLocation = WeaponSocketLocation;
-//		CombatComponent->WeaponArray.AddUnique(Weapon);
-//		Weapon->MeshComp->IgnoreActorWhenMoving(this, true);
-//		if (i == 0) {
-//			CombatComponent->CurrentWeaponIndex = 0;
-//			CombatComponent->SetCurrentWeapon(Weapon, true);
-//		}
-//		CombatComponent->WeaponCount++;
-//	}
-//
-//	for (int i = 0; i < CombatComponent->AbilityClassArray.Num(); i++) {
-//		FActorSpawnParameters SpawnInfo;
-//		ACombatAbility* Ability;
-//		Ability = Cast<ACombatAbility>(GetWorld()->SpawnActor<ACombatAbility>(CombatComponent->AbilityClassArray[i], FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
-//		Ability->SetCombatComponentOwner(CombatComponent);
-//		Ability->ActorSocketLocation = AbilitySocketLocation;
-//		CombatComponent->AbilityArray.AddUnique(Ability);
-//		Ability->MeshComp->IgnoreActorWhenMoving(this, true);
-//		if (i == 0) {
-//			CombatComponent->CurrentAbilityIndex = 0;
-//			CombatComponent->SetCurrentAbility(Ability, true);
-//		}
-//		CombatComponent->AbilityCount++;
-//	}
-//}
-
 void APlayableCharacter::InitCombatComponent() {
-	for (FName Key : CharacterData->WeaponDataKeys) {
-
+	for (int i = 0; i < CharacterData.Weapons.Num(); i++) {
+		FActorSpawnParameters SpawnInfo;
+		ABaseCombatActor* Weapon;
+		Weapon = Cast<ABaseCombatActor>(GetWorld()->SpawnActor<ABaseCombatActor>(CharacterData.Weapons[i]->BaseCombatActorDataStruct.ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Weapon->SetCombatComponentOwner(CombatComponent);
+		Weapon->AssignValues(CharacterData.Weapons[i]);
+		CombatComponent->AddWeaponToArray(Weapon);
+		Weapon->GetMesh()->IgnoreActorWhenMoving(this, true);
+		if (i == 0) {
+			CombatComponent->SetCurrentWeaponIndex(0);
+			CombatComponent->SetCurrentWeapon(Weapon, true);
+		}
+		CombatComponent->WeaponCount++;
 	}
 
-	for (FName Key : CharacterData->AbilityDataKeys) {
+	for (int i = 0; i < CharacterData.Abilities.Num(); i++) {
 
 	}
 }
@@ -150,11 +130,11 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayableCharacter::LookUpAtRate);
 }
 
-FVector APlayableCharacter::GetPawnViewLocation() const{
-		if (FollowCamera) {
-			return FollowCamera->GetComponentLocation();
-		}
-		return Super::GetPawnViewLocation();
+FVector APlayableCharacter::GetPawnViewLocation() const {
+	if (FollowCamera) {
+		return FollowCamera->GetComponentLocation();
+	}
+	return Super::GetPawnViewLocation();
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -183,10 +163,6 @@ void APlayableCharacter::WeaponNext() {
 	if (!bIsAttacking) {
 		CombatComponent->CycleNextWeapon();
 	}
-}
-
-FCharacterData* APlayableCharacter::GetCharacterDataStruct() {
-	return CharacterData;
 }
 
 void APlayableCharacter::WeaponPrevious() {
@@ -222,7 +198,7 @@ void APlayableCharacter::MoveRight(float Value)
 void APlayableCharacter::CharacterAttackStart() {
 	if (CombatComponent->GetCurrentWeapon()) {
 		const float GameTime = GetWorld()->GetTimeSeconds();
-		if (!bIsAttacking && CombatComponent->GetCurrentWeapon()->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
+		if (!bIsAttacking && CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
 			CombatComponent->UseCurrentWeapon();
 		}
@@ -232,7 +208,7 @@ void APlayableCharacter::CharacterAttackStart() {
 void APlayableCharacter::CharacterAttackStop() {
 	if (CombatComponent->GetCurrentWeapon()) {
 		const float GameTime = GetWorld()->GetTimeSeconds();
-		float StopAttackTime = CombatComponent->GetCurrentWeapon()->NextValidFireTime - GameTime;
+		float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime;
 		if (bIsAttacking)
 		{
 			if (StopAttackTime > 0)
@@ -247,7 +223,7 @@ void APlayableCharacter::CharacterAttackStop() {
 void APlayableCharacter::CharacterAbilityStart() {
 	if (CombatComponent->GetCurrentAbility()) {
 		const float GameTime = GetWorld()->GetTimeSeconds();
-		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->NextValidFireTime <= GetWorld()->GetTimeSeconds()) {
+		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
 
 			CombatComponent->UseCurrentAbility();
@@ -258,7 +234,7 @@ void APlayableCharacter::CharacterAbilityStart() {
 void APlayableCharacter::CharacterAbilityStop() {
 	if (CombatComponent->GetCurrentAbility()) {
 		const float GameTime = GetWorld()->GetTimeSeconds();
-		float StopAttackTime = CombatComponent->GetCurrentAbility()->NextValidFireTime - GameTime;
+		float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime;
 		if (bIsAttacking)
 		{
 			if (StopAttackTime > 0)
@@ -321,28 +297,28 @@ USpringArmComponent* APlayableCharacter::GetCameraSpringArm() {
 }
 
 void APlayableCharacter::SetCharacterValues() {
-		SetBaseTurnRate(CameraData->BaseTurnRate);
-		SetBaseLookUpRate(CameraData->BaseLookupRate);
-		bUseControllerRotationPitch = CameraData->bUseControllerPitch;
-		bUseControllerRotationRoll = CameraData->bUseControllerRoll;
-		bUseControllerRotationYaw = CameraData->bUseControllerYaw;
-		GetCameraSpringArm()->bEnableCameraLag = true;
-		GetCameraSpringArm()->bUsePawnControlRotation = CameraData->bUsePawnControlRotation;
-		GetCameraSpringArm()->TargetArmLength = CameraData->BoomArmLength;
-		GetCameraSpringArm()->SetRelativeTransform(CameraData->RelTransform);
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->JumpZVelocity = CharacterData->JumpVelocity;
-		GetCharacterMovement()->RotationRate = CharacterData->RotationRate;
-		GetCharacterMovement()->MaxWalkSpeed = CharacterData->MoveSpeed;
-		GetCapsuleComponent()->InitCapsuleSize(GraphicsData->CapsuleRadius, GraphicsData->CapsuleHeight);
-		GetMesh()->SetRelativeLocation(GraphicsData->MeshLocation);
-		GetMesh()->SetRelativeRotation(GraphicsData->MeshRotation);
-		GetMesh()->SetSkeletalMesh(GraphicsData->SkeletalMesh);
-		GetMesh()->SetMaterial(0, GraphicsData->Material_0);
-		GetMesh()->SetMaterial(1, GraphicsData->Material_1);
-		GetMesh()->SetAnimInstanceClass(GraphicsData->AnimInstanceClass);
-		GetDecal()->DecalSize = GraphicsData->DecalSize;
-		GetDecal()->SetRelativeRotation(GraphicsData->DecalRotation.Quaternion());
-		GetDecal()->SetVisibility(false);
-		GetDecal()->SetDecalMaterial(GraphicsData->DecalMaterial);
+	SetBaseTurnRate(CameraData.BaseTurnRate);
+	SetBaseLookUpRate(CameraData.BaseLookupRate);
+	bUseControllerRotationPitch = CameraData.bUseControllerPitch;
+	bUseControllerRotationRoll = CameraData.bUseControllerRoll;
+	bUseControllerRotationYaw = CameraData.bUseControllerYaw;
+	GetCameraSpringArm()->bEnableCameraLag = true;
+	GetCameraSpringArm()->bUsePawnControlRotation = CameraData.bUsePawnControlRotation;
+	GetCameraSpringArm()->TargetArmLength = CameraData.BoomArmLength;
+	GetCameraSpringArm()->SetRelativeTransform(CameraData.RelTransform);
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->JumpZVelocity = CharacterData.JumpVelocity;
+	GetCharacterMovement()->RotationRate = CharacterData.RotationRate;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterData.MoveSpeed;
+	GetCapsuleComponent()->InitCapsuleSize(GraphicsData.CapsuleRadius, GraphicsData.CapsuleHeight);
+	GetMesh()->SetRelativeLocation(GraphicsData.MeshLocation);
+	GetMesh()->SetRelativeRotation(GraphicsData.MeshRotation);
+	GetMesh()->SetSkeletalMesh(GraphicsData.SkeletalMesh);
+	GetMesh()->SetMaterial(0, GraphicsData.Material_0);
+	GetMesh()->SetMaterial(1, GraphicsData.Material_1);
+	GetMesh()->SetAnimInstanceClass(GraphicsData.AnimInstanceClass);
+	GetDecal()->DecalSize = GraphicsData.DecalSize;
+	GetDecal()->SetRelativeRotation(GraphicsData.DecalRotation.Quaternion());
+	GetDecal()->SetVisibility(false);
+	GetDecal()->SetDecalMaterial(GraphicsData.DecalMaterial);
 }

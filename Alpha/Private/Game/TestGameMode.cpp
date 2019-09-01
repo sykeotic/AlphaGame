@@ -13,7 +13,6 @@ void ATestGameMode::BeginPlay() {
 	Super::BeginPlay();
 	MaxNumPlayers = 1;
 	ULogger::SetIsTestRun(bDisplayLogs);
-	UGameplayUtils::LoadDataTables();
 }
 
 bool ATestGameMode::MyReadyToStartMatch()

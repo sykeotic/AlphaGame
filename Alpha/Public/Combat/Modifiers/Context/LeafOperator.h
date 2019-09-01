@@ -6,16 +6,6 @@
 #include "BaseExpression.h"
 #include "LeafOperator.generated.h"
 
-UENUM(BlueprintType)
-enum class ELeafOperator : uint8 {
-	EQUALS UMETA(DisplayName = "Is"),
-	NOT_EQUAL UMETA(DisplayName = "Is Not"),
-	GREATER_THAN UMETA(DisplayName = "Greater Than"),
-	GREATER_THAN_OR_EQUAL_TO UMETA(DisplayName = "Greater Than Or Equal To"),
-	LESS_THAN UMETA(DisplayName = "Less Than"),
-	LESS_THAN_OR_EQUAL_TO UMETA(DisplayName = "Less Than Or Equal To")
-};
-
 /**
  * 
  */

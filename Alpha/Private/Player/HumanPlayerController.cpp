@@ -22,17 +22,18 @@ AHumanPlayerController::AHumanPlayerController() {
 }
 
 void AHumanPlayerController::BeginPlay() {
-	PlayerControllerData = UGameplayUtils::RetrievePlayerControllerDataRow("TestBoi");
-	UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->RoleSelectWidgetClass);
-	UserWidget->AddToViewport();
+	if (PlayerControllerData) {
+		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->RoleSelectWidgetClass);
+		UserWidget->AddToViewport();
+	}
 	// WidgetComponent->SetWidgetClass(PlayerControllerData->RoleSelectWidgetClass);
 	// WidgetComponent->SetWidget(UserWidget);
 }
 
-void AHumanPlayerController::HeroSelect(FString& InKey, FVector InLoc, FRotator InRot) {
-	InKey = "TestBoi";
-	InLoc = {30.0f, 0.0f, 272.0f};
-	InRot = {0.0f, 0.0f, 0.0f};
+void AHumanPlayerController::HeroSelect() {
+	FName InKey = "TestBoi";
+	FVector InLoc = {30.0f, 0.0f, 272.0f};
+	FRotator InRot = {0.0f, 0.0f, 0.0f};
 	if (bGeneralChosen)
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
@@ -46,12 +47,14 @@ void AHumanPlayerController::HeroSelect(FString& InKey, FVector InLoc, FRotator 
 	bGeneralChosen = false;
 	bShowMouseCursor = false;
 	bEnableTouchEvents = true;
-	UserWidget->RemoveFromViewport();
-	UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->HeroWidgetClass);
-	UserWidget->AddToViewport();
+	//UserWidget->RemoveFromViewport();
+	//UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->HeroWidgetClass);
+	//UserWidget->AddToViewport();
 }
 
-void AHumanPlayerController::GeneralSelect(FVector InLoc, FRotator InRot) {
+void AHumanPlayerController::GeneralSelect() {
+	FVector InLoc = { 30.0f, 0.0f, 272.0f };
+	FRotator InRot = { 0.0f, 0.0f, 0.0f };
 	if (bHeroChosen)
 		UnPossess();
 	ULogger::ScreenMessage(FColor::Red, "Spawning General");
@@ -69,9 +72,9 @@ void AHumanPlayerController::GeneralSelect(FVector InLoc, FRotator InRot) {
 	bShowMouseCursor = true;
 	bGeneralChosen = true;
 	bHeroChosen = false;
-	UserWidget->RemoveFromViewport();
-	UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->GeneralWidgetClass);
-	UserWidget->AddToViewport();
+	//UserWidget->RemoveFromViewport();
+	//UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->GeneralWidgetClass);
+	//UserWidget->AddToViewport();
 }
 
 void AHumanPlayerController::Unbind() {

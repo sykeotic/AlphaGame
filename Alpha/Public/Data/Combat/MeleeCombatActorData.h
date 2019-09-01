@@ -3,36 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Combat/Modifiers/Context/LeafOperator.h"
-#include "FloatLeafOperator.generated.h"
+#include "BaseCombatActorData.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "MeleeCombatActorData.generated.h"
+
 
 USTRUCT(BlueprintType)
-struct FFloatExpression
-{
+struct FMeleeCombatActorDataStruct {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float LeftOperand;
+		USoundCue* ImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ELeafOperator Operator;
+		UPrimitiveComponent* CollisionHitBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RightOperand;
+		float HitBoxActiveDuration;
 };
 
 /**
  * 
  */
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
-class ALPHA_API UFloatLeafOperator : public ULeafOperator
+class ALPHA_API UMeleeCombatActorData : public UBaseCombatActorData
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool Evaluate() override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FFloatExpression Expression;
+		FMeleeCombatActorDataStruct MeleeCombatActorDataStruct;
 };

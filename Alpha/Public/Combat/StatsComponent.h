@@ -31,7 +31,7 @@ public:
 
 	void DisplayCurrentHealth();
 
-	EArmorType GetArmorType();
+	// EArmorType GetArmorType();
 
 	void SetOwner(APlayableCharacter* InChar);
 	APlayableCharacter* GetOwner();
@@ -47,6 +47,6 @@ private:
 	UPROPERTY(Replicated)
 	float CurrentHealth;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	EArmorType ArmorType;
+	// UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	// EArmorType ArmorType;
 };

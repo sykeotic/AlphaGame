@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Engine/DataTable.h"
 #include "DrawDebugHelpers.h"
-#include "CombatActor.h"
 #include "HumanPlayerController.generated.h"
 
 UENUM(BlueprintType)
@@ -17,7 +17,7 @@ enum class EPlayerType : uint8 {
 USTRUCT(BlueprintType)
 struct FPlayerControllerData : public FTableRowBase
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -52,10 +52,10 @@ public:
 	AHumanPlayerController();
 
 	UFUNCTION(BlueprintCallable)
-		void HeroSelect(FString& InKey, FVector InLoc, FRotator InRot);
+		void HeroSelect();
 
 	UFUNCTION(BlueprintCallable)
-		void GeneralSelect(FVector InLoc, FRotator InRot);
+		void GeneralSelect();
 
 	void BeginPlay() override;
 

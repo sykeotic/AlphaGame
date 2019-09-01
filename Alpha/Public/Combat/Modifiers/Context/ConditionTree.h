@@ -9,6 +9,8 @@
 #include "BaseExpression.h"
 #include "ConditionTree.generated.h"
 
+class AModifier;
+
 /**
  * 
  */
@@ -23,4 +25,11 @@ public:
 		TArray<UBaseExpression*> ExpressionTree;
 
 	bool IsConditionTreeTrue();
+
+	AModifier* GetModifierOwner();
+	void SetModifierOwner(AModifier* InModifier);
+
+private:
+
+	AModifier* ModifierOwner;
 };

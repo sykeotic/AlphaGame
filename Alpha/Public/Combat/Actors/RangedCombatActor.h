@@ -3,24 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Combat/Abilities/CombatAbility.h"
-#include "ThrowableCombatAbility.generated.h"
+#include "Combat/Actors/BaseCombatActor.h"
+#include "RangedCombatActorData.h"
+#include "RangedCombatActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ALPHA_API AThrowableCombatAbility : public ACombatAbility
+class ALPHA_API ARangedCombatActor : public ABaseCombatActor
 {
 	GENERATED_BODY()
 
-public:
+		FRangedCombatActorDataStruct RangedDataStruct;
 
-	AThrowableCombatAbility();
-	
 	virtual void OnUse() override;
-
 	virtual void ExecuteUse() override;
-
-
+	
 };

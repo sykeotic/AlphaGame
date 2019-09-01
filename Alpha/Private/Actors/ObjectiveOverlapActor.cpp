@@ -1,8 +1,6 @@
 #include "ObjectiveOverlapActor.h"
 #include "PlayableCharacter.h"
-#include "CombatActor.h"
 #include "TestGameState.h"
-#include "CombatProjectile.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"

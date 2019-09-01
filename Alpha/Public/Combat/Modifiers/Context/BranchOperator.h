@@ -6,13 +6,6 @@
 #include "BaseExpression.h"
 #include "BranchOperator.generated.h"
 
-UENUM(BlueprintType)
-enum class EBranchOperator : uint8 {
-	AND UMETA(DisplayName = "AND"),
-	OR UMETA(DisplayName = "OR"),
-	AND_NOT UMETA(DisplayName = "AND NOT")
-};
-
 USTRUCT(BlueprintType)
 struct FBranchExpression
 {

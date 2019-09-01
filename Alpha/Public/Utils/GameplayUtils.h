@@ -34,14 +34,6 @@ enum class EActorType : uint8 {
 	CONSUMABLE UMETA(DisplayName = "Consumable")
 };
 
-UENUM(BlueprintType)
-enum class ECombatActorState : uint8 {
-	USING UMETA(DisplayName = "Using"),
-	IDLE UMETA(DisplayName = "Idle"),
-	EQUIPPING UMETA(DisplayName = "Equipping"),
-	RELOADING UMETA(DisplayName = "Reloading")
-};
-
 
 USTRUCT(BlueprintType)
 struct FRaceData : public FTableRowBase
@@ -99,33 +91,4 @@ class ALPHA_API UGameplayUtils : public UBlueprintFunctionLibrary
 
 public:
 	UGameplayUtils();
-
-	static UDataTable* CombatActorDataTable;
-
-	static UDataTable* CharacterDataTable;
-	static UDataTable* PawnStatsDataTable;
-	static UDataTable* PawnGraphicsDataTable;
-	static UDataTable* PlayerCameraDataTable;
-	static UDataTable* RaceDataTable;
-
-	static UDataTable* GameModeDataTable;
-	static UDataTable* PlayerControllerDataTable;
-
-
-	static FCharacterData* RetrieveCharacterDataRow(FName InKey);
-	static FPlayerCameraData* RetrieveCameraDataRow(FName InKey);
-	static FPawnGraphicsData* RetrievePawnGraphicsDataRow(FName InKey);
-	static FPawnStatsData* RetrievePawnStatsDataRow(FName InKey);
-	static FPlayerControllerData* RetrievePlayerControllerDataRow(FName InKey);
-
-	static void LoadDataTables();
 };
-
-UDataTable* UGameplayUtils::CharacterDataTable = nullptr;
-UDataTable* UGameplayUtils::PawnStatsDataTable = nullptr;
-UDataTable* UGameplayUtils::PawnGraphicsDataTable = nullptr;
-UDataTable* UGameplayUtils::PlayerCameraDataTable = nullptr;
-UDataTable* UGameplayUtils::RaceDataTable = nullptr;
-UDataTable* UGameplayUtils::GameModeDataTable = nullptr;
-UDataTable* UGameplayUtils::CombatActorDataTable = nullptr;
-UDataTable* UGameplayUtils::PlayerControllerDataTable = nullptr;
