@@ -6,6 +6,9 @@
 #include "BaseCombatActorData.h"
 #include "RangedCombatActorData.generated.h"
 
+class ABaseProjectile;
+class UProjectileData;
+
 USTRUCT(BlueprintType)
 struct FRangedCombatActorDataStruct {
 	GENERATED_BODY()
@@ -15,10 +18,13 @@ public:
 		float ExecutionDelay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName ProjectileSpawnSocketLocation;
+		FName ProjectileSpawnAtSocket;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		//TSubclassOf<Projectile>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<ABaseProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UProjectileData* ProjectileData;
 };
 
 /**

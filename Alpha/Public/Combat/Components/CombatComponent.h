@@ -42,9 +42,6 @@ public:
 	uint8 GetCurrentWeaponIndex();
 	uint8 GetCurrentAbilityIndex();
 
-	uint8 AbilityCount;
-	uint8 WeaponCount;
-
 protected:
 	virtual void BeginPlay() override;
 

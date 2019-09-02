@@ -1,4 +1,5 @@
 #include "..\..\..\Public\Combat\Components\CombatComponent.h"
+#include "Logger.h"
 #include "BaseCombatActor.h"
 
 UCombatComponent::UCombatComponent()
@@ -31,7 +32,7 @@ void UCombatComponent::UseCurrentWeapon()
 
 void UCombatComponent::CycleNextWeapon()
 {
-	if (CurrentWeaponIndex + 1 >= WeaponCount) {
+	if (CurrentWeaponIndex + 1 >= WeaponArray.Num()) {
 		CurrentWeaponIndex = 0;
 	}
 	else {
@@ -43,7 +44,7 @@ void UCombatComponent::CycleNextWeapon()
 void UCombatComponent::CyclePreviousWeapon()
 {
 	if (CurrentWeaponIndex - 1 < 0) {
-		CurrentWeaponIndex = WeaponCount - 1;
+		CurrentWeaponIndex = WeaponArray.Num() - 1;
 	}
 	else {
 		CurrentWeaponIndex--;
@@ -77,7 +78,7 @@ void UCombatComponent::AddWeaponToArray(ABaseCombatActor* InActor)
 
 void UCombatComponent::CycleNextAbility()
 {
-	if (CurrentAbilityIndex + 1 >= AbilityCount) {
+	if (CurrentAbilityIndex + 1 >= AbilityArray.Num()) {
 		CurrentAbilityIndex = 0;
 	}
 	else {
@@ -96,7 +97,7 @@ void UCombatComponent::UseCurrentAbility()
 void UCombatComponent::CyclePreviousAbility()
 {
 	if (CurrentAbilityIndex - 1 < 0) {
-		CurrentAbilityIndex = AbilityCount - 1;
+		CurrentAbilityIndex = AbilityArray.Num() - 1;
 	}
 	else {
 		CurrentAbilityIndex--;

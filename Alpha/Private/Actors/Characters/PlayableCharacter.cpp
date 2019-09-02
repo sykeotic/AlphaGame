@@ -43,7 +43,7 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
-	UBasePawnData* BasePawnData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
+	UBasePawnData* BasePawnData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/PlayableActors/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
 	InitCharacterData(BasePawnData);
 	InitCombatComponent();
 	StatsComponent->SetCurrentHealth(StatsComponent->GetMaxHealth());
@@ -72,11 +72,20 @@ void APlayableCharacter::InitCombatComponent() {
 			CombatComponent->SetCurrentWeaponIndex(0);
 			CombatComponent->SetCurrentWeapon(Weapon, true);
 		}
-		CombatComponent->WeaponCount++;
 	}
 
 	for (int i = 0; i < CharacterData.Abilities.Num(); i++) {
-
+		FActorSpawnParameters SpawnInfo;
+		ABaseCombatActor* Ability;
+		Ability = Cast<ABaseCombatActor>(GetWorld()->SpawnActor<ABaseCombatActor>(CharacterData.Abilities[i]->BaseCombatActorDataStruct.ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Ability->SetCombatComponentOwner(CombatComponent);
+		Ability->AssignValues(CharacterData.Abilities[i]);
+		CombatComponent->AddAbilityToArray(Ability);
+		Ability->GetMesh()->IgnoreActorWhenMoving(this, true);
+		if (i == 0) {
+			CombatComponent->SetCurrentAbilityIndex(0);
+			CombatComponent->SetCurrentAbility(Ability, true);
+		}
 	}
 }
 

@@ -19,5 +19,9 @@ class ALPHA_API ARangedCombatActor : public ABaseCombatActor
 
 	virtual void OnUse() override;
 	virtual void ExecuteUse() override;
+	virtual void AssignValues(UBaseCombatActorData* InData) override;
+
+private:
+	void LaunchProjectile();
 	
 };

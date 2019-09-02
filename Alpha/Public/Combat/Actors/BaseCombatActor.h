@@ -33,6 +33,7 @@ public:
 
 	void SetCombatActorData(FBaseCombatActorDataStruct InData);
 	void SetCombatComponentOwner(UCombatComponent* InComponent);
+	UCombatComponent* GetCombatComponentOwner();
 
 	void AttachMeshToOwner(FName AttachPoint);
 	void DetachMeshFromOwner();
@@ -74,9 +75,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UStaticMeshComponent* MeshComp;
-	UCombatComponent* ComponentOwner;
-
 	float EquipStartedTime;
 	float EquipDuration;
 	float NextValidFireTime;
@@ -100,4 +98,8 @@ private:
 	FTimerHandle SoundTimerHandle;
 
 	ECombatActorState ACTOR_STATE;
+
+protected:
+	UStaticMeshComponent* MeshComp;
+	UCombatComponent* ComponentOwner;
 };

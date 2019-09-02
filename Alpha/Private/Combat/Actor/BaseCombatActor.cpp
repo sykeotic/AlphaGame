@@ -31,6 +31,11 @@ void ABaseCombatActor::SetCombatComponentOwner(UCombatComponent* InComponent)
 	ComponentOwner = InComponent;
 }
 
+UCombatComponent* ABaseCombatActor::GetCombatComponentOwner()
+{
+	return ComponentOwner;
+}
+
 void ABaseCombatActor::AttachMeshToOwner(FName AttachPoint)
 {
 	if (ComponentOwner->GetCharacterOwner())
