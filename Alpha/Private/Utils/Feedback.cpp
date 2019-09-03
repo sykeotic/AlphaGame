@@ -2,5 +2,6 @@
 
 USoundCue* UFeedback::PickRandomSound()
 {
-	return SoundFX[0];
+	int8 Index = FMath::RandRange(0, SoundFX.Num() - 1);
+	return SoundFX[Index];
 }

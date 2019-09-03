@@ -234,7 +234,6 @@ void APlayableCharacter::CharacterAbilityStart() {
 		const float GameTime = GetWorld()->GetTimeSeconds();
 		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
-
 			CombatComponent->UseCurrentAbility();
 		}
 	}

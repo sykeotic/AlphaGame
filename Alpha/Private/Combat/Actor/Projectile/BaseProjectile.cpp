@@ -2,7 +2,11 @@
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "BaseCombatActor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Public/DrawDebugHelpers.h"
+#include "Feedback.h"
 #include "Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Logger.h"
 
@@ -48,7 +52,6 @@ void ABaseProjectile::Fire(const FVector& ShootDirection)
 	{
 		ProjectileMovement->Velocity = ShootDirection * ProjectileMovement->InitialSpeed;
 		ProjectileMovement->UpdateComponentVelocity();
-		ULogger::ScreenMessage(FColor::Yellow, "Velocity: " + ProjectileMovement->Velocity.ToString());
 		DrawDebugLine(GetWorld(), ShootDirection, ProjectileMovement->Velocity, FColor::Red);
 	}
 }
@@ -88,5 +91,9 @@ void ABaseProjectile::InitProjectileData(FProjectileDataStruct InData, FVector I
 
 void ABaseProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ULogger::ScreenMessage(FColor::Blue, "BULLET HIT");
+	if (ProjectileData.bDiesUponCollision) {
+		this->Destroy();
+	}
+	UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileData.Feedback->VisualFX, SweepResult.ImpactPoint, OtherActor->GetActorRotation(), true);
+	UGameplayStatics::SpawnSoundAttached(ProjectileData.Feedback->PickRandomSound(), OtherActor->GetRootComponent());
 }

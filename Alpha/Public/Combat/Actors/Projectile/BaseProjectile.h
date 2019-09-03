@@ -22,11 +22,12 @@ public:
 
 	FProjectileDataStruct ProjectileData;
 
+	UPROPERTY(Transient)
+		UParticleSystemComponent* UsePSC;
+
 	void Fire(const FVector& ShootDirection);
 	void SetCombatActorOwner(ABaseCombatActor* NewOwner);
 	void InitProjectileData(FProjectileDataStruct InData, FVector InLocation);
-
-	UProjectileMovementComponent* ProjectileMovement;
 
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -36,7 +37,7 @@ protected:
 
 private:
 	ABaseCombatActor* CombatActorOwner;
-
+	UProjectileMovementComponent* ProjectileMovement;
 	UStaticMeshComponent* MeshComp;
 	USphereComponent* CollisionComp;
 };

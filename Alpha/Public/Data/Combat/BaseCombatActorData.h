@@ -24,7 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* MeshComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UMaterial* ActorMaterial;
+		FRotator MeshRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector MeshLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName AttachToSocket;

@@ -15,7 +15,10 @@ class ALPHA_API ARangedCombatActor : public ABaseCombatActor
 {
 	GENERATED_BODY()
 
-		FRangedCombatActorDataStruct RangedDataStruct;
+public:
+	ARangedCombatActor();
+	
+	FRangedCombatActorDataStruct RangedDataStruct;
 
 	virtual void OnUse() override;
 	virtual void ExecuteUse() override;

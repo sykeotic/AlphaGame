@@ -72,8 +72,8 @@ void ABaseCombatActor::AssignValues(UBaseCombatActorData* InData)
 {
 	BaseCombatActorData = InData->BaseCombatActorDataStruct;
 	MeshComp->SetStaticMesh(BaseCombatActorData.MeshComp->GetStaticMesh());
-	MeshComp->SetMaterial(0, BaseCombatActorData.ActorMaterial);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
 }
 
 void ABaseCombatActor::StopUse()
@@ -156,6 +156,8 @@ void ABaseCombatActor::OnEquipFinished()
 	bIsEquipped = true;
 	bPendingEquip = false;
 
+	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
+
 	AssertActorState();
 }
 
@@ -213,8 +215,13 @@ void ABaseCombatActor::SetCombatActorState(ECombatActorState InState)
 
 void ABaseCombatActor::StartSimulatingActorUse()
 {
-	ULogger::ScreenMessage(FColor::Blue, "Simulating Actor Use AFter Seconds: " + FString::SanitizeFloat(BaseCombatActorData.Feedback->VisualFXBuffer));
-	GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.Feedback->VisualFXBuffer, false);
+	if (BaseCombatActorData.Feedback) {
+		GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.Feedback->VisualFXBuffer, false);
+		USoundCue* SoundToPlay = BaseCombatActorData.Feedback->PickRandomSound();
+		if (SoundToPlay) {
+			PlaySoundFX(SoundToPlay);
+		}
+	}
 	if (!bPlayingUseAnimation)
 	{
 		int8 AnimIndex = FMath::RandRange(0, BaseCombatActorData.UseAnim.Num() - 1);
@@ -222,8 +229,6 @@ void ABaseCombatActor::StartSimulatingActorUse()
 		PlayActorAnimation(CurrentAnim);
 		bPlayingUseAnimation = true;
 	}
-	int8 SoundIndex = FMath::RandRange(0, BaseCombatActorData.Feedback->SoundFX.Num() - 1);
-	PlaySoundFX(BaseCombatActorData.Feedback->SoundFX[SoundIndex]);
 }
 
 void ABaseCombatActor::StopSimulatingActorUse()
@@ -319,11 +324,11 @@ void ABaseCombatActor::OnRep_BurstCounter()
 {
 	if (BurstCounter > 0)
 	{
-		// StartSimulatingActorUse();
+		StartSimulatingActorUse();
 	}
 	else
 	{
-		// StopSimulatingActorUse();
+		StopSimulatingActorUse();
 	}
 }
 

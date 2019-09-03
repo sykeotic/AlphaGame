@@ -17,7 +17,7 @@ public:
 		USoundCue* ImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPrimitiveComponent* CollisionHitBox;
+		UBoxComponent* CollisionHitBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float HitBoxActiveDuration;

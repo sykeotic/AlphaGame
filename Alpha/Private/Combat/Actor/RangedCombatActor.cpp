@@ -6,6 +6,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Logger.h"
 
+ARangedCombatActor::ARangedCombatActor()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
 void ARangedCombatActor::OnUse()
 {
 	Super::OnUse();
@@ -31,7 +36,7 @@ void ARangedCombatActor::LaunchProjectile()
 		FVector OwnerLoc;
 		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
 		FVector LocationFrom = MeshComp->GetSocketLocation(RangedDataStruct.ProjectileSpawnAtSocket);
-		RotationFrom.Pitch += 5.0f;
+		RotationFrom.Pitch += 10.0f;
 		UWorld* const World = GetWorld();
 		if (World)
 		{
@@ -44,7 +49,6 @@ void ARangedCombatActor::LaunchProjectile()
 			if (Projectile)
 			{
 				FVector const LaunchDir = RotationFrom.Vector();
-				ULogger::ScreenMessage(FColor::Cyan, "LaunchDir: " + LaunchDir.ToString());
 				Projectile->Fire(LaunchDir);
 			}
 		}

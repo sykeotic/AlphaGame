@@ -74,6 +74,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UStaticMeshComponent* MeshComp;
+	UCombatComponent* ComponentOwner;
+
 private:
 	float EquipStartedTime;
 	float EquipDuration;
@@ -98,8 +101,4 @@ private:
 	FTimerHandle SoundTimerHandle;
 
 	ECombatActorState ACTOR_STATE;
-
-protected:
-	UStaticMeshComponent* MeshComp;
-	UCombatComponent* ComponentOwner;
 };
