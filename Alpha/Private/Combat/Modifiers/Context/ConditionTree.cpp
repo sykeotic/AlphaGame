@@ -5,6 +5,7 @@
 
 bool UConditionTree::IsConditionTreeTrue()
 {
+	/*
 	for (UBaseExpression* CurrExp : ExpressionTree) {
 		if (CurrExp->Evaluate() == false) {
 			ULogger::ScreenMessage(FColor::Red, "Condition is true");
@@ -14,6 +15,7 @@ bool UConditionTree::IsConditionTreeTrue()
 			ULogger::ScreenMessage(FColor::Red, "Condition is true");
 		}
 	}
+	*/
 	return true;
 }
 

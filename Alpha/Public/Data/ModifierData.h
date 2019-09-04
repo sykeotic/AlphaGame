@@ -8,6 +8,7 @@
 
 class UFeedback;
 class AModifier;
+class UConditionTree;
 
 USTRUCT(BlueprintType)
 struct FModifierDataStruct {
@@ -19,6 +20,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AModifier> ModifierClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bHasDuration;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Duration;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UConditionTree* Conditions;
 };
 
 /**
@@ -31,6 +39,5 @@ class ALPHA_API UModifierData : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FModifierDataStruct ModifierData;
-	
+		FModifierDataStruct ModifierData;	
 };

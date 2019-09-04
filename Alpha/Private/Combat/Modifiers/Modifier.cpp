@@ -33,10 +33,14 @@ FContext AModifier::GetContext()
 
 void AModifier::ApplyEffects()
 {
-	ULogger::ScreenMessage(FColor::Green, "Applying Effects");
+	ULogger::ScreenMessage(FColor::Orange, "APPLYING EFFECTS");
 }
 
 void AModifier::AssignValues(FModifierDataStruct InData)
 {
 	ModifierData = InData;
+	Context.bHasDuration = ModifierData.bHasDuration;
+	Context.bIsActive = false;
+	Context.Duration = ModifierData.Duration;
+	Context.Conditions = ModifierData.Conditions;
 }

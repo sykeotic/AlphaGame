@@ -75,6 +75,7 @@ void ABaseCombatActor::AssignValues(UBaseCombatActorData* InData)
 	MeshComp->SetStaticMesh(BaseCombatActorData.MeshComp->GetStaticMesh());
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
+	InitModifiers();
 }
 
 void ABaseCombatActor::StopUse()
@@ -226,6 +227,7 @@ void ABaseCombatActor::InitModifiers()
 		AModifier* Modifier;
 		Modifier = Cast<AModifier>(GetWorld()->SpawnActor<AModifier>(BaseCombatActorData.ModifierData[i]->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		Modifier->AssignValues(BaseCombatActorData.ModifierData[i]->ModifierData);
+		Modifiers.Add(Modifier);
 	}
 }
 
@@ -234,7 +236,9 @@ void ABaseCombatActor::ApplyModifiers(AActor* InActor)
 	APlayableCharacter* HitChar;
 	HitChar = Cast<APlayableCharacter>(InActor);
 	if (HitChar) {
+		ULogger::ScreenMessage(FColor::Green, "BaseCombatActor::ApplyModifiers - Hit Char Valid");
 		for (AModifier* CurrMod : Modifiers) {
+			ULogger::ScreenMessage(FColor::Green, "BaseCombatActor::ApplyModifiers - Curr Mod Valid");
 			HitChar->ApplyModifiers(CurrMod, InActor);
 		}
 	}

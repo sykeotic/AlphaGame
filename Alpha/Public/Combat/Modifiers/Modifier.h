@@ -26,8 +26,8 @@ public:
 		bool bHasDuration;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Duration;
-
-	UConditionTree* Conditions;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UConditionTree* Conditions;
 };
 
 class APlayableCharacter;
