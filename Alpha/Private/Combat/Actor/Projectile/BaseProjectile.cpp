@@ -96,4 +96,5 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 	}
 	UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileData.Feedback->VisualFX, SweepResult.ImpactPoint, OtherActor->GetActorRotation(), true);
 	UGameplayStatics::SpawnSoundAttached(ProjectileData.Feedback->PickRandomSound(), OtherActor->GetRootComponent());
+	CombatActorOwner->ApplyModifiers(OtherActor);
 }

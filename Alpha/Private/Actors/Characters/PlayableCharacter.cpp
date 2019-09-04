@@ -12,6 +12,7 @@
 #include "CombatUtils.h"
 #include "Combat/Actors/BaseCombatActor.h"
 #include "GameplayUtils.h"
+#include "HandlerComponent.h"
 #include "Components/InputComponent.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -37,6 +38,9 @@ APlayableCharacter::APlayableCharacter()
 
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
+
+	HandlerComponent = CreateDefaultSubobject<UHandlerComponent>(TEXT("HandlerComponent"));
+	HandlerComponent->SetActorOwner(this);
 
 	bIsAttacking = false;
 }
@@ -298,6 +302,11 @@ UTeamComponent* APlayableCharacter::GetOwnerTeam() {
 
 void APlayableCharacter::SetOwnerTeam(UTeamComponent* InTeam) {
 	OwnerTeam = InTeam;
+}
+
+void APlayableCharacter::ApplyModifiers(AModifier* InModifier, AActor* InActor)
+{
+	HandlerComponent->ActivateModifier(InModifier, InActor);
 }
 
 USpringArmComponent* APlayableCharacter::GetCameraSpringArm() {

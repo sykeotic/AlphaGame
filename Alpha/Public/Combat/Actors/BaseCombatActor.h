@@ -15,6 +15,7 @@ enum class ECombatActorState : uint8 {
 	RELOADING UMETA(DisplayName = "Reloading")
 };
 
+class AModifier;
 class UCombatComponent;
 class UStaticMeshComponent;
 
@@ -54,6 +55,10 @@ public:
 
 	void AssertActorState();
 	void SetCombatActorState(ECombatActorState InState);
+
+	TArray<AModifier*> GetModifiers();
+	void InitModifiers();
+	void ApplyModifiers(AActor* InActor);
 
 	void StartSimulatingActorUse();
 	void StopSimulatingActorUse();
@@ -101,4 +106,6 @@ private:
 	FTimerHandle SoundTimerHandle;
 
 	ECombatActorState ACTOR_STATE;
+
+	TArray<AModifier*> Modifiers;
 };

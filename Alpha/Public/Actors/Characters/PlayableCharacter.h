@@ -16,6 +16,7 @@ class UStatsComponent;
 class UTeamComponent;
 class USpringArmComponent;
 class ABaseCombatActor;
+class AModifier;
 
 UCLASS(Blueprintable)
 class APlayableCharacter : public ACharacter
@@ -66,6 +67,8 @@ public:
 
 	void SetOwnerTeam(UTeamComponent* InTeam);
 
+	void ApplyModifiers(AModifier* InModifier, AActor* InActor);
+
 	bool CharacterCanAttack();
 
 	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
@@ -104,7 +107,7 @@ protected:
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	class UStatsComponent* StatsComponent;
+		class UStatsComponent* StatsComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UCombatComponent* CombatComponent;
@@ -116,4 +119,5 @@ private:
 	float BaseTurnRate;
 
 	class UTeamComponent* OwnerTeam;
+	class UHandlerComponent* HandlerComponent;
 };

@@ -9,6 +9,7 @@
 #include "BaseCombatActorData.generated.h"
 
 class UFeedback;
+class UModifierData;
 
 UENUM(BlueprintType)
 enum class ECombatActorTypeSpecifier : uint8 {
@@ -49,8 +50,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UAnimMontage*> UseAnim;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAnimMontage* EquipAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UModifierData*> ModifierData;
 };
 
 /**

@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include "TimerManager.h"
 #include "Feedback.h"
+#include "Modifier.h"
 #include "PlayableCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Combat/Components/CombatComponent.h"
@@ -213,6 +214,32 @@ void ABaseCombatActor::SetCombatActorState(ECombatActorState InState)
 	}
 }
 
+TArray<AModifier*> ABaseCombatActor::GetModifiers()
+{
+	return Modifiers;
+}
+
+void ABaseCombatActor::InitModifiers()
+{
+	for (int i = 0; i < BaseCombatActorData.ModifierData.Num(); i++) {
+		FActorSpawnParameters SpawnInfo;
+		AModifier* Modifier;
+		Modifier = Cast<AModifier>(GetWorld()->SpawnActor<AModifier>(BaseCombatActorData.ModifierData[i]->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Modifier->AssignValues(BaseCombatActorData.ModifierData[i]->ModifierData);
+	}
+}
+
+void ABaseCombatActor::ApplyModifiers(AActor* InActor)
+{
+	APlayableCharacter* HitChar;
+	HitChar = Cast<APlayableCharacter>(InActor);
+	if (HitChar) {
+		for (AModifier* CurrMod : Modifiers) {
+			HitChar->ApplyModifiers(CurrMod, InActor);
+		}
+	}
+}
+
 void ABaseCombatActor::StartSimulatingActorUse()
 {
 	if (BaseCombatActorData.Feedback) {
@@ -242,10 +269,8 @@ void ABaseCombatActor::StopSimulatingActorUse()
 
 void ABaseCombatActor::PlayVisualFX()
 {
-	ULogger::ScreenMessage(FColor::Blue, "Playing Visual FX");
 	if (BaseCombatActorData.Feedback->VisualFX)
 	{
-		ULogger::ScreenMessage(FColor::Blue, "Visual FX True");
 		UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
 	}
 }
@@ -339,5 +364,5 @@ UStaticMeshComponent* ABaseCombatActor::GetMesh()
 
 float ABaseCombatActor::GetNextValidFireTime()
 {
-	return 0.0f;
+	return NextValidFireTime;
 }

@@ -3,7 +3,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
+#include "ModifierData.h"
 #include "Modifier.generated.h"
+
+class UConditionTree;
 
 UENUM(BlueprintType)
 enum class EFeedbackType : uint8 {
@@ -13,45 +16,18 @@ enum class EFeedbackType : uint8 {
 };
 
 USTRUCT(BlueprintType)
-struct FFeedbacks
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundCue*> SoundFX;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SoundFXBuffer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystem* VisualFX;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float VisualFXBuffer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EFeedbackType FeedbackType;
-
-	UAudioComponent* PlaySoundFX();
-	USoundCue* PickRandomSoundCue();
-	float PlayVisualFX();
-};
-
-USTRUCT(BlueprintType)
 struct FContext {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsActive;
+		bool bIsActive;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bHasDuration;
+		bool bHasDuration;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Duration;
+		float Duration;
 
-	//Condition[]
-
-	bool AreConditionsTrue();
-	bool IsActive();
+	UConditionTree* Conditions;
 };
 
 class APlayableCharacter;
@@ -64,10 +40,23 @@ class ALPHA_API AModifier : public AActor
 public:	
 	AModifier();
 
-	// UHandlerComponent* Owner
+	bool AreConditionsTrue();
+	bool IsActive();
+	void SetIsActive(bool bActiveStatus);
+
+	FContext GetContext();
+
+	void ApplyEffects();
+
+	void AssignValues(FModifierDataStruct InData);
+
+	FModifierDataStruct ModifierData;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+private:
+	FContext Context;
+
+	EFeedbackType FeedbackType;
 };

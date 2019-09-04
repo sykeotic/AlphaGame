@@ -45,6 +45,7 @@ void AMeleeCombatActor::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComp,
 	if (GetCombatComponentOwner() != nullptr && GetCombatComponentOwner() != NULL) {
 		if (!OverlappedActors.Contains(OtherActor) && (OtherActor != nullptr) && (OtherActor != GetCombatComponentOwner()->GetCharacterOwner()) && (OtherComp != nullptr) && (OtherActor != this) && bCanOverlap) {
 			OverlappedActors.AddUnique(OtherActor);
+			ApplyModifiers(OtherActor);
 			ULogger::ScreenMessage(FColor::Orange, "MELEE HIT");
 		}
 	}
