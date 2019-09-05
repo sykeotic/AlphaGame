@@ -14,8 +14,6 @@ struct FRangedCombatActorDataStruct {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ExecutionDelay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName ProjectileSpawnAtSocket;

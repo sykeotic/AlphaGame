@@ -60,7 +60,7 @@ public:
 
 	void ManualTick();
 
-	void ApplyEffects(AModifier* InModifier);
+	void ApplyEffects(AModifier* InModifier, AActor* AffectedActor);
 
 	void SetActorOwner(AActor* InOwner);
 

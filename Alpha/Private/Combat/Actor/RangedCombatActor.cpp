@@ -18,8 +18,9 @@ void ARangedCombatActor::OnUse()
 
 void ARangedCombatActor::ExecuteUse()
 {
-	FTimerHandle DelayAnimHandle;
-	GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ARangedCombatActor::LaunchProjectile, RangedDataStruct.ExecutionDelay, false);
+	ULogger::ScreenMessage(FColor::Red, "RangedCombatActor::ExecuteUse - Modifiers: " + FString::FromInt(Modifiers.Num()));
+	ULogger::ScreenMessage(FColor::Red, "RangedCombatActor::ExecuteUse - Effects: " + FString::FromInt(Modifiers[0]->GetEffectCount()));
+	LaunchProjectile();
 }
 
 void ARangedCombatActor::AssignValues(UBaseCombatActorData* InData)

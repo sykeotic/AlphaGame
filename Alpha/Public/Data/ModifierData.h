@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Data/Combat/Effects/BaseEffectData.h"
 #include "ModifierData.generated.h"
 
 class UFeedback;
 class AModifier;
 class UConditionTree;
+class UBaseEffectData;
 
 USTRUCT(BlueprintType)
 struct FModifierDataStruct {
@@ -27,6 +29,8 @@ public:
 		float Duration;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UConditionTree* Conditions;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UBaseEffectData*> BaseEffectData;
 };
 
 /**

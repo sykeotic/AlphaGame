@@ -31,7 +31,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName AttachToSocket;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ExecutionDelay;
 	UPROPERTY(EditDefaultsOnly)
 		FName VisualFXSpawnLocation;
 

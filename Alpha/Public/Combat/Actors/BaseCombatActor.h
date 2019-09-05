@@ -76,6 +76,8 @@ public:
 
 	float GetNextValidFireTime();
 
+	TArray<AModifier*> Modifiers;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -107,5 +109,5 @@ private:
 
 	ECombatActorState ACTOR_STATE;
 
-	TArray<AModifier*> Modifiers;
+
 };

@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include "Runtime/CoreUObject/Public/UObject/UObjectGlobals.h"
 #include "Modifier.h"
+#include "BaseEffect.h"
 #include "Kismet/GameplayStatics.h"
 
 UHandlerComponent::UHandlerComponent()
@@ -20,9 +21,7 @@ void UHandlerComponent::BeginPlay()
 
 void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 {
-	ULogger::ScreenMessage(FColor::Green, "HandlerComponent::ActivateModifiers - Before");
 	if (Entries.Num() + 1 >= 30 || !InModifier->GetContext().bHasDuration) {
-		ULogger::ScreenMessage(FColor::Green, "HandlerComponent::ActivateModifiers - After");
 		FEntry NewEntry;
 		NewEntry = FEntry();
 		NewEntry.bIsConditionTrue = false;
@@ -34,6 +33,8 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 		NewEntry.Modifier->ModifierData.Conditions = InModifier->ModifierData.Conditions;
 		NewEntry.Modifier->ModifierData.Duration = InModifier->ModifierData.Duration;
 		NewEntry.Modifier->ModifierData.Feedback = InModifier->ModifierData.Feedback;
+		NewEntry.Modifier->ModifierData.BaseEffectData = InModifier->ModifierData.BaseEffectData;
+		// Issue is here
 		Entries.Add(NewEntry);
 		UpdateModifiers();
 	}
@@ -56,7 +57,7 @@ void UHandlerComponent::UpdateModifiers()
 			Entries[i].Modifier->SetIsActive(false);
 		}
 		if (Entries[i].Modifier->IsActive()) {
-			ApplyEffects(Entries[i].Modifier);
+			ApplyEffects(Entries[i].Modifier, ActorOwner);
 		}
 		float CurrentTime = GetWorld()->GetTimeSeconds();
 		float EndTime = Entries[i].StartTime + Entries[i].Modifier->GetContext().Duration;
@@ -76,9 +77,9 @@ void UHandlerComponent::ManualTick()
 	UpdateModifiers();
 }
 
-void UHandlerComponent::ApplyEffects(AModifier* InModifier)
+void UHandlerComponent::ApplyEffects(AModifier* InModifier, AActor* AffectedActor)
 {
-	InModifier->ApplyEffects();
+	InModifier->ApplyEffects(AffectedActor);
 }
 
 void UHandlerComponent::SetActorOwner(AActor* InOwner)

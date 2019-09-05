@@ -31,6 +31,7 @@ public:
 };
 
 class APlayableCharacter;
+class ABaseEffect;
 
 UCLASS()
 class ALPHA_API AModifier : public AActor
@@ -45,8 +46,9 @@ public:
 	void SetIsActive(bool bActiveStatus);
 
 	FContext GetContext();
+	int32 GetEffectCount();
 
-	void ApplyEffects();
+	void ApplyEffects(AActor* AffectedActor);
 
 	void AssignValues(FModifierDataStruct InData);
 
@@ -59,4 +61,5 @@ private:
 	FContext Context;
 
 	EFeedbackType FeedbackType;
+	TArray<ABaseEffect*> Effects;
 };

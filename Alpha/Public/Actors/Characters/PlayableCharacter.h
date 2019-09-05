@@ -32,6 +32,7 @@ public:
 	FPawnGraphicsData GraphicsData;
 
 	void SetCharacterValues();
+	void InitCombatComponent();
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -82,8 +83,6 @@ public:
 protected:	
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
 		void ReceiveOnCharacterDeath();
-
-	void InitCombatComponent();
 
 	void InitCharacterData(UBasePawnData* BaseData);
 

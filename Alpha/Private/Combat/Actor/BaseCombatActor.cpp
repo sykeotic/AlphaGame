@@ -76,12 +76,14 @@ void ABaseCombatActor::AssignValues(UBaseCombatActorData* InData)
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
 	InitModifiers();
+	// ULogger::ScreenMessage(FColor::Emerald, "BaseCombatActor::AssignValues || Modifiers: " + FString::FromInt(Modifiers.Num()));
 }
 
 void ABaseCombatActor::StopUse()
 {
 	if (bWantsToUse)
 	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 		bWantsToUse = false;
 		AssertActorState();
 	}
@@ -100,12 +102,24 @@ void ABaseCombatActor::HandleUse()
 	{
 		if (GetNetMode() != NM_DedicatedServer)
 		{
-			StartSimulatingActorUse();
+			FTimerHandle DelayAnimHandle;
+			if (BaseCombatActorData.ExecutionDelay > 0) {
+				GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ABaseCombatActor::StartSimulatingActorUse, BaseCombatActorData.ExecutionDelay, false);
+			}
+			else {
+				StartSimulatingActorUse();
+			}
 		}
 
 		if (ComponentOwner->GetCharacterOwner() && ComponentOwner->GetCharacterOwner()->IsLocallyControlled())
 		{
-			ExecuteUse();
+			FTimerHandle DelayAnimHandle;
+			if (BaseCombatActorData.ExecutionDelay > 0) {
+				GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ABaseCombatActor::ExecuteUse, BaseCombatActorData.ExecutionDelay, false);
+			}
+			else {
+				ExecuteUse();
+			}
 			BurstCounter++;
 		}
 	}
@@ -123,6 +137,7 @@ void ABaseCombatActor::HandleUse()
 		bRefiring = (ACTOR_STATE == ECombatActorState::USING && BaseCombatActorData.UseCooldown > 0.0f);
 		if (bRefiring)
 		{
+			ULogger::ScreenMessage(FColor::Red, "HandleUse::Refiring");
 			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, BaseCombatActorData.UseCooldown, false);
 		}
 	}
@@ -227,8 +242,10 @@ void ABaseCombatActor::InitModifiers()
 		AModifier* Modifier;
 		Modifier = Cast<AModifier>(GetWorld()->SpawnActor<AModifier>(BaseCombatActorData.ModifierData[i]->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		Modifier->AssignValues(BaseCombatActorData.ModifierData[i]->ModifierData);
+		//ULogger::ScreenMessage(FColor::Cyan, "BaseCombatActor::InitModifiers || Effect Num: " + FString::FromInt(Modifier->GetEffectCount()));
 		Modifiers.Add(Modifier);
 	}
+	//ULogger::ScreenMessage(FColor::Cyan, "BaseCombatActor::InitModifiers || Modifier Num: " + FString::FromInt(Modifiers.Num()));
 }
 
 void ABaseCombatActor::ApplyModifiers(AActor* InActor)
@@ -326,15 +343,17 @@ void ABaseCombatActor::StopActorAnimation(UAnimMontage* InAnim)
 void ABaseCombatActor::OnBurstStarted()
 {
 	const float GameTime = GetWorld()->GetTimeSeconds();
-	NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown;
+	NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay;
 	if (LastFireTime > 0 && BaseCombatActorData.UseCooldown > 0.0f &&
-		LastFireTime + BaseCombatActorData.UseCooldown > GameTime)
+		LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay> GameTime)
 	{
-		GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, LastFireTime + BaseCombatActorData.UseCooldown - GameTime, false);
+		ULogger::ScreenMessage(FColor::Red, "OnBurstStarted::If");
+		GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay - GameTime, false);
 	}
 	else
 	{
-		NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown;
+		NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay;
+		ULogger::ScreenMessage(FColor::Red, "OnBurstStarted::Else");
 		HandleUse();
 	}
 }
@@ -344,7 +363,6 @@ void ABaseCombatActor::OnBurstFinished()
 {
 	BurstCounter = 0;
 	StopSimulatingActorUse();
-
 	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 	bRefiring = false;
 }

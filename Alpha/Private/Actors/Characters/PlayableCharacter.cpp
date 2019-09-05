@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "Combat/Components/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Modifier.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CombatUtils.h"
@@ -70,6 +71,7 @@ void APlayableCharacter::InitCombatComponent() {
 		Weapon = Cast<ABaseCombatActor>(GetWorld()->SpawnActor<ABaseCombatActor>(CharacterData.Weapons[i]->BaseCombatActorDataStruct.ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		Weapon->SetCombatComponentOwner(CombatComponent);
 		Weapon->AssignValues(CharacterData.Weapons[i]);
+		ULogger::ScreenMessage(FColor::Emerald, "InitCombatComponent: " + FString::FromInt(Weapon->Modifiers[0]->GetEffectCount()));
 		CombatComponent->AddWeaponToArray(Weapon);
 		Weapon->GetMesh()->IgnoreActorWhenMoving(this, true);
 		if (i == 0) {
@@ -219,16 +221,14 @@ void APlayableCharacter::CharacterAttackStart() {
 }
 
 void APlayableCharacter::CharacterAttackStop() {
-	if (CombatComponent->GetCurrentWeapon()) {
-		const float GameTime = GetWorld()->GetTimeSeconds();
-		float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime;
-		if (bIsAttacking)
-		{
-			if (StopAttackTime > 0)
-				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-			else {
-				SetAttackingFalse();
-			}
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime;
+	if (bIsAttacking)
+	{
+		if (StopAttackTime > 0)
+			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+		else {
+			SetAttackingFalse();
 		}
 	}
 }
@@ -239,21 +239,20 @@ void APlayableCharacter::CharacterAbilityStart() {
 		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
 			CombatComponent->UseCurrentAbility();
+			ULogger::ScreenMessage(FColor::Red, "Using Character Ability");
 		}
 	}
 }
 
 void APlayableCharacter::CharacterAbilityStop() {
-	if (CombatComponent->GetCurrentAbility()) {
-		const float GameTime = GetWorld()->GetTimeSeconds();
-		float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime;
-		if (bIsAttacking)
-		{
-			if (StopAttackTime > 0)
-				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-			else {
-				SetAttackingFalse();
-			}
+	const float GameTime = GetWorld()->GetTimeSeconds();
+	float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime;
+	if (bIsAttacking)
+	{
+		if (StopAttackTime > 0)
+			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+		else {
+			SetAttackingFalse();
 		}
 	}
 }
