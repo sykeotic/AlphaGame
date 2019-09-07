@@ -28,16 +28,13 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 		NewEntry.StartTime = GetWorld()->GetTimeSeconds();
 		NewEntry.Origin = Origin;
 		FActorSpawnParameters SpawnInfo;
-		NewEntry.Modifier = GetWorld()->SpawnActor<AModifier>(InModifier->GetClass(), FVector::ZeroVector, FRotator::ZeroRotator);
-		NewEntry.Modifier->ModifierData.bHasDuration = InModifier->ModifierData.bHasDuration;
-		NewEntry.Modifier->ModifierData.Conditions = InModifier->ModifierData.Conditions;
-		NewEntry.Modifier->ModifierData.Duration = InModifier->ModifierData.Duration;
+		NewEntry.Modifier = GetWorld()->SpawnActor<AModifier>(InModifier->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator);
 		NewEntry.Modifier->ModifierData.Feedback = InModifier->ModifierData.Feedback;
-		NewEntry.Modifier->ModifierData.BaseEffectData = InModifier->ModifierData.BaseEffectData;
-		// Issue is here
+		NewEntry.Modifier->AssignValues(InModifier->ModifierData);
 		Entries.Add(NewEntry);
 		UpdateModifiers();
 	}
+	ULogger::ScreenMessage(FColor::Orange, "ActivateModifier::Entries " + FString::FromInt(Entries.Num()));
 }
 
 void UHandlerComponent::RemoveEntry(int32 InIndex)
@@ -48,7 +45,6 @@ void UHandlerComponent::RemoveEntry(int32 InIndex)
 void UHandlerComponent::UpdateModifiers()
 {
 	TArray<int32> RemoveItems;
-	ULogger::ScreenMessage(FColor::Emerald, "Num Entries: " + FString::FromInt(Entries.Num()));
 	for (int i = 0; i < Entries.Num(); i++) {
 		if (Entries[i].Modifier->AreConditionsTrue()) {
 			Entries[i].Modifier->SetIsActive(true);
@@ -66,7 +62,6 @@ void UHandlerComponent::UpdateModifiers()
 			RemoveItems.AddUnique(i);
 		}
 	}
-
 	for (int32 CurrIndex : RemoveItems) {
 		RemoveEntry(CurrIndex);
 	}

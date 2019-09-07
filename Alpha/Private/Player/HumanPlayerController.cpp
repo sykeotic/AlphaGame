@@ -32,7 +32,7 @@ void AHumanPlayerController::BeginPlay() {
 
 void AHumanPlayerController::HeroSelect() {
 	FName InKey = "TestBoi";
-	FVector InLoc = {30.0f, 0.0f, 272.0f};
+	FVector InLoc = { -233800.0f,-195340.0f, 7090.0f };
 	FRotator InRot = {0.0f, 0.0f, 0.0f};
 	if (bGeneralChosen)
 		UnPossess();
@@ -47,7 +47,9 @@ void AHumanPlayerController::HeroSelect() {
 	bGeneralChosen = false;
 	bShowMouseCursor = false;
 	bEnableTouchEvents = true;
-	//UserWidget->RemoveFromViewport();
+	if (UserWidget) {
+		UserWidget->RemoveFromViewport();
+	}
 	//UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->HeroWidgetClass);
 	//UserWidget->AddToViewport();
 }

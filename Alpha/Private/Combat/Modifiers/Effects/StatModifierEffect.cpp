@@ -6,7 +6,6 @@ void AStatModifierEffect::ApplyEffectsToActor(AActor* AffectedActor)
 {
 	UStatsComponent* TempStats = AffectedActor->FindComponentByClass<UStatsComponent>();
 	TempStats->TakeDamage(StatModifierData.ModifierOperand);
-	ULogger::ScreenMessage(FColor::Orange, "StatModifier::APPLY_EFFECTS");
 }
 
 void AStatModifierEffect::AssignValues(UBaseEffectData* InData)
