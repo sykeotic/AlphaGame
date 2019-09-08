@@ -1,6 +1,7 @@
 #include "StatsComponent.h"
 #include "UnrealNetwork.h"
 #include "GameplayUtils.h"
+#include "PlayableCharacter.h"
 #include "Logger.h"
 
 UStatsComponent::UStatsComponent()
@@ -9,7 +10,7 @@ UStatsComponent::UStatsComponent()
 }
 
 void UStatsComponent::DisplayCurrentHealth() {
-	ULogger::ScreenMessage(FColor::Red, "Health After: " + FString::SanitizeFloat(CurrentHealth));
+	ULogger::ScreenMessage(FColor::Red, "Health: " + FString::SanitizeFloat(CurrentHealth));
 }
 
 float UStatsComponent::GetCurrentHealth() {
@@ -32,24 +33,11 @@ bool UStatsComponent::IsAlive() {
 //	return ArmorType;
 //}
 
-void UStatsComponent::TakeDamage(float Damage) {
-	ULogger::ScreenMessage(FColor::Red, "Health Before: " + FString::SanitizeFloat(CurrentHealth));
-	CurrentHealth -= Damage;
-	if (CurrentHealth <= 0) {
-		bIsAlive = false;
-	}
-	else {
-		bIsAlive = true;
-	}
-	DisplayCurrentHealth();
-}
-
-void UStatsComponent::Heal(float HealAmount) {
-	if (HealAmount >= 0 && (HealAmount + CurrentHealth) <= MaxHealth) {
-		CurrentHealth += HealAmount;
-	}
-	else if (HealAmount >= 0 && HealAmount + CurrentHealth > MaxHealth) {
-		CurrentHealth = MaxHealth;
+void UStatsComponent::AdjustHealth(float AdjustValue) {
+	CurrentHealth += AdjustValue;
+	CurrentHealth <= 0 ? bIsAlive = false : bIsAlive = true;
+	if (!bIsAlive) {
+		Owner->HandleDeath();
 	}
 	DisplayCurrentHealth();
 }

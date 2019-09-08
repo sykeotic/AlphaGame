@@ -42,6 +42,8 @@ public:
 	uint8 GetCurrentWeaponIndex();
 	uint8 GetCurrentAbilityIndex();
 
+	void HandleDeath();
+
 protected:
 	virtual void BeginPlay() override;
 

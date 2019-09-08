@@ -78,6 +78,12 @@ public:
 		TSubclassOf<class APlayableCharacter> CharacterBlueprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
+		FVector InLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
+		FRotator InRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
 		TSubclassOf<class APlayableGeneralPawn> PawnBlueprint;
 
 	bool bHeroChosen;

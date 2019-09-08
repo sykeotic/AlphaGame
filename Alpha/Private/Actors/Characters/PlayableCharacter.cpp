@@ -22,7 +22,7 @@
 
 APlayableCharacter::APlayableCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	StatsComponent = CreateDefaultSubobject<UStatsComponent>(TEXT("StatsComponent"));
 	StatsComponent->SetOwner(Cast<APlayableCharacter>(this));
@@ -62,6 +62,12 @@ void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
 		GraphicsData = BaseData->CharacterData.PawnGraphicsData;
 		SetCharacterValues();
 	}
+}
+
+void APlayableCharacter::DestroyActor()
+{
+	Destroy();
+	CombatComponent->HandleDeath();
 }
 
 void APlayableCharacter::InitCombatComponent() {
@@ -150,6 +156,13 @@ FVector APlayableCharacter::GetPawnViewLocation() const {
 		return FollowCamera->GetComponentLocation();
 	}
 	return Super::GetPawnViewLocation();
+}
+
+void APlayableCharacter::HandleDeath()
+{
+	FTimerHandle DeathAnim;
+	GetWorldTimerManager().SetTimer(DeathAnim, this, &APlayableCharacter::DestroyActor, 5.0f, false, 5.f);
+	GetMesh()->PlayAnimation(CharacterData.DeathAnimation, false);
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -277,16 +290,6 @@ void APlayableCharacter::SetBaseLookUpRate(float InRate) {
 	BaseLookUpRate = InRate;
 }
 
-float APlayableCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) {
-	if (StatsComponent->IsAlive()) {
-		StatsComponent->TakeDamage(Damage);
-		if (StatsComponent->GetCurrentHealth() <= 0.f) {
-			ReceiveOnCharacterDeath();
-		}
-	}
-	return Damage;
-}
-
 UCombatComponent* APlayableCharacter::GetCombatComponent() {
 	return CombatComponent;
 }
@@ -337,4 +340,7 @@ void APlayableCharacter::SetCharacterValues() {
 	GetDecal()->SetRelativeRotation(GraphicsData.DecalRotation.Quaternion());
 	GetDecal()->SetVisibility(false);
 	GetDecal()->SetDecalMaterial(GraphicsData.DecalMaterial);
+	StatsComponent->SetAlive(true);
+	StatsComponent->SetCurrentHealth(PawnStatsData.MaxHealth);
+	StatsComponent->SetMaxHealth(PawnStatsData.MaxHealth);
 }

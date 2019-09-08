@@ -31,10 +31,10 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 		NewEntry.Modifier = GetWorld()->SpawnActor<AModifier>(InModifier->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator);
 		NewEntry.Modifier->ModifierData.Feedback = InModifier->ModifierData.Feedback;
 		NewEntry.Modifier->AssignValues(InModifier->ModifierData);
+		NewEntry.Modifier->SetActorOwner(ActorOwner);
 		Entries.Add(NewEntry);
 		UpdateModifiers();
 	}
-	ULogger::ScreenMessage(FColor::Orange, "ActivateModifier::Entries " + FString::FromInt(Entries.Num()));
 }
 
 void UHandlerComponent::RemoveEntry(int32 InIndex)

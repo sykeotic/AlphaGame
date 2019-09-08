@@ -23,7 +23,9 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(TSubclassOf<class APlayab
 		ULogger::ScreenMessage(FColor::Red, "Spawn Char 0 Obj");
 		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(CharClass, SpawnLocation, SpawnRotation, SpawnInfo);
 	}
-	SpawnChar->SetOwnerTeam(this);
-	TeamHeroes.Add(SpawnChar);
+	if (SpawnChar) {
+		SpawnChar->SetOwnerTeam(this);
+		TeamHeroes.Add(SpawnChar);
+	}
 	return SpawnChar; 
 }

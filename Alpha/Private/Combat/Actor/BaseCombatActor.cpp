@@ -76,7 +76,6 @@ void ABaseCombatActor::AssignValues(UBaseCombatActorData* InData)
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
 	InitModifiers();
-	// ULogger::ScreenMessage(FColor::Emerald, "BaseCombatActor::AssignValues || Modifiers: " + FString::FromInt(Modifiers.Num()));
 }
 
 void ABaseCombatActor::StopUse()
@@ -137,7 +136,6 @@ void ABaseCombatActor::HandleUse()
 		bRefiring = (ACTOR_STATE == ECombatActorState::USING && BaseCombatActorData.UseCooldown > 0.0f);
 		if (bRefiring)
 		{
-			ULogger::ScreenMessage(FColor::Red, "HandleUse::Refiring");
 			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, BaseCombatActorData.UseCooldown, false);
 		}
 	}
@@ -241,11 +239,10 @@ void ABaseCombatActor::InitModifiers()
 		FActorSpawnParameters SpawnInfo;
 		AModifier* Modifier;
 		Modifier = Cast<AModifier>(GetWorld()->SpawnActor<AModifier>(BaseCombatActorData.ModifierData[i]->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
+		Modifier->SetActorOwner(GetCombatComponentOwner()->GetCharacterOwner());
 		Modifier->AssignValues(BaseCombatActorData.ModifierData[i]->ModifierData);
-		//ULogger::ScreenMessage(FColor::Cyan, "BaseCombatActor::InitModifiers || Effect Num: " + FString::FromInt(Modifier->GetEffectCount()));
 		Modifiers.Add(Modifier);
 	}
-	//ULogger::ScreenMessage(FColor::Cyan, "BaseCombatActor::InitModifiers || Modifier Num: " + FString::FromInt(Modifiers.Num()));
 }
 
 void ABaseCombatActor::ApplyModifiers(AActor* InActor)
@@ -253,9 +250,7 @@ void ABaseCombatActor::ApplyModifiers(AActor* InActor)
 	APlayableCharacter* HitChar;
 	HitChar = Cast<APlayableCharacter>(InActor);
 	if (HitChar) {
-		ULogger::ScreenMessage(FColor::Green, "BaseCombatActor::ApplyModifiers - Hit Char Valid");
 		for (AModifier* CurrMod : Modifiers) {
-			ULogger::ScreenMessage(FColor::Green, "BaseCombatActor::ApplyModifiers - Curr Mod Valid");
 			HitChar->ApplyModifiers(CurrMod, InActor);
 		}
 	}
@@ -347,13 +342,11 @@ void ABaseCombatActor::OnBurstStarted()
 	if (LastFireTime > 0 && BaseCombatActorData.UseCooldown > 0.0f &&
 		LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay> GameTime)
 	{
-		ULogger::ScreenMessage(FColor::Red, "OnBurstStarted::If");
 		GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay - GameTime, false);
 	}
 	else
 	{
 		NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay;
-		ULogger::ScreenMessage(FColor::Red, "OnBurstStarted::Else");
 		HandleUse();
 	}
 }

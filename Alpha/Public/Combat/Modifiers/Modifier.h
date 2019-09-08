@@ -48,6 +48,9 @@ public:
 	FContext GetContext();
 	int32 GetEffectCount();
 
+	void SetActorOwner(AActor* InActor);
+	AActor* GetActorOwner();
+
 	void ApplyEffects(AActor* AffectedActor);
 
 	void AssignValues(FModifierDataStruct InData);
@@ -59,7 +62,7 @@ protected:
 
 private:
 	FContext Context;
-
+	AActor* ActorOwner;
 	EFeedbackType FeedbackType;
 	TArray<ABaseEffect*> Effects;
 };

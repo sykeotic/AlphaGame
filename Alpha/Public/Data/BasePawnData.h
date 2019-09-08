@@ -114,6 +114,8 @@ public:
 		TArray<UBaseCombatActorData*> Weapons;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UBaseCombatActorData*> Abilities;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* DeathAnimation;
 };
 
 /**

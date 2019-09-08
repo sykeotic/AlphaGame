@@ -32,16 +32,16 @@ void AHumanPlayerController::BeginPlay() {
 
 void AHumanPlayerController::HeroSelect() {
 	FName InKey = "TestBoi";
-	FVector InLoc = { -233800.0f,-195340.0f, 7090.0f };
-	FRotator InRot = {0.0f, 0.0f, 0.0f};
 	if (bGeneralChosen)
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = ControllerTeam->SpawnTeamCharacter(CharacterBlueprint, InLoc, InRot);
+	HeroChar = ControllerTeam->SpawnTeamCharacter(CharacterBlueprint, InLocation, InRotation);
 	Possess(HeroChar);
 	Unbind();
-	HeroChar->SetupPlayerInputComponent(InputComponent);
+	if (HeroChar) {
+		HeroChar->SetupPlayerInputComponent(InputComponent);
+	}
 	ULogger::ScreenMessage(FColor::Red, "Spawning Hero");
 	bHeroChosen = true;
 	bGeneralChosen = false;

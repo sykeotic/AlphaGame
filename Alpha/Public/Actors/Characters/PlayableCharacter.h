@@ -72,21 +72,17 @@ public:
 
 	bool CharacterCanAttack();
 
-	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
-
 	UFUNCTION(BlueprintCallable)
 	float GetCurrentHPPercent();
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetPawnViewLocation() const override;
-
-protected:	
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCharacterDeath"))
-		void ReceiveOnCharacterDeath();
-
-	void InitCharacterData(UBasePawnData* BaseData);
+	
+	void HandleDeath();
 
 protected:
+	void InitCharacterData(UBasePawnData* BaseData);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
 
@@ -112,6 +108,8 @@ protected:
 	class UCombatComponent* CombatComponent;
 
 private:
+	void DestroyActor();
+
 	FTimerHandle AttackStopTimer;
 
 	float BaseLookUpRate;

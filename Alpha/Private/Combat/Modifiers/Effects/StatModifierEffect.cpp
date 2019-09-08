@@ -5,7 +5,7 @@
 void AStatModifierEffect::ApplyEffectsToActor(AActor* AffectedActor)
 {
 	UStatsComponent* TempStats = AffectedActor->FindComponentByClass<UStatsComponent>();
-	TempStats->TakeDamage(StatModifierData.ModifierOperand);
+	TempStats->AdjustHealth(-StatModifierData.ModifierOperand);
 }
 
 void AStatModifierEffect::AssignValues(UBaseEffectData* InData)

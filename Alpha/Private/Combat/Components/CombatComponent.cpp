@@ -148,3 +148,14 @@ uint8 UCombatComponent::GetCurrentAbilityIndex()
 {
 	return uint8();
 }
+
+void UCombatComponent::HandleDeath()
+{
+	for (ABaseCombatActor* CurrActor : WeaponArray) {
+		CurrActor->Destroy();
+	}
+
+	for (ABaseCombatActor* CurrActor : AbilityArray) {
+		CurrActor->Destroy();
+	}
+}

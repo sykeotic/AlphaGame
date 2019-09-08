@@ -17,8 +17,7 @@ class ALPHA_API UStatsComponent : public UActorComponent
 public:	
 	UStatsComponent();
 
-	void TakeDamage(float Damage);
-	void Heal(float HealAmount);
+	void AdjustHealth(float AdjustValue);
 
 	bool IsAlive();
 	void SetAlive(bool IsAlive);

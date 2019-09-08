@@ -14,7 +14,8 @@ enum class ETargetOperand : uint8 {
 
 UENUM(BlueprintType)
 enum class EFloatProperty : uint8 {
-	CURRENT_HEALTH UMETA(DisplayName = "Current Health %")
+	CURRENT_HEALTH_PERCENT UMETA(DisplayName = "Current Health %"),
+	CURRENT_MOVESPEED UMETA(DisplayName = "Current Movespeed")
 };
 
 UENUM(BlueprintType)

@@ -24,6 +24,8 @@ public:
 	UPROPERTY(Instanced, EditAnywhere, BlueprintReadWrite)
 		TArray<UBaseExpression*> ExpressionTree;
 
+	void InitExpressions();
+
 	bool IsConditionTreeTrue();
 
 	AModifier* GetModifierOwner();
