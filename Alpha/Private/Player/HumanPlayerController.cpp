@@ -26,8 +26,6 @@ void AHumanPlayerController::BeginPlay() {
 		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->RoleSelectWidgetClass);
 		UserWidget->AddToViewport();
 	}
-	// WidgetComponent->SetWidgetClass(PlayerControllerData->RoleSelectWidgetClass);
-	// WidgetComponent->SetWidget(UserWidget);
 }
 
 void AHumanPlayerController::HeroSelect() {
@@ -50,8 +48,6 @@ void AHumanPlayerController::HeroSelect() {
 	if (UserWidget) {
 		UserWidget->RemoveFromViewport();
 	}
-	//UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->HeroWidgetClass);
-	//UserWidget->AddToViewport();
 }
 
 void AHumanPlayerController::GeneralSelect() {

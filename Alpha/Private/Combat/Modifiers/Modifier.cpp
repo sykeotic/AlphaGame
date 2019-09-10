@@ -50,7 +50,6 @@ AActor* AModifier::GetActorOwner()
 
 void AModifier::ApplyEffects(AActor* AffectedActor)
 {
-	ULogger::ScreenMessage(FColor::Cyan, "Modifier::ApplyEffects || Effects.Size(): " + FString::FromInt(Effects.Num()));
 	for ( ABaseEffect* CurrEffect : Effects) {
 		CurrEffect->ApplyEffectsToActor(AffectedActor);		
 	}
@@ -72,11 +71,9 @@ void AModifier::AssignValues(FModifierDataStruct InData)
 		if (TempEffect) {
 			TempEffect->AssignValues(ModifierData.BaseEffectData[i]);
 			Effects.Add(TempEffect);
-			ULogger::ScreenMessage(FColor::Cyan, "TempEffect Added");
 		}
 		else {
 			ULogger::ScreenMessage(FColor::Cyan, "TempEffect NULL");
 		}
 	}
-	ULogger::ScreenMessage(FColor::Cyan, "Modifier::AssignValues || Effects.Size(): " + FString::FromInt(Effects.Num()));
 }

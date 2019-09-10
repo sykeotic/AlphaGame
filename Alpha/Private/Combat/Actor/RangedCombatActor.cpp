@@ -18,8 +18,6 @@ void ARangedCombatActor::OnUse()
 
 void ARangedCombatActor::ExecuteUse()
 {
-	ULogger::ScreenMessage(FColor::Red, "RangedCombatActor::ExecuteUse - Modifiers: " + FString::FromInt(Modifiers.Num()));
-	ULogger::ScreenMessage(FColor::Red, "RangedCombatActor::ExecuteUse - Effects: " + FString::FromInt(Modifiers[0]->GetEffectCount()));
 	LaunchProjectile();
 }
 
