@@ -5,9 +5,11 @@
 #include "GameInstanceData.generated.h"
 
 class UFactionData;
+class ULevelData;
+class UUserWidget;
 class USoundBase;
 
-UCLASS()
+UCLASS(BlueprintType)
 class ALPHA_API UGameInstanceData : public UDataAsset
 {
 	GENERATED_BODY()
@@ -18,8 +20,17 @@ public:
 		TArray<UFactionData*> AvailableFactions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UWorld*> AvailableMaps;
+		TArray<ULevelData*> AvailableLevels;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TAssetPtr<UWorld> MainMenuLevel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USoundBase*> MenuMusic;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> GameMenuWidgetClass;
 };

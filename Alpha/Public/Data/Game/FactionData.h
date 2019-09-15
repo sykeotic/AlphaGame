@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
 class ALPHA_API UFactionData : public UDataAsset
 {
 	GENERATED_BODY()
@@ -17,10 +17,10 @@ class ALPHA_API UFactionData : public UDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AActor*>> AvailableHeroes;
+		TArray<TSubclassOf<AActor>> AvailableHeroes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AActor*>> AvailablePawns;
+		TArray<TSubclassOf<AActor>> AvailablePawns;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName FactionName;

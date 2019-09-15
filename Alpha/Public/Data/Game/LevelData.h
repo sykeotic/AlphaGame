@@ -11,7 +11,7 @@ class AGameModeBase;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
 class ALPHA_API ULevelData : public UDataAsset
 {
 	GENERATED_BODY()
@@ -21,5 +21,8 @@ public:
 		UWorld* Map;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AGameModeBase*>> AvailableGameModes;
+		TArray<TSubclassOf<AGameModeBase>> AvailableGameModes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName LevelName;
 };

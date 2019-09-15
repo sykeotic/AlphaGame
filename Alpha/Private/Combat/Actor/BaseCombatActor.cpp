@@ -57,7 +57,7 @@ void ABaseCombatActor::DetachMeshFromOwner()
 
 void ABaseCombatActor::OnUse()
 {
-	if (!bWantsToUse) {
+	if (!bWantsToUse || bRefiring) {
 		bWantsToUse = true;
 		AssertActorState();
 	}
@@ -92,7 +92,7 @@ bool ABaseCombatActor::CanUse()
 {
 	bool bOwnerCanFire = ComponentOwner->GetCharacterOwner() && ComponentOwner->GetCharacterOwner()->CharacterCanAttack();
 	bool bStateOK = ACTOR_STATE == ECombatActorState::IDLE || ACTOR_STATE == ECombatActorState::USING;
-	return bOwnerCanFire && bStateOK;
+	return bOwnerCanFire && bStateOK && bWantsToUse;
 }
 
 void ABaseCombatActor::HandleUse()
@@ -102,12 +102,12 @@ void ABaseCombatActor::HandleUse()
 		if (GetNetMode() != NM_DedicatedServer)
 		{
 			FTimerHandle DelayAnimHandle;
-			if (BaseCombatActorData.ExecutionDelay > 0) {
-				GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ABaseCombatActor::StartSimulatingActorUse, BaseCombatActorData.ExecutionDelay, false);
-			}
-			else {
+			//if (BaseCombatActorData.ExecutionDelay > 0) {
+			//	GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ABaseCombatActor::StartSimulatingActorUse, BaseCombatActorData.ExecutionDelay, false);
+			//}
+			//else {
 				StartSimulatingActorUse();
-			}
+			//}
 		}
 
 		if (ComponentOwner->GetCharacterOwner() && ComponentOwner->GetCharacterOwner()->IsLocallyControlled())
@@ -119,6 +119,7 @@ void ABaseCombatActor::HandleUse()
 			else {
 				ExecuteUse();
 			}
+			ULogger::ScreenMessage(FColor::Red, "BurstCounter: " + FString::FromInt(BurstCounter));
 			BurstCounter++;
 		}
 	}
@@ -136,7 +137,7 @@ void ABaseCombatActor::HandleUse()
 		bRefiring = (ACTOR_STATE == ECombatActorState::USING && BaseCombatActorData.UseCooldown > 0.0f);
 		if (bRefiring)
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, BaseCombatActorData.UseCooldown, false);
+			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay, false);
 		}
 	}
 
@@ -340,7 +341,7 @@ void ABaseCombatActor::OnBurstStarted()
 	const float GameTime = GetWorld()->GetTimeSeconds();
 	NextValidFireTime = GameTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay;
 	if (LastFireTime > 0 && BaseCombatActorData.UseCooldown > 0.0f &&
-		LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay> GameTime)
+		LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay >= GameTime)
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseCombatActor::HandleUse, LastFireTime + BaseCombatActorData.UseCooldown + BaseCombatActorData.ExecutionDelay - GameTime, false);
 	}

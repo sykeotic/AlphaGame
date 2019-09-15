@@ -11,6 +11,8 @@
 
 class ACombatActor;
 class APlayableCharacter;
+class UBasePawnData;
+class UFactionData;
 
 UENUM(BlueprintType)
 enum class EValidTargets : uint8 {
@@ -36,19 +38,15 @@ enum class EActorType : uint8 {
 
 
 USTRUCT(BlueprintType)
-struct FRaceData : public FTableRowBase
+struct FFactionDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName RaceName;
+	FName FactionName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName RacialPassive;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FName> PlayableHeroesData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FName> PlayablePawnsData;
+	UFactionData* FactionData;
 };
 
 USTRUCT(BlueprintType)

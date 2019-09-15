@@ -34,12 +34,14 @@ bool UStatsComponent::IsAlive() {
 //}
 
 void UStatsComponent::AdjustHealth(float AdjustValue) {
-	CurrentHealth += AdjustValue;
-	CurrentHealth <= 0 ? bIsAlive = false : bIsAlive = true;
-	if (!bIsAlive) {
-		Owner->HandleDeath();
+	if (bIsAlive) {
+		CurrentHealth += AdjustValue;
+		CurrentHealth <= 0 ? bIsAlive = false : bIsAlive = true;
+		if (!bIsAlive) {
+			Owner->HandleDeath();
+		}
+		DisplayCurrentHealth();
 	}
-	DisplayCurrentHealth();
 }
 
 void UStatsComponent::SetAlive(bool InIsAlive) {

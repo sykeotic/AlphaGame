@@ -235,10 +235,10 @@ void APlayableCharacter::CharacterAttackStart() {
 
 void APlayableCharacter::CharacterAttackStop() {
 	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime;
+	float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime - .1;
 	if (bIsAttacking)
 	{
-		if (StopAttackTime > 0)
+		if (StopAttackTime >= 0)
 			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
 		else {
 			SetAttackingFalse();
@@ -259,7 +259,7 @@ void APlayableCharacter::CharacterAbilityStart() {
 
 void APlayableCharacter::CharacterAbilityStop() {
 	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime;
+	float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime - .1;
 	if (bIsAttacking)
 	{
 		if (StopAttackTime > 0)

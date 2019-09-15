@@ -70,9 +70,6 @@ void AHumanPlayerController::GeneralSelect() {
 	bShowMouseCursor = true;
 	bGeneralChosen = true;
 	bHeroChosen = false;
-	//UserWidget->RemoveFromViewport();
-	//UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->GeneralWidgetClass);
-	//UserWidget->AddToViewport();
 }
 
 void AHumanPlayerController::Unbind() {
