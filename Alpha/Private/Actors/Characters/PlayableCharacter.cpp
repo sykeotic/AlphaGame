@@ -48,20 +48,26 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
-	UBasePawnData* BasePawnData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/PlayableActors/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
-	InitCharacterData(BasePawnData);
-	InitCombatComponent();
-	StatsComponent->SetCurrentHealth(StatsComponent->GetMaxHealth());
+	InitCharacterData(nullptr);
 }
 
 void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
-	if (BaseData) {
+	if (!BaseData) {
+		UBasePawnData* ErrorBaseData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/PlayableActors/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
+		CharacterData = ErrorBaseData->CharacterData;
+		CameraData = ErrorBaseData->CharacterData.PlayerCameraData;
+		PawnStatsData = ErrorBaseData->CharacterData.PawnStatsData;
+		GraphicsData = ErrorBaseData->CharacterData.PawnGraphicsData;
+	}
+	else {
 		CharacterData = BaseData->CharacterData;
 		CameraData = BaseData->CharacterData.PlayerCameraData;
 		PawnStatsData = BaseData->CharacterData.PawnStatsData;
 		GraphicsData = BaseData->CharacterData.PawnGraphicsData;
-		SetCharacterValues();
 	}
+	SetCharacterValues();
+	InitCombatComponent();
+	StatsComponent->SetCurrentHealth(StatsComponent->GetMaxHealth());
 }
 
 void APlayableCharacter::DestroyActor()

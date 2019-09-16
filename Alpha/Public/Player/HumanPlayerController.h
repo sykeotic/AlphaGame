@@ -72,10 +72,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		APlayableGeneralPawn* GeneralChar;
 
-	UTeamComponent* ControllerTeam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
-		TSubclassOf<class APlayableCharacter> CharacterBlueprint;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UTeamComponent* ControllerTeam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class")
 		FVector InLocation;
@@ -90,7 +88,9 @@ public:
 	bool bGeneralChosen;
 
 	UWidgetComponent* WidgetComponent;
-	UUserWidget* UserWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UUserWidget* UserWidget;
 
 	FPlayerControllerData* PlayerControllerData;
 

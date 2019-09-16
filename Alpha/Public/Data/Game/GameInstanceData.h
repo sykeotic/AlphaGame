@@ -16,21 +16,21 @@ class ALPHA_API UGameInstanceData : public UDataAsset
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UFactionData*> AvailableFactions;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TArray<UFactionData*> AvailableFactions;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<ULevelData*> AvailableLevels;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TArray<ULevelData*> AvailableLevels;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TAssetPtr<UWorld> MainMenuLevel;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TAssetPtr<UWorld> MainMenuLevel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundBase*> MenuMusic;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TArray<USoundBase*> MenuMusic;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> MainMenuWidgetClass;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> GameMenuWidgetClass;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TSubclassOf<UUserWidget> GameMenuWidgetClass;
 };

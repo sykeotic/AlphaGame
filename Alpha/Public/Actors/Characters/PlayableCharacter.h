@@ -70,6 +70,8 @@ public:
 
 	void ApplyModifiers(AModifier* InModifier, AActor* InActor);
 
+	void InitCharacterData(UBasePawnData* BaseData);
+
 	bool CharacterCanAttack();
 
 	UFUNCTION(BlueprintCallable)
@@ -81,7 +83,6 @@ public:
 	void HandleDeath();
 
 protected:
-	void InitCharacterData(UBasePawnData* BaseData);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;

@@ -12,9 +12,11 @@ class ALPHA_API UPlayableGameInstance : public UGameInstance
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UGameInstanceData* GameInstanceData;
-
 	virtual void Init() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UFactionData* SelectedFaction;
+
+
 	
 };

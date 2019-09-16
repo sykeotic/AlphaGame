@@ -34,7 +34,7 @@ void AHumanPlayerController::HeroSelect() {
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = ControllerTeam->SpawnTeamCharacter(CharacterBlueprint, InLocation, InRotation);
+	HeroChar = ControllerTeam->SpawnTeamCharacter(InLocation, InRotation);
 	Possess(HeroChar);
 	Unbind();
 	if (HeroChar) {

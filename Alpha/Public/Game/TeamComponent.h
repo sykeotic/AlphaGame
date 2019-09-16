@@ -46,9 +46,8 @@ protected:
 public:
 	TArray<AHumanPlayerController*> HumanPlayerControllerArray;
 
-	
+	UFactionData* FactionData;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;
@@ -57,15 +56,8 @@ public:
 	uint8 TeamIndex;
 	FString TeamName;
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray < TSubclassOf<class APlayableCharacter >> PlayableCharacterClassArray;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray < TSubclassOf<class APlayablePawn >> PlayablePawnClassArray;
-
 	void SpawnTeamPawn();
-
-
-	APlayableCharacter* SpawnTeamCharacter(TSubclassOf<class APlayableCharacter> CharClass, FVector SpawnLocation, FRotator SpawnRotation);
+	
+	APlayableCharacter* SpawnTeamCharacter(FVector SpawnLocation, FRotator SpawnRotation);
 		
 };

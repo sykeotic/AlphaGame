@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "FactionData.generated.h"
 
+class UBasePawnData;
+
 /**
  * 
  */
@@ -17,10 +19,10 @@ class ALPHA_API UFactionData : public UDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AActor>> AvailableHeroes;
+		TArray<UBasePawnData*> AvailableHeroes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AActor>> AvailablePawns;
+		TArray<UBasePawnData*> AvailablePawns;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName FactionName;

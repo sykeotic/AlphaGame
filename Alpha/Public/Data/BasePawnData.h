@@ -129,5 +129,8 @@ class ALPHA_API UBasePawnData : public UDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FCharacterData CharacterData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName CharacterName;
 	
 };
