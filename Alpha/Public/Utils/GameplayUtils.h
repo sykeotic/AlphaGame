@@ -44,9 +44,10 @@ struct FFactionDataTable : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName FactionName;
+		FName FactionName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UFactionData* FactionData;
+		TSoftObjectPtr<UFactionData> FactionData;
+	
 };
 
 USTRUCT(BlueprintType)

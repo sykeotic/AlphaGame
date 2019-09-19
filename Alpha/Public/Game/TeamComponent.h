@@ -8,29 +8,7 @@
 #include "SpawnLocationActor.h"
 #include "TeamComponent.generated.h"
 
-USTRUCT(BlueprintType)
-struct FTeamData {
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* MeshComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UMaterial* ActorMaterial;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName AttachToSocket;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystem* ActorFX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USoundCue*> UseSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class ABaseCombatActor> ActorClass;
-};
-
+class UFactionData;
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ALPHA_API UTeamComponent : public UActorComponent
@@ -58,6 +36,7 @@ public:
 
 	void SpawnTeamPawn();
 	
-	APlayableCharacter* SpawnTeamCharacter(FVector SpawnLocation, FRotator SpawnRotation);
+	APlayableCharacter* SpawnTeamCharacter(FVector SpawnLocation, FRotator SpawnRotation, uint8 HeroArrayIndex);
+	void SetFactionData(UFactionData* InData);
 		
 };

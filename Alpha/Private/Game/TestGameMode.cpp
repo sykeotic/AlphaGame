@@ -4,6 +4,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameplayUtils.h"
 #include "TestGameState.h"
+#include "PlayableGameInstance.h"
 #include "Logger.h"
 
 ATestGameMode::ATestGameMode() {
@@ -23,4 +24,9 @@ bool ATestGameMode::MyReadyToStartMatch()
 void ATestGameMode::PostLogin(APlayerController* NewPlayer) {
 	Super::PostLogin(NewPlayer);
 	HumanPlayerControllerClass.Add(NewPlayer);
+}
+
+void ATestGameMode::InitTeams()
+{
+
 }

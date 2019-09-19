@@ -27,5 +27,5 @@ protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 public:
-	void InitPlayers();
+	void InitTeams();
 };

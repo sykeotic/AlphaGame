@@ -12,7 +12,12 @@ void UTeamComponent::BeginPlay()
 	Super::BeginPlay();	
 }
 
-APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FRotator SpawnRotation) {
+void UTeamComponent::SpawnTeamPawn()
+{
+
+}
+
+APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FRotator SpawnRotation, uint8 HeroArrayIndex) {
 	FActorSpawnParameters SpawnInfo;
 	APlayableCharacter* SpawnChar;
 	if (OwnedObjectives.Num() > 0) {
@@ -35,4 +40,9 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FR
 		TeamHeroes.Add(SpawnChar);
 	}
 	return SpawnChar; 
+}
+
+void UTeamComponent::SetFactionData(UFactionData* InData)
+{
+	FactionData = InData;
 }

@@ -14,27 +14,6 @@ enum class EPlayerType : uint8 {
 	GENERAL UMETA(DisplayName = "General")
 };
 
-USTRUCT(BlueprintType)
-struct FPlayerControllerData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> HeroWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> GeneralWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> RoleSelectWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName HeroRoleLabel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName GeneralRoleLabel;
-};
 /**
  * 
  */
@@ -42,6 +21,7 @@ class UTeamComponent;
 class APlayableCharacter;
 class APlayableGeneralPawn;
 class UWidgetComponent;
+class UPlayerControllerData;
 
 UCLASS()
 class ALPHA_API AHumanPlayerController : public APlayerController
@@ -52,16 +32,22 @@ public:
 	AHumanPlayerController();
 
 	UFUNCTION(BlueprintCallable)
-		void HeroSelect();
+		void HeroSelect(uint8 HeroCharIndex);
 
 	UFUNCTION(BlueprintCallable)
 		void GeneralSelect();
+
+	UFUNCTION(BlueprintCallable)
+		void ShowHeroSelectWidget();
 
 	void BeginPlay() override;
 
 	void Unbind();
 
 	void SetupGeneralHUD();
+
+	UFUNCTION(BlueprintCallable)
+		void AssignData(UPlayerControllerData* InData);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class AGeneralHUD* GeneralHUD;
@@ -92,7 +78,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UUserWidget* UserWidget;
 
-	FPlayerControllerData* PlayerControllerData;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UPlayerControllerData* PlayerControllerData;
 
 private:
 	EPlayerType PlayerType;

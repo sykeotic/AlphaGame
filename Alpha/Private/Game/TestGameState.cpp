@@ -7,50 +7,47 @@
 #include "ObjectiveOverlapActor.h"
 #include "TeamComponent.h"
 #include "UnrealNetwork.h"
+#include "PlayableGameInstance.h"
 
 ATestGameState::ATestGameState() {
 
 }
 
 void ATestGameState::BeginPlay() {
-	UTeamComponent* AITeam = NewObject<UTeamComponent>(this, DefaultAITeam);
-	AITeam->TeamName = "AI Team";
-	AITeam->TeamIndex = 0;
-	UTeamComponent* PlayerTeam = NewObject<UTeamComponent>(this, DefaultPlayerTeam);
-	PlayerTeam->TeamName = "Player Team";
-	PlayerTeam->TeamIndex = 1;
-	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, DefaultNeutralTeam);
+	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
 	NeutralTeam->TeamName = "Neutral Team";
-	NeutralTeam->TeamIndex = 2;
-	ActiveTeams.AddUnique(AITeam);
-	ActiveTeams.AddUnique(PlayerTeam);
+	NeutralTeam->TeamIndex = 0;
+	UTeamComponent* DwarfTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
+	DwarfTeam->TeamName = "Dwarf Team";
+	DwarfTeam->TeamIndex = 1;
+	UTeamComponent* HumanTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
+	HumanTeam->TeamName = "Human Team";
+	HumanTeam->TeamIndex = 2;
 	ActiveTeams.AddUnique(NeutralTeam);
+	ActiveTeams.AddUnique(DwarfTeam);
+	ActiveTeams.AddUnique(HumanTeam);
 
-	if (ActiveTeams.Num() > 2 && ActiveTeams[0] && ActiveTeams[1] && ActiveTeams[2]) {
+	if (ActiveTeams.Num() == 3 && ActiveTeams[0] && ActiveTeams[1] && ActiveTeams[2]) {
 		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{
 			AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(*Iterator);
-			if (PlayerController)
+			UPlayableGameInstance* GameInstance = Cast<UPlayableGameInstance>(PlayerController->GetGameInstance());
+			if (PlayerController && GameInstance)
 			{
-				PlayerController->ControllerTeam = ActiveTeams[1];
-			}
-			else {
-				ULogger::ScreenMessage(FColor::Blue, "Player Controller Not Valid");
+				PlayerController->ControllerTeam = ActiveTeams[GameInstance->CurrentTeamIndex];
+				if (GameInstance->Role == EPlayerType::GENERAL) {
+					PlayerController->GeneralSelect();
+				}
+				else if (GameInstance->Role == EPlayerType::HERO) {
+					PlayerController->ShowHeroSelectWidget();
+				}
 			}
 		}
-
 		for (TActorIterator<AObjectiveOverlapActor> ObjectiveActorIter(GetWorld()); ObjectiveActorIter; ++ObjectiveActorIter)
 		{
 			AObjectiveOverlapActor* CurrObj = *ObjectiveActorIter;
 			ActiveObjectives.AddUnique(CurrObj);
-			CurrObj->OwningTeam = ActiveTeams[2];
-		}
-
-		for (TActorIterator<APlayableCharacter> ObjectiveActorIter(GetWorld()); ObjectiveActorIter; ++ObjectiveActorIter)
-		{
-			APlayableCharacter* CurrObj = *ObjectiveActorIter;
-			CurrObj->SetOwnerTeam(AITeam);
-			ActiveTeams[0]->TeamHeroes.Add(CurrObj);
+			CurrObj->OwningTeam = ActiveTeams[0];
 		}
 	}
 	else {

@@ -2,35 +2,31 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Engine/DataTable.h"
 #include "GameInstanceData.generated.h"
 
 class UFactionData;
 class ULevelData;
 class UUserWidget;
+class UPlayerControllerData;
 class USoundBase;
 
-UCLASS(BlueprintType)
+USTRUCT(BlueprintType)
+struct FGameInstanceDataStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPlayerControllerData* PlayerControllerData;
+};
+
+UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
 class ALPHA_API UGameInstanceData : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TArray<UFactionData*> AvailableFactions;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TArray<ULevelData*> AvailableLevels;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TAssetPtr<UWorld> MainMenuLevel;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TArray<USoundBase*> MenuMusic;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TSubclassOf<UUserWidget> MainMenuWidgetClass;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	TSubclassOf<UUserWidget> GameMenuWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameInstanceDataStruct GameInstanceData;
 };

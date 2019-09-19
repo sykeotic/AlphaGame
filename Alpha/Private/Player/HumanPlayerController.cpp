@@ -7,10 +7,12 @@
 #include "Runtime/UMG/Public/Components/WidgetComponent.h"
 #include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
 #include "NavigationSystem.h"
+#include "PlayerControllerData.h"
 #include "TeamComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayUtils.h"
 #include "GeneralHUD.h"
+#include "PlayableGameInstance.h"
 #include "Logger.h"
 
 AHumanPlayerController::AHumanPlayerController() {
@@ -22,19 +24,15 @@ AHumanPlayerController::AHumanPlayerController() {
 }
 
 void AHumanPlayerController::BeginPlay() {
-	if (PlayerControllerData) {
-		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->RoleSelectWidgetClass);
-		UserWidget->AddToViewport();
-	}
+
 }
 
-void AHumanPlayerController::HeroSelect() {
-	FName InKey = "TestBoi";
+void AHumanPlayerController::HeroSelect(uint8 HeroCharIndex) {
 	if (bGeneralChosen)
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
 	FActorSpawnParameters SpawnInfo;
-	HeroChar = ControllerTeam->SpawnTeamCharacter(InLocation, InRotation);
+	HeroChar = ControllerTeam->SpawnTeamCharacter(InLocation, InRotation, HeroCharIndex);
 	Possess(HeroChar);
 	Unbind();
 	if (HeroChar) {
@@ -45,6 +43,7 @@ void AHumanPlayerController::HeroSelect() {
 	bGeneralChosen = false;
 	bShowMouseCursor = false;
 	bEnableTouchEvents = true;
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
 	if (UserWidget) {
 		UserWidget->RemoveFromViewport();
 	}
@@ -72,6 +71,21 @@ void AHumanPlayerController::GeneralSelect() {
 	bHeroChosen = false;
 }
 
+void AHumanPlayerController::ShowHeroSelectWidget()
+{
+	// PlayerControllerData = LoadObject<UPlayerControllerData>(NULL, TEXT("PlayerControllerData'/Game/Data/DataAssets/Game/PlayerControllerData.PlayerControllerData'"), NULL, LOAD_None, NULL);
+	UPlayableGameInstance* GameInst = Cast<UPlayableGameInstance>(GetGameInstance());
+	UPlayerControllerData* TempData = GameInst->GameData->GameInstanceData.PlayerControllerData;
+	if (TempData) {
+		UserWidget = CreateWidget<UUserWidget>(this, TempData->PlayerControllerData.CharSelectionWidgetClass);
+		UserWidget->AddToViewport();
+	}
+	else {
+		ULogger::ScreenMessage(FColor::Red, "Controller Data not valid");
+	}
+	bShowMouseCursor = true;
+}
+
 void AHumanPlayerController::Unbind() {
 	InputComponent->AxisBindings.Empty();
 	InputComponent->ClearActionBindings();
@@ -82,4 +96,9 @@ void AHumanPlayerController::SetupGeneralHUD() {
 	if (GeneralHUD->IsValidLowLevel()) {
 		ULogger::ScreenMessage(FColor::Red, "Cast worked");
 	}
+}
+
+void AHumanPlayerController::AssignData(UPlayerControllerData* InData)
+{
+	PlayerControllerData = InData;
 }

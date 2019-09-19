@@ -2,7 +2,7 @@
 #include "Data/Game/GameInstanceData.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
-void UPlayableGameInstance::Init()
+void UPlayableGameInstance::AssignData(UGameInstanceData* InData)
 {
-
+	GameData = InData;
 }
