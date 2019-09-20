@@ -29,6 +29,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UGameInstanceData* GameData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		UFactionData* SelectedFaction;
+
 	UFUNCTION(BlueprintCallable)
 		void AssignData(UGameInstanceData* InData);
 };

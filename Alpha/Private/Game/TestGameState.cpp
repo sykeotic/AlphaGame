@@ -35,6 +35,10 @@ void ATestGameState::BeginPlay() {
 			if (PlayerController && GameInstance)
 			{
 				PlayerController->ControllerTeam = ActiveTeams[GameInstance->CurrentTeamIndex];
+				PlayerController->PlayerControllerData = GameInstance->GameData->GameInstanceData.PlayerControllerData;
+				if (PlayerController->PlayerControllerData) {
+					PlayerController->ControllerTeam->FactionData = GameInstance->SelectedFaction;
+				}
 				if (GameInstance->Role == EPlayerType::GENERAL) {
 					PlayerController->GeneralSelect();
 				}

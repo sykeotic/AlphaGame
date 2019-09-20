@@ -29,10 +29,6 @@ bool UStatsComponent::IsAlive() {
 	return bIsAlive;
 }
 
-//EArmorType UStatsComponent::GetArmorType() {
-//	return ArmorType;
-//}
-
 void UStatsComponent::AdjustHealth(float AdjustValue) {
 	if (bIsAlive) {
 		CurrentHealth += AdjustValue;

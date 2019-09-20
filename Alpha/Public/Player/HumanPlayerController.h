@@ -22,6 +22,7 @@ class APlayableCharacter;
 class APlayableGeneralPawn;
 class UWidgetComponent;
 class UPlayerControllerData;
+class UFactionData;
 
 UCLASS()
 class ALPHA_API AHumanPlayerController : public APlayerController
@@ -32,7 +33,10 @@ public:
 	AHumanPlayerController();
 
 	UFUNCTION(BlueprintCallable)
-		void HeroSelect(uint8 HeroCharIndex);
+		void HeroSelectIndex(uint8 HeroCharIndex);
+
+	UFUNCTION(BlueprintCallable)
+		void HeroSelectName(FName HeroCharName);
 
 	UFUNCTION(BlueprintCallable)
 		void GeneralSelect();
@@ -45,6 +49,9 @@ public:
 	void Unbind();
 
 	void SetupGeneralHUD();
+
+	UFUNCTION(BlueprintCallable)
+		UFactionData* GetFactionData();
 
 	UFUNCTION(BlueprintCallable)
 		void AssignData(UPlayerControllerData* InData);

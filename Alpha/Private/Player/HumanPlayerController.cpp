@@ -13,10 +13,10 @@
 #include "GameplayUtils.h"
 #include "GeneralHUD.h"
 #include "PlayableGameInstance.h"
+#include "FactionData.h"
 #include "Logger.h"
 
 AHumanPlayerController::AHumanPlayerController() {
-	ULogger::ScreenMessage(FColor::Red, "Spawning Controller");
 	bHeroChosen = false;
 	bGeneralChosen = false;
 
@@ -27,7 +27,7 @@ void AHumanPlayerController::BeginPlay() {
 
 }
 
-void AHumanPlayerController::HeroSelect(uint8 HeroCharIndex) {
+void AHumanPlayerController::HeroSelectIndex(uint8 HeroCharIndex) {
 	if (bGeneralChosen)
 		UnPossess();
 	PlayerType = EPlayerType::HERO;
@@ -46,6 +46,16 @@ void AHumanPlayerController::HeroSelect(uint8 HeroCharIndex) {
 	UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
 	if (UserWidget) {
 		UserWidget->RemoveFromViewport();
+	}
+}
+
+void AHumanPlayerController::HeroSelectName(FName HeroCharName)
+{
+	for (UBasePawnData* PawnData : ControllerTeam->FactionData->AvailableHeroes) {
+		if (PawnData->CharacterName == HeroCharName) {
+			HeroSelectIndex(ControllerTeam->FactionData->AvailableHeroes.Find(PawnData));
+			break;
+		}
 	}
 }
 
@@ -73,7 +83,6 @@ void AHumanPlayerController::GeneralSelect() {
 
 void AHumanPlayerController::ShowHeroSelectWidget()
 {
-	// PlayerControllerData = LoadObject<UPlayerControllerData>(NULL, TEXT("PlayerControllerData'/Game/Data/DataAssets/Game/PlayerControllerData.PlayerControllerData'"), NULL, LOAD_None, NULL);
 	UPlayableGameInstance* GameInst = Cast<UPlayableGameInstance>(GetGameInstance());
 	UPlayerControllerData* TempData = GameInst->GameData->GameInstanceData.PlayerControllerData;
 	if (TempData) {
@@ -96,6 +105,11 @@ void AHumanPlayerController::SetupGeneralHUD() {
 	if (GeneralHUD->IsValidLowLevel()) {
 		ULogger::ScreenMessage(FColor::Red, "Cast worked");
 	}
+}
+
+UFactionData* AHumanPlayerController::GetFactionData()
+{
+	return ControllerTeam->FactionData;
 }
 
 void AHumanPlayerController::AssignData(UPlayerControllerData* InData)

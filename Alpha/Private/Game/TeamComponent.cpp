@@ -23,13 +23,13 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FR
 	if (OwnedObjectives.Num() > 0) {
 		ULogger::ScreenMessage(FColor::Red, "Spawn Char +1 Obj");
 		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(APlayableCharacter::StaticClass(), OwnedObjectives.Last()->GetActorLocation(), OwnedObjectives.Last()->GetActorRotation(), SpawnInfo);
-		SpawnChar->InitCharacterData(FactionData->AvailableHeroes[0]);
+		SpawnChar->InitCharacterData(FactionData->AvailableHeroes[HeroArrayIndex]);
 	}
 	else {
 		ULogger::ScreenMessage(FColor::Red, "Spawn Char 0 Obj");
 		SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(APlayableCharacter::StaticClass(), SpawnLocation, SpawnRotation, SpawnInfo);
 		if (FactionData && FactionData->AvailableHeroes.Num() > 0) {
-			SpawnChar->InitCharacterData(FactionData->AvailableHeroes[0]);
+			SpawnChar->InitCharacterData(FactionData->AvailableHeroes[HeroArrayIndex]);
 		}
 		else {
 			SpawnChar->InitCharacterData(nullptr);

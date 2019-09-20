@@ -24,7 +24,8 @@ protected:
 public:
 	TArray<AHumanPlayerController*> HumanPlayerControllerArray;
 
-	UFactionData* FactionData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UFactionData* FactionData;
 
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
