@@ -24,6 +24,7 @@ void AObjectiveOverlapActor::BeginPlay(){
 	SphereComponent->SetGenerateOverlapEvents(true);
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapBegin);
 	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapEnd);
+	// OwningTeam = Cast<ATestGameState>(GetWorld()->GetGameState())->ActiveTeams[0];
 }
 
 void AObjectiveOverlapActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
@@ -54,16 +55,13 @@ void AObjectiveOverlapActor::AssertObjectiveState() {
 	if (InZoneActors.Num() > 0) {
 		AdjustModifier();
 		if (OBJECTIVE_STATE == EObjectiveState::NEUTRAL) {
-			ULogger::ScreenMessage(FColor::Blue, "Neutral Obj");
 			StartCapturing();
 		}
 		else if (OBJECTIVE_STATE == EObjectiveState::CAPTURED) {
-			ULogger::ScreenMessage(FColor::Blue, "Captured Obj");
 			for (AActor* CurrActor : InZoneActors) {
 				APlayableCharacter* CurrChar = Cast<APlayableCharacter>(CurrActor);
 				if (CurrChar->IsValidLowLevel()) {
 					if (OwningTeam != CurrChar->GetOwnerTeam()) {
-						ULogger::ScreenMessage(FColor::Blue, "Char valid, Captured Obj");
 						StartCapturing();
 					}
 				}
@@ -79,11 +77,9 @@ void AObjectiveOverlapActor::AssertObjectiveState() {
 		}
 		else if (OBJECTIVE_STATE == EObjectiveState::CAPTURING) {
 			AdjustModifier();
-			ULogger::ScreenMessage(FColor::Blue, "Capturing Obj");
 		}
 	}
 	else {
-		ULogger::ScreenMessage(FColor::Blue, "Resetting Obj");
 		ResetObjective();
 	}
 }
@@ -107,8 +103,6 @@ void AObjectiveOverlapActor::TimerTick() {
 		ResetObjectiveFinished();
 	}
 	else if (CurrentCaptureScore >= RequiredCaptureScore && !bResetting) {
-		//ULogger::ScreenMessage(FColor::Yellow, "Required Score: " + FString::FromInt(RequiredCaptureScore));
-		//ULogger::ScreenMessage(FColor::Yellow, "Current Score: " + FString::FromInt(CurrentCaptureScore));
 		HandleCapture();
 	}
 	else {
@@ -117,15 +111,12 @@ void AObjectiveOverlapActor::TimerTick() {
 		if (CurrentCaptureScore <= 0)
 			CurrentCaptureScore = 0;
 		if (!bResetting) {
-			//ULogger::ScreenMessage(FColor::Green, "Capture Timer");
 			GetWorldTimerManager().SetTimer(CaptureTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 		}
 		else {
-			//ULogger::ScreenMessage(FColor::Green,  "Reset Timer");
 			GetWorldTimerManager().SetTimer(ResetTimer, this, &AObjectiveOverlapActor::TimerTick, .1f, false);
 		}
 	}
-	//ULogger::ScreenMessage(FColor::Green, "Timer Tick: " + FString::FromInt(CurrentCaptureScore));
 }
 
 void AObjectiveOverlapActor::AdjustModifier() {
@@ -159,7 +150,6 @@ void AObjectiveOverlapActor::AdjustModifier() {
 	else {
 		CaptureModifier = (NumHeroes * 5) + (NumPawns);
 	}
-	ULogger::ScreenMessage(FColor::Red, "Adjust Modifier: " + FString::FromInt(CaptureModifier));
 }
 
 void AObjectiveOverlapActor::HandleCapture() {

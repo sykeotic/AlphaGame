@@ -14,49 +14,7 @@ ATestGameState::ATestGameState() {
 }
 
 void ATestGameState::BeginPlay() {
-	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
-	NeutralTeam->TeamName = "Neutral Team";
-	NeutralTeam->TeamIndex = 0;
-	UTeamComponent* DwarfTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
-	DwarfTeam->TeamName = "Dwarf Team";
-	DwarfTeam->TeamIndex = 1;
-	UTeamComponent* HumanTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
-	HumanTeam->TeamName = "Human Team";
-	HumanTeam->TeamIndex = 2;
-	ActiveTeams.AddUnique(NeutralTeam);
-	ActiveTeams.AddUnique(DwarfTeam);
-	ActiveTeams.AddUnique(HumanTeam);
 
-	if (ActiveTeams.Num() == 3 && ActiveTeams[0] && ActiveTeams[1] && ActiveTeams[2]) {
-		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-		{
-			AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(*Iterator);
-			UPlayableGameInstance* GameInstance = Cast<UPlayableGameInstance>(PlayerController->GetGameInstance());
-			if (PlayerController && GameInstance)
-			{
-				PlayerController->ControllerTeam = ActiveTeams[GameInstance->CurrentTeamIndex];
-				PlayerController->PlayerControllerData = GameInstance->GameData->GameInstanceData.PlayerControllerData;
-				if (PlayerController->PlayerControllerData) {
-					PlayerController->ControllerTeam->FactionData = GameInstance->SelectedFaction;
-				}
-				if (GameInstance->Role == EPlayerType::GENERAL) {
-					PlayerController->GeneralSelect();
-				}
-				else if (GameInstance->Role == EPlayerType::HERO) {
-					PlayerController->ShowHeroSelectWidget();
-				}
-			}
-		}
-		for (TActorIterator<AObjectiveOverlapActor> ObjectiveActorIter(GetWorld()); ObjectiveActorIter; ++ObjectiveActorIter)
-		{
-			AObjectiveOverlapActor* CurrObj = *ObjectiveActorIter;
-			ActiveObjectives.AddUnique(CurrObj);
-			CurrObj->OwningTeam = ActiveTeams[0];
-		}
-	}
-	else {
-		ULogger::ScreenMessage(FColor::Red, "At least one Team isnt valid");
-	}
 }
 
 void ATestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

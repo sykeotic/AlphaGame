@@ -51,16 +51,6 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FGameModeData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName GameModeName;
-};
-
-USTRUCT(BlueprintType)
 struct FDataTablePaths : public FTableRowBase
 {
 	GENERATED_BODY()

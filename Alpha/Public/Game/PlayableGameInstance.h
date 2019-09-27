@@ -26,7 +26,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FName CurrentFactionName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 		UGameInstanceData* GameData;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

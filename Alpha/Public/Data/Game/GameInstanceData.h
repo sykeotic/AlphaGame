@@ -21,7 +21,7 @@ public:
 		UPlayerControllerData* PlayerControllerData;
 };
 
-UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
+UCLASS(BlueprintType)
 class ALPHA_API UGameInstanceData : public UDataAsset
 {
 	GENERATED_BODY()

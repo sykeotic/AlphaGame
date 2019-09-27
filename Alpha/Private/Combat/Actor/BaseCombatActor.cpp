@@ -102,12 +102,7 @@ void ABaseCombatActor::HandleUse()
 		if (GetNetMode() != NM_DedicatedServer)
 		{
 			FTimerHandle DelayAnimHandle;
-			//if (BaseCombatActorData.ExecutionDelay > 0) {
-			//	GetWorldTimerManager().SetTimer(DelayAnimHandle, this, &ABaseCombatActor::StartSimulatingActorUse, BaseCombatActorData.ExecutionDelay, false);
-			//}
-			//else {
-				StartSimulatingActorUse();
-			//}
+			StartSimulatingActorUse();
 		}
 
 		if (ComponentOwner->GetCharacterOwner() && ComponentOwner->GetCharacterOwner()->IsLocallyControlled())

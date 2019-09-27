@@ -22,7 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	TArray<AHumanPlayerController*> HumanPlayerControllerArray;
+	TArray<AController*> PlayerControllerArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UFactionData* FactionData;

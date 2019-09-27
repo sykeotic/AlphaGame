@@ -83,6 +83,8 @@ protected:
 
 	UStaticMeshComponent* MeshComp;
 	UCombatComponent* ComponentOwner;
+	UAnimMontage* CurrentAnim;
+	ECombatActorState ACTOR_STATE;
 
 private:
 	float EquipStartedTime;
@@ -93,21 +95,15 @@ private:
 	
 	bool bPendingEquip;
 	bool bIsEquipped;
-	bool bWantsToUse;
 	bool bRefiring;
 	bool bPlayingUseAnimation;
 	bool bPlayingSound;
 	bool bPlaySoundEveryTime;
-
-	UAnimMontage* CurrentAnim;
+	bool bWantsToUse;
 
 	FTimerHandle EquipFinishedTimerHandle;
 	FTimerHandle TimerHandle_HandleFiring;
 	FTimerHandle AnimationTimerHandle;
 	FTimerHandle VisualFXTimerHandle;
 	FTimerHandle SoundTimerHandle;
-
-	ECombatActorState ACTOR_STATE;
-
-
 };

@@ -83,7 +83,7 @@ void APlayableCharacter::InitCombatComponent() {
 		Weapon = Cast<ABaseCombatActor>(GetWorld()->SpawnActor<ABaseCombatActor>(CharacterData.Weapons[i]->BaseCombatActorDataStruct.ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		Weapon->SetCombatComponentOwner(CombatComponent);
 		Weapon->AssignValues(CharacterData.Weapons[i]);
-		ULogger::ScreenMessage(FColor::Emerald, "InitCombatComponent: " + FString::FromInt(Weapon->Modifiers[0]->GetEffectCount()));
+		// ULogger::ScreenMessage(FColor::Emerald, "InitCombatComponent: " + FString::FromInt(Weapon->Modifiers[0]->GetEffectCount()));
 		CombatComponent->AddWeaponToArray(Weapon);
 		Weapon->GetMesh()->IgnoreActorWhenMoving(this, true);
 		if (i == 0) {

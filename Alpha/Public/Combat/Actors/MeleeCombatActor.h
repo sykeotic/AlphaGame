@@ -32,6 +32,9 @@ private:
 	UBoxComponent* MeleeBoxComponent;
 
 	FTimerHandle OverlapWindowTimer;
+	FTimerHandle ClearTimer;
+
+	int32 SectionCounter;
 
 	FMeleeCombatActorDataStruct MeleeCombatActorStruct;
 
@@ -40,4 +43,6 @@ private:
 	bool bCanOverlap;
 
 	void SetOverlappingToFalse();
+
+	void ClearOverlappedArray();
 };
