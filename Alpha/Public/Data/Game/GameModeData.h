@@ -7,9 +7,10 @@
 #include "GameModeData.generated.h"
 
 class AAIController;
+class AGameMode;
 
 USTRUCT(BlueprintType)
-struct FGameModeDataStruct : public FTableRowBase
+struct FGameModeDataStruct
 {
 	GENERATED_BODY()
 
@@ -19,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AAIController> AIControllerClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AGameMode> GameModeClass;
 };
 
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)

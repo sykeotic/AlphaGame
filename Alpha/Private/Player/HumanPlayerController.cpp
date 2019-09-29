@@ -86,6 +86,7 @@ void AHumanPlayerController::GeneralSelect() {
 
 void AHumanPlayerController::ShowHeroSelectWidget()
 {
+	/*
 	UPlayableGameInstance* GameInst = Cast<UPlayableGameInstance>(GetGameInstance());
 	UPlayerControllerData* TempData = GameInst->GameData->GameInstanceData.PlayerControllerData;
 	if (TempData) {
@@ -96,6 +97,7 @@ void AHumanPlayerController::ShowHeroSelectWidget()
 		ULogger::ScreenMessage(FColor::Red, "Controller Data not valid");
 	}
 	bShowMouseCursor = true;
+	*/
 }
 
 void AHumanPlayerController::Unbind() {

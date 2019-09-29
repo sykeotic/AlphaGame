@@ -2,7 +2,22 @@
 #include "Data/Game/GameInstanceData.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
-void UPlayableGameInstance::AssignData(UGameInstanceData* InData)
+UGameModeData* UPlayableGameInstance::GetGameModeData()
 {
-	GameData = InData;
+	return CurrentGameModeData;
+}
+
+TMap<uint8, FMainMenuTeamStruct> UPlayableGameInstance::GetTeamData()
+{
+	return TeamData;
+}
+
+void UPlayableGameInstance::SetGameModeData(UGameModeData* InData)
+{
+	CurrentGameModeData = InData;
+}
+
+void UPlayableGameInstance::SetTeamData(TMap<uint8, FMainMenuTeamStruct> InMap)
+{
+	TeamData = InMap;
 }

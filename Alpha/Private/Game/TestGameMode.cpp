@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "TestGameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameplayUtils.h"
@@ -33,6 +31,7 @@ void ATestGameMode::StartMatch()
 
 void ATestGameMode::InitTeams()
 {
+	/*
 	UTeamComponent* NeutralTeam = NewObject<UTeamComponent>(this, UTeamComponent::StaticClass());
 	NeutralTeam->TeamName = "Neutral Team";
 	NeutralTeam->TeamIndex = 0;
@@ -85,4 +84,5 @@ void ATestGameMode::InitTeams()
 			ChangeFloat += 5000.f;
 		}
 	}
+	*/
 }

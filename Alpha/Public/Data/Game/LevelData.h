@@ -18,10 +18,7 @@ class ALPHA_API ULevelData : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UWorld* Map;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<TSubclassOf<AGameModeBase>> AvailableGameModes;
+		TSoftObjectPtr<UWorld> Map;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName LevelName;

@@ -2,13 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "Data/Game/GameInstanceData.h"
-#include "HumanPlayerController.h"
+#include "MainMenuGameMode.h"
 #include "PlayableGameInstance.generated.h"
 
-class UFactionData;
-
-
+class UGameModeData;
 
 UCLASS(BlueprintType)
 class ALPHA_API UPlayableGameInstance : public UGameInstance
@@ -17,21 +14,14 @@ class ALPHA_API UPlayableGameInstance : public UGameInstance
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		uint8 CurrentTeamIndex;
+	UGameModeData* GetGameModeData();
+	TMap<uint8, FMainMenuTeamStruct> GetTeamData();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		EPlayerType Role;
+	void SetGameModeData(UGameModeData* InData);
+	void SetTeamData(TMap<uint8, FMainMenuTeamStruct> InMap);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		FName CurrentFactionName;
+private:
 
-	UPROPERTY(EditDefaultsOnly)
-		UGameInstanceData* GameData;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UFactionData* SelectedFaction;
-
-	UFUNCTION(BlueprintCallable)
-		void AssignData(UGameInstanceData* InData);
+	UGameModeData* CurrentGameModeData;
+	TMap<uint8, FMainMenuTeamStruct> TeamData;
 };
