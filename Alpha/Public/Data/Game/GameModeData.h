@@ -8,6 +8,7 @@
 
 class AAIController;
 class AGameMode;
+class UPlayerControllerData;
 
 USTRUCT(BlueprintType)
 struct FGameModeDataStruct
@@ -23,9 +24,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AGameMode> GameModeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UPlayerControllerData* PlayerControllerData;
 };
 
-UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
+UCLASS(BlueprintType, DefaultToInstanced)
 class ALPHA_API UGameModeData : public UDataAsset
 {
 	GENERATED_BODY()

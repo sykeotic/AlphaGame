@@ -14,8 +14,14 @@ class ALPHA_API UPlayableGameInstance : public UGameInstance
 
 public:
 
-	UGameModeData* GetGameModeData();
-	TMap<uint8, FMainMenuTeamStruct> GetTeamData();
+	UFUNCTION(BlueprintCallable)
+		UGameModeData* GetGameModeData();
+
+	UFUNCTION(BlueprintCallable)
+		TMap<uint8, FMainMenuTeamStruct> GetTeamData();
+
+	void SetPersistentID(int32 InID);
+	int32 GetPersistentID();
 
 	void SetGameModeData(UGameModeData* InData);
 	void SetTeamData(TMap<uint8, FMainMenuTeamStruct> InMap);
@@ -24,4 +30,6 @@ private:
 
 	UGameModeData* CurrentGameModeData;
 	TMap<uint8, FMainMenuTeamStruct> TeamData;
+
+	int32 PersistentID;
 };

@@ -11,7 +11,7 @@ class UBasePawnData;
 /**
  * 
  */
-UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
+UCLASS(BlueprintType, DefaultToInstanced)
 class ALPHA_API UFactionData : public UDataAsset
 {
 	GENERATED_BODY()

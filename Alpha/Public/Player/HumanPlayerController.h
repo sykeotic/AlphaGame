@@ -88,6 +88,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UPlayerControllerData* PlayerControllerData;
 
-private:
 	EPlayerType PlayerType;
+
+private:
 };
