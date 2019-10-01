@@ -4,28 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "GameModeData.generated.h"
+#include "AIData.generated.h"
 
 class AAIController;
-class AGameMode;
-class UPlayerControllerData;
-class UAIData;
+class UBehaviorTree;
+class UBlackboardComponent;
+class UAIPerceptionComponent;
 
 UCLASS(BlueprintType)
-class ALPHA_API UGameModeData : public UDataAsset
+class ALPHA_API UAIData : public UDataAsset
 {
 	GENERATED_BODY()
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		uint8 MaxPlayersPerTeam;
+		TSubclassOf<AAIController> AIControllerClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAIData* AIData;
+		UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AGameMode> GameModeClass;
+		UBlackboardComponent* Blackboard;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPlayerControllerData* PlayerControllerData;
+		UAIPerceptionComponent* AIPerceptionComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName BlackboardEnemyKey;
 };

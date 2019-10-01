@@ -6,6 +6,7 @@
 #include "PlayablePawn.h"
 #include "ObjectiveOverlapActor.h"
 #include "SpawnLocationActor.h"
+#include "MainMenuGameMode.h"
 #include "TeamComponent.generated.h"
 
 class UFactionData;
@@ -27,6 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UFactionData* FactionData;
 
+	TMap<int32, FMainMenuPlayerStruct> CurrentPlayerData;
 	TArray<APlayableCharacter*> TeamHeroes;
 	TArray<APlayablePawn*> TeamPawns;
 	TArray<ASpawnLocationActor*> TeamSpawnLocations;

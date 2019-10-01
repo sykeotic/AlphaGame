@@ -11,7 +11,7 @@ class AGameModeBase;
 /**
  * 
  */
-UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
+UCLASS(BlueprintType, DefaultToInstanced)
 class ALPHA_API ULevelData : public UDataAsset
 {
 	GENERATED_BODY()

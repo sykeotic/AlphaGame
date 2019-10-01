@@ -7,6 +7,8 @@
 #include "MainMenuGameMode.h"
 #include "BattlefieldGameMode.generated.h"
 
+class ABattlefieldGameState;
+class UPlayableGameInstance;
 /**
  * 
  */
@@ -20,15 +22,21 @@ public:
 
 protected:
 
+	ABattlefieldGameMode();
+
 	virtual void BeginPlay() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void StartMatch() override;	
 
-	void InitTeam(FMainMenuTeamStruct InTeamStruct);
+	void InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStruct);
 
 private:
 
 	UGameModeData* CurrentGameModeData;
 	TMap<uint8, FMainMenuTeamStruct> TeamData;
+
+	UPlayableGameInstance* CurrentGameInstance;
+
+	bool bTeamsInit;
 };

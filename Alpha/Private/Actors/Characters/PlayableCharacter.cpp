@@ -18,6 +18,7 @@
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "Game/Controllers/AI/BattlefieldAIController.h"
 #include "GameFramework/SpringArmComponent.h"
 
 APlayableCharacter::APlayableCharacter()
@@ -44,6 +45,7 @@ APlayableCharacter::APlayableCharacter()
 	HandlerComponent->SetActorOwner(this);
 
 	bIsAttacking = false;
+
 }
 
 void APlayableCharacter::BeginPlay() {

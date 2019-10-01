@@ -21,6 +21,9 @@ AHumanPlayerController::AHumanPlayerController() {
 	bGeneralChosen = false;
 
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+
+	InLocation = {1000.f, 200.f, 200.f};
+	InRotation = {0.f, 0.f, 0.f};
 }
 
 void AHumanPlayerController::BeginPlay() {
@@ -86,18 +89,14 @@ void AHumanPlayerController::GeneralSelect() {
 
 void AHumanPlayerController::ShowHeroSelectWidget()
 {
-	/*
-	UPlayableGameInstance* GameInst = Cast<UPlayableGameInstance>(GetGameInstance());
-	UPlayerControllerData* TempData = GameInst->GameData->GameInstanceData.PlayerControllerData;
-	if (TempData) {
-		UserWidget = CreateWidget<UUserWidget>(this, TempData->PlayerControllerData.CharSelectionWidgetClass);
+	if (PlayerControllerData) {
+		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->CharSelectionWidgetClass);
 		UserWidget->AddToViewport();
 	}
 	else {
 		ULogger::ScreenMessage(FColor::Red, "Controller Data not valid");
 	}
 	bShowMouseCursor = true;
-	*/
 }
 
 void AHumanPlayerController::Unbind() {

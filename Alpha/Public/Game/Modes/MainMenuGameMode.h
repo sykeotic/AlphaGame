@@ -31,10 +31,13 @@ struct FMainMenuTeamStruct
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSoftObjectPtr<UFactionData> SelectedFactionData;
+		UFactionData* SelectedFactionData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<int32, FMainMenuPlayerStruct> CurrentPlayerData;
+
+	FMainMenuTeamStruct() : SelectedFactionData(nullptr), CurrentPlayerData()
+	{}
 };
 
 USTRUCT(BlueprintType)
@@ -47,13 +50,13 @@ public:
 		TMap<FString, EPlayerType> AvailableRoles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<FString, TSoftObjectPtr<UFactionData>> AvailableFactions;
+		TMap<FString, UFactionData*> AvailableFactions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<FString, TSoftObjectPtr<ULevelData>> AvailableLevels;
+		TMap<FString, ULevelData*> AvailableLevels;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<FString, TSoftObjectPtr<UGameModeData>> AvailableGameModes;
+		TMap<FString, UGameModeData*> AvailableGameModes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf < UUserWidget > MainMenuWidget;

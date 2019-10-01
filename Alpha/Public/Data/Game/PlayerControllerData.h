@@ -10,8 +10,8 @@
 
 class UUserWidget;
 
-USTRUCT(BlueprintType)
-struct FPlayerControllerDataStruct : public FTableRowBase
+UCLASS(BlueprintType)
+class ALPHA_API UPlayerControllerData : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -32,16 +32,5 @@ public:
 		FName HeroRoleLabel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName GeneralRoleLabel;
-};
-
-UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
-class ALPHA_API UPlayerControllerData : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FPlayerControllerDataStruct PlayerControllerData;
-	
+		FName GeneralRoleLabel;	
 };

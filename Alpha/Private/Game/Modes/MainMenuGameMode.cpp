@@ -5,19 +5,13 @@
 #include "Blueprint/UserWidget.h"
 #include "Logger.h"
 #include "GameFramework/PlayerState.h"
+#include "Runtime/Engine/Classes/Engine/StreamableManager.h"
 #include "PlayableGameInstance.h"
 #include "Game/Controllers/MainMenuController.h"
 
 AMainMenuGameMode::AMainMenuGameMode()
 {
-	FMainMenuTeamStruct Neutral_Team;
-	Teams.Add(0, Neutral_Team);
 
-	FMainMenuTeamStruct Team_1;
-	Teams.Add(1, Team_1);
-
-	FMainMenuTeamStruct Team_2;
-	Teams.Add(2, Team_2);
 }
 
 void AMainMenuGameMode::BeginPlay()
@@ -28,17 +22,19 @@ void AMainMenuGameMode::BeginPlay()
 void AMainMenuGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+	FMainMenuTeamStruct Team_1;
 	AMainMenuController* InputPlayer = Cast<AMainMenuController>(NewPlayer);
 	if (InputPlayer) {
 		if (GameStruct.MainMenuWidget) {
 			InputPlayer->SetCurrentWidget(GameStruct.MainMenuWidget);
 		}
-		else {
-			ULogger::ScreenMessage(FColor::Red, "Game Struct Null");
-		}
 		FMainMenuPlayerStruct PlayerStruct;
-		Teams.Find(0)->CurrentPlayerData.Add(InputPlayer->GetUniqueID(), PlayerStruct);
+		Team_1.CurrentPlayerData.Add(InputPlayer->GetUniqueID(), PlayerStruct);
+		Cast<UPlayableGameInstance>(InputPlayer->GetGameInstance())->SetPersistentID(InputPlayer->GetUniqueID());
+		FString Message =  FString::FromInt(InputPlayer->GetUniqueID());
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameMode::PostLogin - Adding Unique ID "), *Message);
 	}
+	Teams.Add(0, Team_1);
 }
 
 void AMainMenuGameMode::SetPlayerRole(int32 PlayerID, FString InKey)
@@ -53,35 +49,56 @@ void AMainMenuGameMode::SetPlayerRole(int32 PlayerID, FString InKey)
 
 void AMainMenuGameMode::SetMatchLevel(FString InKey)
 {
-	SelectedLevel = GameStruct.AvailableLevels.Find(InKey)->Get();
+	SelectedLevel = GameStruct.AvailableLevels.FindRef(InKey);
 }
 
 void AMainMenuGameMode::SetGameMode(FString InKey)
 {
-	SelectedGameMode = GameStruct.AvailableGameModes.Find(InKey)->Get();
+	SelectedGameMode = GameStruct.AvailableGameModes.FindRef(InKey);
+	if (SelectedGameMode) {
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetGameMode - SelectedGameMode OK"));
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetGameMode - SelectedGameMode NULL"));
+	}
 	UPlayableGameInstance* GameInstance = Cast<UPlayableGameInstance>(GetGameInstance());
 	if (GameInstance) {
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetGameMode - GameInstance OK"));
 		GameInstance->SetGameModeData(SelectedGameMode);
 	}
 	else
 	{
-		ULogger::ScreenMessage(FColor::Red, "MainMenuGameGame::SetGameMode - GameInstance NULL");
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetGameMode - GameInstance NULL"));
 	}
 }
 
 void AMainMenuGameMode::SetFaction(uint8 TeamID, FString InKey)
 {
-	Teams.Find(TeamID)->SelectedFactionData = GameStruct.AvailableFactions.Find(InKey)->Get();
+	if (GameStruct.AvailableFactions.FindRef(InKey)) {
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetFaction - Faction Data OK"));
+		Teams.FindOrAdd(TeamID).SelectedFactionData = GameStruct.AvailableFactions.FindRef(InKey);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetFaction - Faction Data NULL"));
+	}
 }
 
 void AMainMenuGameMode::SetExportData()
 {
 	UPlayableGameInstance* GameInstance = Cast<UPlayableGameInstance>(GetGameInstance());
 	if (GameInstance) {
-		GameInstance->SetTeamData(Teams);
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetExportData - GameInstance OK"));
+		if (Teams.Num() > 0) {
+			UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetExportData - Team Elements OK"));
+			GameInstance->SetTeamData(Teams);
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetExportData - Team Elements are ZERO"));
+		}
+
 	}
 	else
 	{
-		ULogger::ScreenMessage(FColor::Red, "MainMenuGameGame::SetExportData - GameInstance NULL");
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameGame::SetExportData - GameInstance NULL"));
 	}
 }

@@ -1,9 +1,11 @@
 #include "ObjectiveOverlapActor.h"
 #include "PlayableCharacter.h"
-#include "TestGameState.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "PlayablePawn.h"
+#include "TeamComponent.h"
+#include "Game/Modes/Battlefield/BattlefieldGameState.h"
 #include "Logger.h"
 
 AObjectiveOverlapActor::AObjectiveOverlapActor() {
@@ -158,7 +160,7 @@ void AObjectiveOverlapActor::HandleCapture() {
 	ResetObjectiveFinished();
 	PlayActorSound(CapturedSound);
 	ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);
-	ATestGameState* CurrGameState = Cast<ATestGameState>(GetWorld()->GetGameState());
+	ABattlefieldGameState* CurrGameState = Cast<ABattlefieldGameState>(GetWorld()->GetGameState());
 	CurrGameState->ObjectiveCaptured(OwningTeam, this);
 }
 
