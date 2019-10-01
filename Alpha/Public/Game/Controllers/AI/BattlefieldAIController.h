@@ -6,6 +6,13 @@
 #include "AIController.h"
 #include "BattlefieldAIController.generated.h"
 
+class UBehaviorTreeComponent;
+class UAIPerceptionComponent;
+class UBehaviorTree;
+class UBlackboardComponent;
+class UAISenseConfig_Sight;
+class UAIData;
+
 /**
  * 
  */
@@ -16,8 +23,26 @@ class ALPHA_API ABattlefieldAIController : public AAIController
 	
 public:
 
+	ABattlefieldAIController();
+
+	void AssignData(UAIData* InData);
+	AActor* GetSeeingPawn();
+
+	UFUNCTION(BlueprintCallable)
+		void OnPerceptionUpdated(TArray<AActor*> UpdatedActors);
+
 protected:
 
 	virtual void BeginPlay() override;
 
+private:
+	FName BlackboardEnemyKey;
+
+	UBehaviorTree* BehaviorTree;
+	UBehaviorTreeComponent* BehaviorTreeComponent;
+	UBlackboardComponent* Blackboard;
+	UAIPerceptionComponent* AIPerceptionComponent;
+
+
+	UAIData* AIData;
 };

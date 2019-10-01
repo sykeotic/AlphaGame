@@ -8,6 +8,7 @@
 #include "PlayableCharacter.h"
 #include "GameModeData.h"
 #include "Kismet/GameplayStatics.h"
+#include "Data/Game/AI/AIData.h"
 #include "BattlefieldAIController.h"
 #include "Game/PlayableGameInstance.h"
 
@@ -21,6 +22,7 @@ void ABattlefieldGameMode::InitTeams()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeams - Initializing Teams"));
 	CurrentGameInstance = Cast<UPlayableGameInstance>(GetGameInstance());
+	CurrentGameModeData = CurrentGameInstance->GetGameModeData();
 	TeamData = CurrentGameInstance->GetTeamData();
 	for (auto& Elem : TeamData) {
 		InitTeam(Elem.Key, TeamData.FindRef(Elem.Key));
@@ -30,9 +32,7 @@ void ABattlefieldGameMode::InitTeams()
 void ABattlefieldGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentGameInstance = Cast<UPlayableGameInstance>(GetGameInstance());
-	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::BeginPlay - BeginPlay"));
-	CurrentGameModeData = CurrentGameInstance->GetGameModeData();
+	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::BeginPlay - BeginPlay"));	
 }
 
 void ABattlefieldGameMode::PostLogin(APlayerController* NewPlayer)
@@ -44,7 +44,7 @@ void ABattlefieldGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::PostLogin - Initializing New Player"));
 	AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(NewPlayer);
-	PlayerController->AssignData(CurrentGameInstance->GetGameModeData()->GameModeDataStruct.PlayerControllerData);
+	PlayerController->AssignData(CurrentGameInstance->GetGameModeData()->PlayerControllerData);
 	ABattlefieldGameState* CurrentGameState = Cast<ABattlefieldGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	int32 PersistentID = Cast<UPlayableGameInstance>(PlayerController->GetGameInstance())->GetPersistentID();
 	if (CurrentGameState) {		
@@ -73,7 +73,6 @@ void ABattlefieldGameMode::InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStr
 	NewTeam->TeamIndex = InIndex;
 	NewTeam->FactionData = InTeamStruct.SelectedFactionData;
 	NewTeam->CurrentPlayerData = InTeamStruct.CurrentPlayerData;
-
 	float ChangeFloat = 0.f;
 	uint8 Sentinel = 0;
 	while (NewTeam->PlayerControllerArray.Num() <= 8) {
@@ -82,12 +81,17 @@ void ABattlefieldGameMode::InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStr
 		FRotator Rot = { 0, 0, 0 };
 		APlayableCharacter* AIChar = NewTeam->SpawnTeamCharacter(Vec, Rot, 0);
 		if (CurrentGameModeData) {
-			AIChar->AIControllerClass = CurrentGameModeData->GameModeDataStruct.AIControllerClass;
+			UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeam - CurrentGameModeData OK"));
+			AIChar->AIControllerClass = CurrentGameModeData->AIData->AIControllerClass;
+			AIChar->SpawnDefaultController();
+			Cast<ABattlefieldAIController>(AIChar->GetController())->AssignData(CurrentGameModeData->AIData);
 		}
 		else {
+			UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeam - CurrentGameModeData NULL"));
 			AIChar->AIControllerClass = ABattlefieldAIController::StaticClass();
-		}
-		AIChar->SpawnDefaultController();
+			AIChar->SpawnDefaultController();
+		}		
+		AIChar->SetOwnerTeam(NewTeam);
 		Sentinel++;
 	}
 	ChangeFloat += 5000.f;

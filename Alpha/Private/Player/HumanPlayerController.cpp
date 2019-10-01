@@ -90,7 +90,7 @@ void AHumanPlayerController::GeneralSelect() {
 void AHumanPlayerController::ShowHeroSelectWidget()
 {
 	if (PlayerControllerData) {
-		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->PlayerControllerData.CharSelectionWidgetClass);
+		UserWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->CharSelectionWidgetClass);
 		UserWidget->AddToViewport();
 	}
 	else {
