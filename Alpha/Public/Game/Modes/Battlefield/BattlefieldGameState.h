@@ -19,6 +19,7 @@ public:
 	ABattlefieldGameState();
 
 	void AddTeam(UTeamComponent* NewTeam);
+	UTeamComponent* GetTeamFromID(int32 InIndex);
 
 	UTeamComponent* FindTeamForPlayer(int32 PlayerID);
 	void ObjectiveCaptured(UTeamComponent* InTeam, AObjectiveOverlapActor* InObjective);

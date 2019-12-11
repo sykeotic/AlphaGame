@@ -27,6 +27,11 @@ void ABattlefieldGameState::AddTeam(UTeamComponent* NewTeam)
 	ActiveTeams.Add(NewTeam);
 }
 
+UTeamComponent* ABattlefieldGameState::GetTeamFromID(int32 InIndex)
+{
+	return ActiveTeams[InIndex];
+}
+
 UTeamComponent* ABattlefieldGameState::FindTeamForPlayer(int32 PlayerID)
 {
 	for (UTeamComponent* CurrTeam : ActiveTeams) {

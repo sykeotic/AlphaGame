@@ -3,7 +3,13 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Data/Game/AI/AIData.h"
+#include "PlayableCharacter.h"
+#include "TeamComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Game/TeamComponent.h"
+#include "Data/Game/FactionData.h"
+#include "TimerManager.h"
+#include "Components/TextRenderComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 ABattlefieldAIController::ABattlefieldAIController()
@@ -12,26 +18,16 @@ ABattlefieldAIController::ABattlefieldAIController()
 	BehaviorTree = CreateDefaultSubobject<UBehaviorTree>(FName("BehaviorTree"));
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(FName("BlackboardComp"));
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(FName("AIPerceptionComp"));
-}
 
-void ABattlefieldAIController::AssignData(UAIData* InData)
-{
-	AIData = InData;
-	BehaviorTree = AIData->BehaviorTree;
-	BlackboardEnemyKey = AIData->BlackboardEnemyKey;
-	Blackboard = AIData->Blackboard;
-	AIPerceptionComponent = AIData->AIPerceptionComponent;
-	if (BehaviorTree)
-	{
-		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		BehaviorTreeComponent->StartTree(*BehaviorTree);
-	}
-}
+	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(FName("Sight Config"));
+	Sight->SightRadius = 1000.f;
+	Sight->LoseSightRadius = 1500.f;
+	Sight->PeripheralVisionAngleDegrees = 130.f;
+	Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Sight->DetectionByAffiliation.bDetectFriendlies = true;
+	Sight->DetectionByAffiliation.bDetectNeutrals = true;
 
-AActor* ABattlefieldAIController::GetSeeingPawn()
-{
-	UObject* object = Blackboard->GetValueAsObject(BlackboardEnemyKey);
-	return object ? Cast<AActor>(object) : nullptr;
+	AIPerceptionComponent->ConfigureSense(*Sight);
 }
 
 void ABattlefieldAIController::BeginPlay()
@@ -40,14 +36,121 @@ void ABattlefieldAIController::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("AIController::BeginPlay"));
 }
 
-void ABattlefieldAIController::OnPerceptionUpdated(TArray<AActor*> UpdatedActors)
+void ABattlefieldAIController::AssignData(UAIData* InData)
 {
-	for (AActor* Actor : UpdatedActors){
-		if (Actor->IsA<APlayableCharacter>() && !GetSeeingPawn())
-		{
-			Blackboard->SetValueAsObject(BlackboardEnemyKey, Actor);
-			return;
+	AIData = InData;
+	BehaviorTree = AIData->BehaviorTree;
+	BlackboardEnemyKey = AIData->BlackboardEnemyKey;
+	BlackboardCanSeeEnemyKey = AIData->BlackboardCanSeeEnemyKey;
+	Sight->SightRadius = InData->SightRadius;
+	Sight->LoseSightRadius = InData->LoseSightRadius;
+	Sight->PeripheralVisionAngleDegrees = InData->PeripheralVisionAngleDegrees;
+	Sight->DetectionByAffiliation.bDetectEnemies = InData->DetectEnemies;
+	Sight->DetectionByAffiliation.bDetectFriendlies = InData->DetectAllies;
+	Sight->DetectionByAffiliation.bDetectNeutrals = InData->DetectNeutrals;
+	if (BehaviorTree)
+	{
+		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		BehaviorTreeComponent->StartTree(*BehaviorTree);
+	}
+	AIPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ABattlefieldAIController::OnPerceptionUpdated);
+}
+
+AActor* ABattlefieldAIController::GetSeeingPawn()
+{
+	UObject* object = Blackboard->GetValueAsObject(BlackboardEnemyKey);
+	return object ? Cast<AActor>(object) : nullptr;
+}
+
+void ABattlefieldAIController::HandlePawnDeath()
+{
+	UnPossess();
+	FTimerHandle SpawnTimer;
+	BehaviorTreeComponent->StopTree();
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimer, this, &ABattlefieldAIController::SpawnNewPawn, 2.f, false);
+}
+
+void ABattlefieldAIController::JumpRandomly()
+{
+	FTimerHandle JumpTimer;
+	float TimeHandle = FMath::RandRange(1.f, 5.f);
+	GetWorldTimerManager().SetTimer(JumpTimer, this, &ABattlefieldAIController::ExecuteJump, TimeHandle, true);
+}
+
+void ABattlefieldAIController::ExecuteJump()
+{
+	AICharacter->Jump();
+}
+
+void ABattlefieldAIController::SpawnNewPawn()
+{
+	float ChangeFloat = 0.f;
+	FVector Vec = { FMath::FRandRange(0.f + ChangeFloat, 2000.f + ChangeFloat), FMath::FRandRange(0.f + ChangeFloat, 2000.f + ChangeFloat), 350.0f };
+	FRotator Rot = { 0, 0, 0 };
+	uint8 Selection = FMath::RandRange(0, ControllerTeam->FactionData->AvailableHeroes.Num() - 1);
+	AICharacter = ControllerTeam->SpawnTeamCharacter(Vec, Rot, Selection);
+	Possess(AICharacter);
+	AICharacter->SetIsAIPlayer(true);
+	RunBehaviorTree(BehaviorTree);
+}
+
+void ABattlefieldAIController::BrainPulse()
+{
+	if (AICharacter) {
+		if (VisibleEnemies.Num() <= 0) {
+			bInCombat = false;
+			NonCombatPulse();
+		}
+		else {
+			bInCombat = true;
+			CombatPulse();
 		}
 	}
-	Blackboard->SetValueAsObject(BlackboardEnemyKey, nullptr);
+}
+
+void ABattlefieldAIController::NonCombatPulse()
+{
+
+}
+
+void ABattlefieldAIController::CombatPulse()
+{
+
+}
+
+void ABattlefieldAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+	
+	for (AActor* Actor : UpdatedActors){
+		if (Actor->IsA<APlayableCharacter>() && !GetSeeingPawn() && Cast<APlayableCharacter>(Actor)->GetOwnerTeam() != ControllerTeam && !VisibleEnemies.Contains(Actor))
+		{
+			VisibleEnemies.Add(Actor);
+			// Blackboard->SetValueAsObject(BlackboardEnemyKey, Actor);
+			// Blackboard->SetValueAsBool(BlackboardCanSeeEnemyKey, true);
+			// return;
+		}
+	}
+	// Blackboard->SetValueAsObject(BlackboardEnemyKey, nullptr);
+	// Blackboard->SetValueAsBool(BlackboardCanSeeEnemyKey, false);
+	
+}
+
+void ABattlefieldAIController::SetAICharacter(APlayableCharacter* InChar)
+{
+	AICharacter = InChar;
+}
+
+APlayableCharacter* ABattlefieldAIController::GetAICharacter()
+{
+	return AICharacter;
+}
+
+void ABattlefieldAIController::SetControllerTeam(UTeamComponent* InTeam)
+{
+	ControllerTeam = InTeam;
+}
+
+UTeamComponent* ABattlefieldAIController::GetControllerTeam()
+{
+	return ControllerTeam;
 }

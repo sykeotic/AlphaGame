@@ -12,6 +12,10 @@ class UBehaviorTree;
 class UBlackboardComponent;
 class UAISenseConfig_Sight;
 class UAIData;
+class UTextRenderComponent;
+class APlayableCharacter;
+class UTeamComponent;
+
 
 /**
  * 
@@ -25,24 +29,56 @@ public:
 
 	ABattlefieldAIController();
 
+	void SetAICharacter(APlayableCharacter* InChar);
+	APlayableCharacter* GetAICharacter();
+
+	void SetControllerTeam(UTeamComponent* InTeam);
+	UTeamComponent* GetControllerTeam();
+
 	void AssignData(UAIData* InData);
 	AActor* GetSeeingPawn();
 
+	void HandlePawnDeath();
+
+	void JumpRandomly();
+
 	UFUNCTION(BlueprintCallable)
-		void OnPerceptionUpdated(TArray<AActor*> UpdatedActors);
+		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 protected:
 
 	virtual void BeginPlay() override;
 
 private:
+
+	bool bInCombat;
+
+	TArray<AActor*> VisibleEnemies;
+
 	FName BlackboardEnemyKey;
+	FName BlackboardCanSeeEnemyKey;
+
+	UTeamComponent* ControllerTeam;
+
+	UTextRenderComponent* AIStatusText;
 
 	UBehaviorTree* BehaviorTree;
 	UBehaviorTreeComponent* BehaviorTreeComponent;
 	UBlackboardComponent* Blackboard;
 	UAIPerceptionComponent* AIPerceptionComponent;
+	UAISenseConfig_Sight* Sight;
 
+	APlayableCharacter* AICharacter;
+
+	FTimerHandle PulseHandler;
 
 	UAIData* AIData;
+
+	void ExecuteJump();
+	void SpawnNewPawn();
+
+	void BrainPulse();
+	void NonCombatPulse();
+	void CombatPulse();
+
 };

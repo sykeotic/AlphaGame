@@ -104,6 +104,19 @@ void AHumanPlayerController::Unbind() {
 	InputComponent->ClearActionBindings();
 }
 
+void AHumanPlayerController::CreateCastingWidget()
+{
+	CastingWidget = CreateWidget<UUserWidget>(this, PlayerControllerData->ObjectiveCapturingWidgetClass);
+	CastingWidget->AddToViewport();
+}
+
+void AHumanPlayerController::RemoveCastingWidget()
+{
+	if (CastingWidget) {
+		CastingWidget->RemoveFromParent();
+	}
+}
+
 void AHumanPlayerController::SetupGeneralHUD() {
 	GeneralHUD = Cast<AGeneralHUD>(this->GetHUD());
 	if (GeneralHUD->IsValidLowLevel()) {

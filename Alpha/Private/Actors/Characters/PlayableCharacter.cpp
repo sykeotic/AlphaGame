@@ -3,10 +3,12 @@
 #include "Logger.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "TimerManager.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/DataTable.h"
 #include "Combat/Components/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Modifier.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,6 +17,7 @@
 #include "GameplayUtils.h"
 #include "HandlerComponent.h"
 #include "Components/InputComponent.h"
+#include "HumanPlayerController.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -50,22 +53,23 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::BeginPlay() {
 	Super::BeginPlay();
-	InitCharacterData(nullptr);
 }
 
 void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
-	if (!BaseData) {
+	if (IsValid(BaseData)) {
+		UE_LOG(LogTemp, Warning, TEXT("PlayableCharacter::InitCharacterData - Base Data OK"));
+		CharacterData = BaseData->CharacterData;
+		CameraData = BaseData->CharacterData.PlayerCameraData;
+		PawnStatsData = BaseData->CharacterData.PawnStatsData;
+		GraphicsData = BaseData->CharacterData.PawnGraphicsData;
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("PlayableCharacter::InitCharacterData - Base Data NULL"));
 		UBasePawnData* ErrorBaseData = LoadObject<UBasePawnData>(NULL, TEXT("BasePawnData'/Game/Data/DataAssets/PlayableActors/TestBoi.TestBoi'"), NULL, LOAD_None, NULL);
 		CharacterData = ErrorBaseData->CharacterData;
 		CameraData = ErrorBaseData->CharacterData.PlayerCameraData;
 		PawnStatsData = ErrorBaseData->CharacterData.PawnStatsData;
 		GraphicsData = ErrorBaseData->CharacterData.PawnGraphicsData;
-	}
-	else {
-		CharacterData = BaseData->CharacterData;
-		CameraData = BaseData->CharacterData.PlayerCameraData;
-		PawnStatsData = BaseData->CharacterData.PawnStatsData;
-		GraphicsData = BaseData->CharacterData.PawnGraphicsData;
 	}
 	SetCharacterValues();
 	InitCombatComponent();
@@ -74,8 +78,8 @@ void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
 
 void APlayableCharacter::DestroyActor()
 {
-	Destroy();
 	CombatComponent->HandleDeath();
+	Destroy();
 }
 
 void APlayableCharacter::InitCombatComponent() {
@@ -85,7 +89,6 @@ void APlayableCharacter::InitCombatComponent() {
 		Weapon = Cast<ABaseCombatActor>(GetWorld()->SpawnActor<ABaseCombatActor>(CharacterData.Weapons[i]->BaseCombatActorDataStruct.ActorClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		Weapon->SetCombatComponentOwner(CombatComponent);
 		Weapon->AssignValues(CharacterData.Weapons[i]);
-		// ULogger::ScreenMessage(FColor::Emerald, "InitCombatComponent: " + FString::FromInt(Weapon->Modifiers[0]->GetEffectCount()));
 		CombatComponent->AddWeaponToArray(Weapon);
 		Weapon->GetMesh()->IgnoreActorWhenMoving(this, true);
 		if (i == 0) {
@@ -123,6 +126,28 @@ void APlayableCharacter::SwitchOnDecal() {
 
 void APlayableCharacter::SwitchOffDecal() {
 	CursorToWorld->SetVisibility(false);
+}
+
+void APlayableCharacter::SetSpawnFX(UParticleSystemComponent* InComp){
+	SpawnEffect = InComp;
+}
+
+UParticleSystemComponent* APlayableCharacter::GetSpawnFX(){
+	return SpawnEffect;
+}
+
+void APlayableCharacter::PlaySpawnFX(UParticleSystem* InVFX, USoundCue* InSound)
+{
+	FTimerHandle FXLife;
+	SpawnEffect = UGameplayStatics::SpawnEmitterAttached(InVFX, GetRootComponent());
+	SpawnEffect->AddRelativeLocation({ 0, 0, -130 });
+	UGameplayStatics::SpawnSoundAttached(InSound, GetRootComponent());
+	GetWorld()->GetTimerManager().SetTimer(FXLife, this, &APlayableCharacter::DestroySpawnFX, .5f, false);
+}
+
+void APlayableCharacter::DestroySpawnFX()
+{
+	SpawnEffect->DeactivateSystem();
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -169,8 +194,18 @@ FVector APlayableCharacter::GetPawnViewLocation() const {
 void APlayableCharacter::HandleDeath()
 {
 	FTimerHandle DeathAnim;
-	GetWorldTimerManager().SetTimer(DeathAnim, this, &APlayableCharacter::DestroyActor, 5.0f, false, 5.f);
+	GetWorldTimerManager().SetTimer(DeathAnim, this, &APlayableCharacter::DestroyActor, 1.5f, false);
 	GetMesh()->PlayAnimation(CharacterData.DeathAnimation, false);
+	if (!bIsAIPlayer) {
+		AHumanPlayerController* TempController = Cast<AHumanPlayerController>(GetController());
+		TempController->UnPossess();
+		if (TempController)
+			TempController->ShowHeroSelectWidget();
+	}
+	else {
+		ABattlefieldAIController* TempController = Cast<ABattlefieldAIController>(GetController());
+		TempController->HandlePawnDeath();
+	}
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -276,6 +311,15 @@ void APlayableCharacter::CharacterAbilityStop() {
 			SetAttackingFalse();
 		}
 	}
+}
+
+void APlayableCharacter::SetIsAIPlayer(bool InBool)
+{
+	bIsAIPlayer = InBool;
+}
+
+bool APlayableCharacter::IsAIPlayer() {
+	return bIsAIPlayer;
 }
 
 void APlayableCharacter::SetAttackingFalse() {

@@ -23,6 +23,8 @@ void AMainMenuGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	FMainMenuTeamStruct Team_1;
+	FMainMenuTeamStruct Team_2;
+	Team_2.SelectedFactionData = LoadObject<UFactionData>(NULL, TEXT("FactionData'/Game/Data/DataAssets/Factions/Dwarves.Dwarves'"), NULL, LOAD_None, NULL);
 	AMainMenuController* InputPlayer = Cast<AMainMenuController>(NewPlayer);
 	if (InputPlayer) {
 		if (GameStruct.MainMenuWidget) {
@@ -35,6 +37,7 @@ void AMainMenuGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(LogTemp, Warning, TEXT("MainMenuGameMode::PostLogin - Adding Unique ID "), *Message);
 	}
 	Teams.Add(0, Team_1);
+	Teams.Add(1, Team_2);
 }
 
 void AMainMenuGameMode::SetPlayerRole(int32 PlayerID, FString InKey)

@@ -15,6 +15,7 @@ class UCombatComponent;
 class UStatsComponent;
 class UTeamComponent;
 class USpringArmComponent;
+class USoundCue;
 class ABaseCombatActor;
 class AModifier;
 
@@ -45,18 +46,37 @@ public:
 	void SetBaseTurnRate(float InRate);
 	void SetBaseLookUpRate(float InRate);
 
-	void AbilityNext();
-	void AbilityPrevious();
-	void WeaponNext();
-	void WeaponPrevious();
+	UFUNCTION(BlueprintCallable)
+		void AbilityNext();
+	UFUNCTION(BlueprintCallable)
+		void AbilityPrevious();
+
+	UFUNCTION(BlueprintCallable)
+		void WeaponNext();
+	UFUNCTION(BlueprintCallable)
+		void WeaponPrevious();
+
+	UFUNCTION(BlueprintCallable)
+		void CharacterAttackStart();
+	UFUNCTION(BlueprintCallable)
+		void CharacterAttackStop();
+
+	UFUNCTION(BlueprintCallable)
+		void CharacterAbilityStart();
+	UFUNCTION(BlueprintCallable)
+		void CharacterAbilityStop();
+
 
 	void SwitchOnDecal();
 	void SwitchOffDecal();
 
-	void CharacterAttackStart();
-	void CharacterAttackStop();
-	void CharacterAbilityStart();
-	void CharacterAbilityStop();
+	void SetSpawnFX(UParticleSystemComponent* InComp);
+	UParticleSystemComponent* GetSpawnFX();
+	void PlaySpawnFX(UParticleSystem* InVFX, USoundCue* InSound);
+	void DestroySpawnFX();
+	
+	bool IsAIPlayer();
+	void SetIsAIPlayer(bool InBool);
 
 	void SetAttackingFalse();
 
@@ -118,4 +138,8 @@ private:
 
 	class UTeamComponent* OwnerTeam;
 	class UHandlerComponent* HandlerComponent;
+
+	bool bIsAIPlayer;
+
+	UParticleSystemComponent* SpawnEffect;
 };

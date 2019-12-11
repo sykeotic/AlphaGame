@@ -48,6 +48,9 @@ public:
 
 	void Unbind();
 
+	void CreateCastingWidget();
+	void RemoveCastingWidget();
+
 	void SetupGeneralHUD();
 
 	UFUNCTION(BlueprintCallable)
@@ -84,6 +87,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UUserWidget* UserWidget;
+
+	UUserWidget* CastingWidget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		UPlayerControllerData* PlayerControllerData;

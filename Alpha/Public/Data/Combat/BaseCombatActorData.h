@@ -14,8 +14,58 @@ class UModifierData;
 UENUM(BlueprintType)
 enum class ECombatActorTypeSpecifier : uint8 {
 	RANGED UMETA(DisplayName = "Ranged"),
-	MELEE UMETA(DisplayName = "Melee")
+	MELEE UMETA(DisplayName = "Melee"),
+	NONE UMETA(DisplayName = "None")
 };
+
+UENUM(BlueprintType)
+enum class ECombatProfileValidTargets : uint8 {
+	ENEMIES UMETA(DisplayName = "Enemies"),
+	ALLIES UMETA(DisplayName = "Allies"),
+	SELF UMETA(DisplayName = "Self"),
+	ALL UMETA(DisplayName = "All"),
+	NONE UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
+enum class ECombatProfileTargetScope : uint8 {
+	AREA_OF_EFFECT UMETA(DisplayName = "Area of Effect"),
+	SINGLE_TARGET UMETA(DisplayName = "Single Target"),
+	MELEE UMETA(DisplayName = "Melee"),
+	NONE UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
+enum class ECombatProfileEffects : uint8 {
+	HEAL UMETA(DisplayName = "Heal"),
+	DAMAGE UMETA(DisplayName = "Damage"),
+	BUFF UMETA(DisplayName = "Buff"),
+	DEBUFF UMETA(DisplayName = "Debuff"),
+	NONE UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
+enum class ECombatProfileStrengths : uint8 {
+	LOW_HP UMETA(DisplayName = "Low HP %"),
+	HIGH_HP UMETA(DisplayName = "High HP %"),
+	NO_ARMOR UMETA(DisplayName = "No Armor"),
+	LOW_ARMOR UMETA(DisplayName = "Low Armor"),
+	MED_ARMOR UMETA(DisplayName = "Medium Armor"),
+	HIGH_ARMOR UMETA(DisplayName = "High Armor"),
+	NONE UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
+enum class ECombatProfileWeaknesses : uint8 {
+	LOW_HP UMETA(DisplayName = "Low HP %"),
+	HIGH_HP UMETA(DisplayName = "High HP %"),
+	NO_ARMOR UMETA(DisplayName = "No Armor"),
+	LOW_ARMOR UMETA(DisplayName = "Low Armor"),
+	MED_ARMOR UMETA(DisplayName = "Medium Armor"),
+	HIGH_ARMOR UMETA(DisplayName = "High Armor"),
+	NONE UMETA(DisplayName = "None")
+};
+
 
 USTRUCT(BlueprintType)
 struct FBaseCombatActorDataStruct {
@@ -56,6 +106,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UModifierData*> ModifierData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatProfileValidTargets ProfileValidTargets;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatProfileStrengths ProfileStrengths;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatProfileWeaknesses ProfileWeaknesses;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatProfileEffects ProfileEffects;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatProfileTargetScope ProfileTargetScope;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ECombatActorTypeSpecifier ProfileActorType;
+
 };
 
 /**
@@ -69,8 +133,5 @@ class UBaseCombatActorData : public UDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FBaseCombatActorDataStruct BaseCombatActorDataStruct;
-
-	//enum for Use Animations: HeavyAttackAnim, SpellAnim, etc
-	
+		FBaseCombatActorDataStruct BaseCombatActorDataStruct;	
 };

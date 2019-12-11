@@ -7,6 +7,9 @@
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "ObjectiveOverlapActor.generated.h"
 
+class AHumanPlayerController;
+class UTeamComponent;
+
 UENUM(BlueprintType)
 enum class EObjectiveState : uint8 {
 	CAPTURING UMETA(DisplayName = "Capturing"),
@@ -43,24 +46,15 @@ public:
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void AssertObjectiveState();
-
 	void StartCapturing();
-
 	void ResetObjectiveFinished();
-
 	void ResetObjective();
-
 	void TimerTick();
-
 	void AdjustModifier();
-
 	void HandleCapture();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void CreateCaptureDisplay();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void DestroyCaptureDisplay();
+	void CreateCaptureDisplay(AHumanPlayerController* InController);
+	void DestroyCaptureDisplay(AHumanPlayerController* InController);
 
 	void ChangeState(EObjectiveState InState);
 
@@ -72,12 +66,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float PercentProgress;
 
+	UPROPERTY(EditInstanceOnly)
+	int32 StartingTeam;
+
 	float CurrentCaptureScore;
 
 	bool bResetting;
 
 	FTimerHandle CaptureTimer;
-
 	FTimerHandle ResetTimer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -86,7 +82,6 @@ public:
 	EObjectiveState OBJECTIVE_STATE;
 	EObjectiveState PREV_STATE;
 
-	class UTeamComponent* OwningTeam;
-
-	class UTeamComponent* ContestingTeam;
+	UTeamComponent* OwningTeam;
+	UTeamComponent* ContestingTeam;
 };

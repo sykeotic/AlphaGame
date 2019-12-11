@@ -10,6 +10,7 @@ class AAIController;
 class AGameMode;
 class UPlayerControllerData;
 class UAIData;
+class UFeedback;
 
 UCLASS(BlueprintType)
 class ALPHA_API UGameModeData : public UDataAsset
@@ -28,4 +29,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPlayerControllerData* PlayerControllerData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UFeedback* SpawnFX;
 };

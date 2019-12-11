@@ -4,7 +4,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "PlayablePawn.h"
+#include "HumanPlayerController.h"
+#include "PlayerControllerData.h"
 #include "TeamComponent.h"
+#include "Battlefield/BattlefieldGameState.h"
 #include "Game/Modes/Battlefield/BattlefieldGameState.h"
 #include "Logger.h"
 
@@ -26,7 +29,7 @@ void AObjectiveOverlapActor::BeginPlay(){
 	SphereComponent->SetGenerateOverlapEvents(true);
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapBegin);
 	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapEnd);
-	// OwningTeam = Cast<ATestGameState>(GetWorld()->GetGameState())->ActiveTeams[0];
+	UE_LOG(LogTemp, Warning, TEXT("Objective::BeginPlay - Assigning Team"));
 }
 
 void AObjectiveOverlapActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
@@ -89,7 +92,9 @@ void AObjectiveOverlapActor::AssertObjectiveState() {
 void AObjectiveOverlapActor::StartCapturing() {
 	ChangeState(EObjectiveState::CAPTURING);
 	APlayableCharacter* FirstChar = Cast<APlayableCharacter>(InZoneActors.Last());
-	CreateCaptureDisplay();
+	AHumanPlayerController* InController = Cast<AHumanPlayerController>(FirstChar->GetController());
+	if(InController)
+		CreateCaptureDisplay(InController);
 	if (FirstChar) {
 		ContestingTeam = FirstChar->GetOwnerTeam();
 		CurrentCaptureScore += CaptureModifier;
@@ -155,13 +160,27 @@ void AObjectiveOverlapActor::AdjustModifier() {
 }
 
 void AObjectiveOverlapActor::HandleCapture() {
-	ChangeState(EObjectiveState::CAPTURED);
-	OwningTeam = ContestingTeam;
-	ResetObjectiveFinished();
-	PlayActorSound(CapturedSound);
-	ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);
-	ABattlefieldGameState* CurrGameState = Cast<ABattlefieldGameState>(GetWorld()->GetGameState());
-	CurrGameState->ObjectiveCaptured(OwningTeam, this);
+	if (ContestingTeam->IsValidLowLevel()) {
+		ChangeState(EObjectiveState::CAPTURED);
+		OwningTeam->RemoveObjective(this);
+		OwningTeam = ContestingTeam;
+		OwningTeam->AddObjective(this);
+		ResetObjectiveFinished();
+		PlayActorSound(CapturedSound);
+		ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);
+		ABattlefieldGameState* CurrGameState = Cast<ABattlefieldGameState>(GetWorld()->GetGameState());
+		CurrGameState->ObjectiveCaptured(OwningTeam, this);
+	}
+}
+
+void AObjectiveOverlapActor::CreateCaptureDisplay(AHumanPlayerController* InController)
+{
+	InController->CreateCastingWidget();
+}
+
+void AObjectiveOverlapActor::DestroyCaptureDisplay(AHumanPlayerController* InController)
+{
+	InController->RemoveCastingWidget();
 }
 
 void AObjectiveOverlapActor::ResetObjective() {
@@ -173,7 +192,11 @@ void AObjectiveOverlapActor::ResetObjective() {
 void AObjectiveOverlapActor::ResetObjectiveFinished() {
 	ContestingTeam = nullptr;
 	ChangeState(EObjectiveState::CAPTURED);
-	DestroyCaptureDisplay();
+	for (AActor* CurrActor : InZoneActors) {
+		AHumanPlayerController* InController = Cast<AHumanPlayerController>(Cast<APlayableCharacter>(CurrActor)->GetController());
+		if(InController)
+			DestroyCaptureDisplay(InController);
+	}
 	CurrentCaptureScore = 0;
 	PercentProgress = 0.0f;
 	InZoneActors.Empty();

@@ -24,11 +24,26 @@ public:
 		UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UBlackboardComponent* Blackboard;
+		float SightRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAIPerceptionComponent* AIPerceptionComponent;
+		float LoseSightRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float PeripheralVisionAngleDegrees;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DetectEnemies;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DetectAllies;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool DetectNeutrals;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName BlackboardEnemyKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName BlackboardCanSeeEnemyKey;
 };

@@ -16,17 +16,12 @@ class ALPHA_API UPlayerControllerData : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> HeroWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> GeneralWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<UUserWidget> RoleSelectWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<UUserWidget> CharSelectionWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> ObjectiveCapturingWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName HeroRoleLabel;
