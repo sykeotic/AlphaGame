@@ -103,6 +103,9 @@ void ABattlefieldGameMode::InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStr
 				ControllerArray.Add(AIController);
 				AIController->SetAICharacter(AIChar);
 				AIController->SetControllerTeam(NewTeam);
+				AIController->SpawnTextActor();
+				AIController->SetPossessed(true);
+				AIController->EngageBrainPulseLoop();
 			}			
 		}
 		else {

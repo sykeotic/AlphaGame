@@ -13,6 +13,7 @@ class UBlackboardComponent;
 class UAISenseConfig_Sight;
 class UAIData;
 class UTextRenderComponent;
+class ATextRenderActor;
 class APlayableCharacter;
 class UTeamComponent;
 
@@ -42,6 +43,10 @@ public:
 
 	void JumpRandomly();
 
+	void SpawnTextActor();
+	void EngageBrainPulseLoop();
+	void SetPossessed(bool inPossessed);
+
 	UFUNCTION(BlueprintCallable)
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
@@ -52,6 +57,7 @@ protected:
 private:
 
 	bool bInCombat;
+	bool bPossessed;
 
 	TArray<AActor*> VisibleEnemies;
 
@@ -60,7 +66,8 @@ private:
 
 	UTeamComponent* ControllerTeam;
 
-	UTextRenderComponent* AIStatusText;
+	// UTextRenderComponent* AIStatusText;
+	ATextRenderActor* AIStatusText;
 
 	UBehaviorTree* BehaviorTree;
 	UBehaviorTreeComponent* BehaviorTreeComponent;

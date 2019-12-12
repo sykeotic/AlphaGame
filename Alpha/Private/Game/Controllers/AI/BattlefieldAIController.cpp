@@ -10,6 +10,7 @@
 #include "Data/Game/FactionData.h"
 #include "TimerManager.h"
 #include "Components/TextRenderComponent.h"
+#include "Engine/TextRenderActor.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 ABattlefieldAIController::ABattlefieldAIController()
@@ -65,9 +66,11 @@ AActor* ABattlefieldAIController::GetSeeingPawn()
 void ABattlefieldAIController::HandlePawnDeath()
 {
 	UnPossess();
+	GetWorld()->DestroyActor(AIStatusText);
+	bPossessed = false;
 	FTimerHandle SpawnTimer;
 	BehaviorTreeComponent->StopTree();
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimer, this, &ABattlefieldAIController::SpawnNewPawn, 2.f, false);
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimer, this, &ABattlefieldAIController::SpawnNewPawn, 3.f, false);
 }
 
 void ABattlefieldAIController::JumpRandomly()
@@ -90,32 +93,74 @@ void ABattlefieldAIController::SpawnNewPawn()
 	uint8 Selection = FMath::RandRange(0, ControllerTeam->FactionData->AvailableHeroes.Num() - 1);
 	AICharacter = ControllerTeam->SpawnTeamCharacter(Vec, Rot, Selection);
 	Possess(AICharacter);
+	bPossessed = true;
 	AICharacter->SetIsAIPlayer(true);
-	RunBehaviorTree(BehaviorTree);
+	SpawnTextActor();
+	EngageBrainPulseLoop();
+	// RunBehaviorTree(BehaviorTree);
+}
+
+void ABattlefieldAIController::SpawnTextActor()
+{
+	if (AICharacter) {
+		AIStatusText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(200.f, 200.f, 200.f), FRotator(0.f, 0.f, 0.f));
+		AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("SPAWN")));
+		AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Yellow);
+		AIStatusText->SetActorScale3D(FVector(1.f, 1.f, 1.f));
+		AIStatusText->AttachToComponent(Cast<USceneComponent>(AICharacter->GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		AIStatusText->GetTextRender()->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
+	}
+}
+
+void ABattlefieldAIController::EngageBrainPulseLoop()
+{
+	GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 3.f, false);
+}
+
+void ABattlefieldAIController::SetPossessed(bool inPossessed)
+{
+	bPossessed = inPossessed;
 }
 
 void ABattlefieldAIController::BrainPulse()
 {
-	if (AICharacter) {
+	if (!AICharacter) {
+		UE_LOG(LogTemp, Warning, TEXT("AIController::SpawnNewPawn No AI Character"));
+	}
+	if (!AIStatusText) {
+		UE_LOG(LogTemp, Warning, TEXT("AIController::SpawnNewPawn No AIStatusText"));
+	}
+	if (AICharacter && bPossessed) {
 		if (VisibleEnemies.Num() <= 0) {
 			bInCombat = false;
+			if (AICharacter && AIStatusText) {
+				AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("PEACE")));
+				AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Green);
+			}
 			NonCombatPulse();
 		}
 		else {
 			bInCombat = true;
+			if (AICharacter && AIStatusText) {
+				AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("COMBAT")));
+				AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Red);
+			}
 			CombatPulse();
 		}
+	}
+	if (bPossessed) {
+		GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 3.f, true);
 	}
 }
 
 void ABattlefieldAIController::NonCombatPulse()
 {
-
+	// TODO Make the AI think
 }
 
 void ABattlefieldAIController::CombatPulse()
 {
-
+	// TODO Make the AI think
 }
 
 void ABattlefieldAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
