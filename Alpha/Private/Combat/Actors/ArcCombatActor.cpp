@@ -53,7 +53,9 @@ void AArcCombatActor::ArcSweep()
 		ULogger::ScreenMessage(FColor::Green, "Sweep Done");
 		if (SphereCollision) {
 			ULogger::ScreenMessage(FColor::Red, "SOMEONE WAS HIT WITH FIERY BREATH OF DOOM");
-
+			for (FHitResult HitResult : HitResults) {
+				ApplyModifiers(HitResult.Actor.Get());
+			}
 		}
 		else {
 			ULogger::ScreenMessage(FColor::Green, "No one was hit :(");
