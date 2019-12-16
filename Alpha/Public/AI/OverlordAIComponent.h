@@ -19,10 +19,14 @@ public:
 	void Init(TArray<ABattlefieldAIController*> InTroops);
 	void SetAssignedTeam(UTeamComponent* InTeam);
 
+	void OverlordPulse();
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	FTimerHandle PulseHandler;
+
 	TArray<ACaptainAI*> AssignedCaptains;
 	UTeamComponent* AssignedTeam;
 };

@@ -277,14 +277,16 @@ void APlayableCharacter::CharacterAttackStart() {
 }
 
 void APlayableCharacter::CharacterAttackStop() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime - .1;
-	if (bIsAttacking)
-	{
-		if (StopAttackTime >= 0)
-			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-		else {
-			SetAttackingFalse();
+	if (CombatComponent->GetCurrentWeapon()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		float StopAttackTime = CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() - GameTime - .1;
+		if (bIsAttacking)
+		{
+			if (StopAttackTime >= 0)
+				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+			else {
+				SetAttackingFalse();
+			}
 		}
 	}
 }
@@ -301,14 +303,16 @@ void APlayableCharacter::CharacterAbilityStart() {
 }
 
 void APlayableCharacter::CharacterAbilityStop() {
-	const float GameTime = GetWorld()->GetTimeSeconds();
-	float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime - .1;
-	if (bIsAttacking)
-	{
-		if (StopAttackTime > 0)
-			GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
-		else {
-			SetAttackingFalse();
+	if (CombatComponent->GetCurrentAbility()) {
+		const float GameTime = GetWorld()->GetTimeSeconds();
+		float StopAttackTime = CombatComponent->GetCurrentAbility()->GetNextValidFireTime() - GameTime - .1;
+		if (bIsAttacking)
+		{
+			if (StopAttackTime > 0)
+				GetWorldTimerManager().SetTimer(AttackStopTimer, this, &APlayableCharacter::SetAttackingFalse, StopAttackTime, false);
+			else {
+				SetAttackingFalse();
+			}
 		}
 	}
 }
@@ -384,6 +388,7 @@ void APlayableCharacter::SetCharacterValues() {
 	GetCapsuleComponent()->InitCapsuleSize(GraphicsData.CapsuleRadius, GraphicsData.CapsuleHeight);
 	GetMesh()->SetRelativeLocation(GraphicsData.MeshLocation);
 	GetMesh()->SetRelativeRotation(GraphicsData.MeshRotation);
+	SetActorRelativeScale3D(GraphicsData.MeshScale);
 	GetMesh()->SetSkeletalMesh(GraphicsData.SkeletalMesh);
 	GetMesh()->SetMaterial(0, GraphicsData.Material_0);
 	GetMesh()->SetMaterial(1, GraphicsData.Material_1);

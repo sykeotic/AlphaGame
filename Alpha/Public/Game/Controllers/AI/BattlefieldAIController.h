@@ -12,7 +12,6 @@ class UBehaviorTree;
 class UBlackboardComponent;
 class UAISenseConfig_Sight;
 class UAIData;
-class UTextRenderComponent;
 class ATextRenderActor;
 class APlayableCharacter;
 class UTeamComponent;
@@ -66,7 +65,6 @@ private:
 
 	UTeamComponent* ControllerTeam;
 
-	// UTextRenderComponent* AIStatusText;
 	ATextRenderActor* AIStatusText;
 
 	UBehaviorTree* BehaviorTree;

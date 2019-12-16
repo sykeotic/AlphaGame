@@ -32,6 +32,11 @@ UTeamComponent* ABattlefieldGameState::GetTeamFromID(int32 InIndex)
 	return ActiveTeams[InIndex];
 }
 
+TArray<AObjectiveOverlapActor*> ABattlefieldGameState::GetAllObjectives()
+{
+	return ActiveObjectives;
+}
+
 UTeamComponent* ABattlefieldGameState::FindTeamForPlayer(int32 PlayerID)
 {
 	for (UTeamComponent* CurrTeam : ActiveTeams) {

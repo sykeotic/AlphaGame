@@ -18,8 +18,6 @@ class ALPHA_API ABaseProjectile : public AActor
 public:
 	ABaseProjectile();
 
-	void Tick(float DeltaSeconds) override;
-
 	FProjectileDataStruct ProjectileData;
 
 	UPROPERTY(Transient)

@@ -31,7 +31,8 @@ void ABattlefieldGameMode::InitTeams()
 void ABattlefieldGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::BeginPlay - BeginPlay"));	
+	ULogger::SetIsTestRun(true);
+	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::BeginPlay - BeginPlay"));
 }
 
 void ABattlefieldGameMode::PostLogin(APlayerController* NewPlayer)
@@ -93,6 +94,7 @@ void ABattlefieldGameMode::InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStr
 		FRotator Rot = { 0, 0, 0 };
 		APlayableCharacter* AIChar = NewTeam->SpawnTeamCharacter(Vec, Rot, 0);
 		if (CurrentGameModeData) {
+
 			UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeam - CurrentGameModeData OK"));
 			AIChar->AIControllerClass = CurrentGameModeData->AIData->AIControllerClass;
 			AIChar->SpawnDefaultController();
@@ -106,13 +108,13 @@ void ABattlefieldGameMode::InitTeam(uint8 InIndex, FMainMenuTeamStruct InTeamStr
 				AIController->SpawnTextActor();
 				AIController->SetPossessed(true);
 				AIController->EngageBrainPulseLoop();
-			}			
+			}
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeam - CurrentGameModeData NULL"));
 			AIChar->AIControllerClass = ABattlefieldAIController::StaticClass();
 			AIChar->SpawnDefaultController();
-		}		
+		}
 		AIChar->SetOwnerTeam(NewTeam);
 		Sentinel++;
 	}

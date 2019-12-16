@@ -12,8 +12,8 @@
 
 ABaseProjectile::ABaseProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(15.0f);
@@ -32,11 +32,6 @@ ABaseProjectile::ABaseProjectile()
 	ProjectileMovement->Bounciness = 0.3f;
 
 	InitialLifeSpan = 3.0f;
-}
-
-void ABaseProjectile::Tick(float DeltaSeconds)
-{
-
 }
 
 void ABaseProjectile::BeginPlay()

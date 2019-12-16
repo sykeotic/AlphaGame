@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include "TimerManager.h"
 #include "Feedback.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Modifier.h"
 #include "PlayableCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -72,7 +73,9 @@ void ABaseCombatActor::ExecuteUse()
 void ABaseCombatActor::AssignValues(UBaseCombatActorData* InData)
 {
 	BaseCombatActorData = InData->BaseCombatActorDataStruct;
-	MeshComp->SetStaticMesh(BaseCombatActorData.MeshComp->GetStaticMesh());
+	if (BaseCombatActorData.MeshComp) {
+		MeshComp->SetStaticMesh(BaseCombatActorData.MeshComp->GetStaticMesh());
+	}
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AddActorLocalRotation(BaseCombatActorData.MeshRotation);
 	InitModifiers();
@@ -256,10 +259,11 @@ void ABaseCombatActor::StartSimulatingActorUse()
 {
 	if (BaseCombatActorData.Feedback) {
 		GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.Feedback->VisualFXBuffer, false);
-		USoundCue* SoundToPlay = BaseCombatActorData.Feedback->PickRandomSound();
-		if (SoundToPlay) {
-			PlaySoundFX(SoundToPlay);
-		}
+		FTimerHandle SoundDelay;
+		GetWorldTimerManager().SetTimer(SoundDelay, [this]() {
+			USoundCue* SoundToPlayObj = BaseCombatActorData.Feedback->PickRandomSound();				
+			PlaySoundFX(SoundToPlayObj);
+		}, BaseCombatActorData.Feedback->SoundFXBuffer, false);			
 	}
 	if (!bPlayingUseAnimation)
 	{
@@ -315,6 +319,8 @@ float ABaseCombatActor::PlayActorAnimation(UAnimMontage* Animation, float InPlay
 		{
 			Duration = ComponentOwner->GetCharacterOwner()->PlayAnimMontage(Animation, InPlayRate, StartSectionName);
 		}
+	}
+	else {
 	}
 	GetWorldTimerManager().SetTimer(AnimationTimerHandle, this, &ABaseCombatActor::StopSimulatingActorUse, Duration, false);
 	return Duration;

@@ -41,6 +41,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FRotator MeshRotation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector MeshScale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UMaterial* Material_0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UMaterial* Material_1;

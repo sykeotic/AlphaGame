@@ -29,7 +29,6 @@ void AMeleeCombatActor::OnUse() {
 void AMeleeCombatActor::ExecuteUse()
 {
 	SectionCounter = 0;
-	// ULogger::ScreenMessage(FColor::Magenta, "AMeleeCombatActor::ExecuteUse");
 	bCanOverlap = true;
 	GetWorldTimerManager().SetTimer(OverlapWindowTimer, this, &AMeleeCombatActor::SetOverlappingToFalse, CurrentAnim->GetPlayLength(), false);
 	ClearOverlappedArray();
@@ -57,7 +56,6 @@ void AMeleeCombatActor::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComp,
 
 void AMeleeCombatActor::SetOverlappingToFalse()
 {
-	// ULogger::ScreenMessage(FColor::Magenta, "AMeleeCombatActor::SetOverlappingToFalse");
 	bCanOverlap = false;
 	OverlappedActors.Empty();
 }
@@ -65,11 +63,7 @@ void AMeleeCombatActor::SetOverlappingToFalse()
 void AMeleeCombatActor::ClearOverlappedArray()
 {
 	if (ACTOR_STATE == ECombatActorState::USING) {
-		// ULogger::ScreenMessage(FColor::Magenta, "AMeleeCombatActor::ClearOverlappedArray - TRUE");
 		OverlappedActors.Empty();
 		GetWorldTimerManager().SetTimer(ClearTimer, this, &AMeleeCombatActor::ClearOverlappedArray, CurrentAnim->GetSectionLength(SectionCounter++), false);
-	}
-	else {
-		// ULogger::ScreenMessage(FColor::Magenta, "AMeleeCombatActor::ClearOverlappedArray - FALSE");
 	}
 }

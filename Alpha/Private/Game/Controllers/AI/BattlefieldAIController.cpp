@@ -52,7 +52,7 @@ void ABattlefieldAIController::AssignData(UAIData* InData)
 	if (BehaviorTree)
 	{
 		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		BehaviorTreeComponent->StartTree(*BehaviorTree);
+		// BehaviorTreeComponent->StartTree(*BehaviorTree);
 	}
 	AIPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ABattlefieldAIController::OnPerceptionUpdated);
 }
@@ -106,7 +106,7 @@ void ABattlefieldAIController::SpawnTextActor()
 		AIStatusText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(200.f, 200.f, 200.f), FRotator(0.f, 0.f, 0.f));
 		AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("SPAWN")));
 		AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Yellow);
-		AIStatusText->SetActorScale3D(FVector(1.f, 1.f, 1.f));
+		AIStatusText->SetActorScale3D(FVector(.7f, .7f, .7f));
 		AIStatusText->AttachToComponent(Cast<USceneComponent>(AICharacter->GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		AIStatusText->GetTextRender()->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
 	}
@@ -114,7 +114,7 @@ void ABattlefieldAIController::SpawnTextActor()
 
 void ABattlefieldAIController::EngageBrainPulseLoop()
 {
-	GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 1.f, false);
 }
 
 void ABattlefieldAIController::SetPossessed(bool inPossessed)
@@ -149,7 +149,7 @@ void ABattlefieldAIController::BrainPulse()
 		}
 	}
 	if (bPossessed) {
-		GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 3.f, true);
+		GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, 1.f, true);
 	}
 }
 
@@ -166,18 +166,17 @@ void ABattlefieldAIController::CombatPulse()
 void ABattlefieldAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
 	
-	for (AActor* Actor : UpdatedActors){
-		if (Actor->IsA<APlayableCharacter>() && !GetSeeingPawn() && Cast<APlayableCharacter>(Actor)->GetOwnerTeam() != ControllerTeam && !VisibleEnemies.Contains(Actor))
+	for (AActor* Actor : UpdatedActors) {
+		if (Actor->IsA<APlayableCharacter>() && !GetSeeingPawn() && Cast<APlayableCharacter>(Actor)->GetOwnerTeam() != ControllerTeam )
 		{
-			VisibleEnemies.Add(Actor);
-			// Blackboard->SetValueAsObject(BlackboardEnemyKey, Actor);
-			// Blackboard->SetValueAsBool(BlackboardCanSeeEnemyKey, true);
-			// return;
+			if (!VisibleEnemies.Contains(Actor)) {
+				VisibleEnemies.Add(Actor);
+			}
+			else {
+				VisibleEnemies.Remove(Actor);
+			}
 		}
 	}
-	// Blackboard->SetValueAsObject(BlackboardEnemyKey, nullptr);
-	// Blackboard->SetValueAsBool(BlackboardCanSeeEnemyKey, false);
-	
 }
 
 void ABattlefieldAIController::SetAICharacter(APlayableCharacter* InChar)
