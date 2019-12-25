@@ -80,7 +80,10 @@ public:
 
 	void SetAttackingFalse();
 
+	UFUNCTION(BlueprintCallable)
 	UCombatComponent* GetCombatComponent();
+
+	UFUNCTION(BlueprintCallable)
 	UTeamComponent* GetOwnerTeam();
 	UStatsComponent* GetStatsComponent();
 	UDecalComponent* GetDecal();
@@ -90,7 +93,8 @@ public:
 
 	void ApplyModifiers(AModifier* InModifier, AActor* InActor);
 
-	void InitCharacterData(UBasePawnData* BaseData);
+	UFUNCTION(BlueprintCallable)
+		void InitCharacterData(UBasePawnData* BaseData);
 
 	bool CharacterCanAttack();
 

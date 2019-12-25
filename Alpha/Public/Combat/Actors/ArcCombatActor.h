@@ -25,8 +25,10 @@ public:
 	virtual void ExecuteUse() override;
 	virtual void AssignValues(UBaseCombatActorData* InData) override;
 
+	virtual void PlayVisualFX() override;
+
 private:
 
 	void ArcSweep();
-	
+	void SetMeshToInvisible();
 };

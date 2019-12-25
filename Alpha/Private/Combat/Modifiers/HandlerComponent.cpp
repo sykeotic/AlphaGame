@@ -46,20 +46,27 @@ void UHandlerComponent::UpdateModifiers()
 {
 	TArray<int32> RemoveItems;
 	for (int i = 0; i < Entries.Num(); i++) {
-		if (Entries[i].Modifier->AreConditionsTrue()) {
-			Entries[i].Modifier->SetIsActive(true);
-		}
-		else {
-			Entries[i].Modifier->SetIsActive(false);
-		}
-		if (Entries[i].Modifier->IsActive()) {
-			ApplyEffects(Entries[i].Modifier, ActorOwner);
-		}
-		float CurrentTime = GetWorld()->GetTimeSeconds();
-		float EndTime = Entries[i].StartTime + Entries[i].Modifier->GetContext().Duration;
-		bool bPersistent = Entries[i].Modifier->GetContext().bHasDuration;
-		if ( !bPersistent || EndTime <= CurrentTime) {
-			RemoveItems.AddUnique(i);
+		if (Entries[i].Modifier) {
+			if (!Entries[i].Modifier->GetConditionTree()) {
+				Entries[i].Modifier->SetIsActive(true);
+			}
+			else {
+				if (Entries[i].Modifier->AreConditionsTrue()) {
+					Entries[i].Modifier->SetIsActive(true);
+				}
+				else {
+					Entries[i].Modifier->SetIsActive(false);
+				}
+			}
+			if (Entries[i].Modifier->IsActive()) {
+				ApplyEffects(Entries[i].Modifier, ActorOwner);
+			}
+			float CurrentTime = GetWorld()->GetTimeSeconds();
+			float EndTime = Entries[i].StartTime + Entries[i].Modifier->GetContext().Duration;
+			bool bPersistent = Entries[i].Modifier->GetContext().bHasDuration;
+			if (!bPersistent || EndTime <= CurrentTime) {
+				RemoveItems.AddUnique(i);
+			}
 		}
 	}
 	for (int32 CurrIndex : RemoveItems) {

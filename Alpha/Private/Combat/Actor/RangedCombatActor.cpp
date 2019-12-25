@@ -28,6 +28,11 @@ void ARangedCombatActor::AssignValues(UBaseCombatActorData* InData)
 	RangedDataStruct = TempData->RangedCombatActorDataStruct;
 }
 
+void ARangedCombatActor::PlayVisualFX()
+{
+	Super::PlayVisualFX();
+}
+
 void ARangedCombatActor::LaunchProjectile()
 {
 	if (RangedDataStruct.ProjectileClass != NULL) {
@@ -35,7 +40,7 @@ void ARangedCombatActor::LaunchProjectile()
 		FVector OwnerLoc;
 		ComponentOwner->GetOwner()->GetActorEyesViewPoint(OwnerLoc, RotationFrom);
 		FVector LocationFrom = MeshComp->GetSocketLocation(RangedDataStruct.ProjectileSpawnAtSocket);
-		RotationFrom.Pitch += 10.0f;
+		RotationFrom.Pitch -= 5.0f;
 		UWorld* const World = GetWorld();
 		if (World)
 		{

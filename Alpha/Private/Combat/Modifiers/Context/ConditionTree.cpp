@@ -12,12 +12,17 @@ void UConditionTree::InitExpressions()
 
 bool UConditionTree::IsConditionTreeTrue()
 {
-	for (UBaseExpression* CurrExp : ExpressionTree) {
-		if (CurrExp->Evaluate() == false) {
-			return false;
+	if (ExpressionTree.Num() > 0) {
+		for (UBaseExpression* CurrExp : ExpressionTree) {
+			if (CurrExp->Evaluate() == false) {
+				return false;
+			}
 		}
+		return true;
 	}
-	return true;
+	else {
+		return true;
+	}
 }
 
 AModifier* UConditionTree::GetModifierOwner()

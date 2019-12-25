@@ -29,7 +29,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName ArcSpawnFromSocket;
-
 };
 
 /**

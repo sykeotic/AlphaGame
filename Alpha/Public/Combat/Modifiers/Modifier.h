@@ -42,6 +42,7 @@ public:
 	AModifier();
 
 	bool AreConditionsTrue();
+	UConditionTree* GetConditionTree();
 	bool IsActive();
 	void SetIsActive(bool bActiveStatus);
 

@@ -18,6 +18,11 @@ bool AModifier::AreConditionsTrue()
 	return Context.Conditions->IsConditionTreeTrue();
 }
 
+UConditionTree* AModifier::GetConditionTree()
+{
+	return Context.Conditions;
+}
+
 bool AModifier::IsActive()
 {
 	return Context.bIsActive;
@@ -61,9 +66,11 @@ void AModifier::AssignValues(FModifierDataStruct InData)
 	Context.bHasDuration = ModifierData.bHasDuration;
 	Context.bIsActive = false;
 	Context.Duration = ModifierData.Duration;
-	Context.Conditions = ModifierData.Conditions;
-	Context.Conditions->SetModifierOwner(this);
-	Context.Conditions->InitExpressions();
+	if (Context.Conditions) {
+		Context.Conditions = ModifierData.Conditions;
+		Context.Conditions->SetModifierOwner(this);
+		Context.Conditions->InitExpressions();
+	}
 	for (int i = 0; i < ModifierData.BaseEffectData.Num(); i++) {
 		FActorSpawnParameters SpawnInfo;
 		ABaseEffect* TempEffect;

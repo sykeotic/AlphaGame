@@ -75,6 +75,8 @@ private:
 
 	APlayableCharacter* AICharacter;
 
+	AActor* CurrentTarget;
+
 	FTimerHandle PulseHandler;
 
 	UAIData* AIData;

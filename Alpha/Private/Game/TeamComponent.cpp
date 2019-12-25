@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Feedback.h"
 #include "ObjectiveOverlapActor.h"
+#include "Components/StaticMeshComponent.h"
 #include "Game/Modes/Battlefield/BattlefieldGameState.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "AI/OverlordAIComponent.h"
@@ -46,6 +47,7 @@ void UTeamComponent::FindAllObjectivesForTeam()
 			AddObjective(CurrObj);
 			CurrObj->OBJECTIVE_STATE = EObjectiveState::CAPTURED;
 			CurrObj->PREV_STATE = EObjectiveState::NEUTRAL;
+			CurrObj->MeshComp->SetStaticMesh(FactionData->FactionFlagMesh->GetStaticMesh());
 		}
 	}
 }
@@ -70,9 +72,9 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FR
 	if (GetWorld()) {
 		if (OwnedObjectives.Num() > 0) {
 			FVector Loc = OwnedObjectives.Last()->GetActorLocation();
-			Loc.X += 500;
-			Loc.Y += 500;
-			Loc.Z += 500;
+			Loc.X += FMath::RandRange(-500, 500);
+			Loc.Y += FMath::RandRange(-500, 500);
+			Loc.Z += 100;
 			SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(APlayableCharacter::StaticClass(), Loc, OwnedObjectives.Last()->GetActorRotation(), SpawnInfo);
 			
 			UE_LOG(LogTemp, Warning, TEXT("TeamComponent::SpawnTeamCharacter - Spawn at objective"));

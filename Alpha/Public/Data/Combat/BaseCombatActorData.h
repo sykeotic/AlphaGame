@@ -80,6 +80,9 @@ public:
 		FVector MeshLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool AlwaysDisplayMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName AttachToSocket;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ExecutionDelay;

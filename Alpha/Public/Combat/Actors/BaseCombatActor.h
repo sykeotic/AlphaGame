@@ -62,7 +62,7 @@ public:
 
 	void StartSimulatingActorUse();
 	void StopSimulatingActorUse();
-	void PlayVisualFX();
+	virtual void PlayVisualFX();
 	UAudioComponent* PlaySoundFX(USoundCue* InSound);
 	void SetSoundPlayingToFalse();
 	float PlayActorAnimation(UAnimMontage* Animation, float InPlayRate = 1.f, FName StartSectionName = NAME_None);

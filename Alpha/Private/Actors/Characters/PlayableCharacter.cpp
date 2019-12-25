@@ -198,13 +198,16 @@ void APlayableCharacter::HandleDeath()
 	GetMesh()->PlayAnimation(CharacterData.DeathAnimation, false);
 	if (!bIsAIPlayer) {
 		AHumanPlayerController* TempController = Cast<AHumanPlayerController>(GetController());
-		TempController->UnPossess();
-		if (TempController)
+		if (TempController) {
+			TempController->UnPossess();
 			TempController->ShowHeroSelectWidget();
+		}
+
 	}
 	else {
 		ABattlefieldAIController* TempController = Cast<ABattlefieldAIController>(GetController());
-		TempController->HandlePawnDeath();
+		if(TempController)
+			TempController->HandlePawnDeath();
 	}
 }
 

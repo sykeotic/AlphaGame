@@ -47,6 +47,10 @@ void ABaseCombatActor::AttachMeshToOwner(FName AttachPoint)
 		USkeletalMeshComponent* OwnerMesh = ComponentOwner->GetCharacterOwner()->GetMesh();
 		MeshComp->SetHiddenInGame(false);
 		MeshComp->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
+
+		if (!BaseCombatActorData.AlwaysDisplayMesh) {
+			MeshComp->SetVisibility(false);
+		}
 	}
 }
 
@@ -287,7 +291,9 @@ void ABaseCombatActor::PlayVisualFX()
 {
 	if (BaseCombatActorData.Feedback->VisualFX)
 	{
-		UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
+		if (MeshComp) {
+			UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
+		}
 	}
 }
 

@@ -5,20 +5,22 @@
 #include "PlayableCharacter.h"
 #include "Combat/Components/CombatComponent.h"
 #include "BaseCombatActorData.h"
+#include "Components/SphereComponent.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
 
 AMeleeCombatActor::AMeleeCombatActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	MeleeBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeBoxComponent"));
-	MeleeBoxComponent->SetupAttachment(RootComponent);
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	SphereComponent->SetupAttachment(RootComponent);
 }
 
 void AMeleeCombatActor::BeginPlay()
 {
 	Super::BeginPlay();
-	MeleeBoxComponent->SetGenerateOverlapEvents(true);
-	MeleeBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMeleeCombatActor::WeaponBeginOverlap);
+	SphereComponent->SetGenerateOverlapEvents(true);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AMeleeCombatActor::ActorBeginOverlap);
+	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AMeleeCombatActor::ActorEndOverlap);
 	SectionCounter = 0;
 }
 
@@ -29,9 +31,7 @@ void AMeleeCombatActor::OnUse() {
 void AMeleeCombatActor::ExecuteUse()
 {
 	SectionCounter = 0;
-	bCanOverlap = true;
-	GetWorldTimerManager().SetTimer(OverlapWindowTimer, this, &AMeleeCombatActor::SetOverlappingToFalse, CurrentAnim->GetPlayLength(), false);
-	ClearOverlappedArray();
+	GetWorldTimerManager().SetTimer(OverlapWindowTimer, this, &AMeleeCombatActor::ApplyModifiersToSphere, MeleeCombatActorStruct.HitBoxActiveDuration, false);
 }
 
 void AMeleeCombatActor::AssignValues(UBaseCombatActorData* InData)
@@ -39,31 +39,36 @@ void AMeleeCombatActor::AssignValues(UBaseCombatActorData* InData)
 	Super::AssignValues(InData);
 	UMeleeCombatActorData* TempData = Cast<UMeleeCombatActorData>(InData);
 	MeleeCombatActorStruct = TempData->MeleeCombatActorDataStruct;
-	MeleeBoxComponent->SetRelativeTransform(MeleeCombatActorStruct.CollisionHitBox->GetRelativeTransform());
-	MeleeBoxComponent->AddRelativeRotation(InData->BaseCombatActorDataStruct.MeshRotation);
+	SphereComponent->SetSphereRadius(MeleeCombatActorStruct.SphereRadius);
+	SphereComponent->SetVisibility(true);
 }
 
-void AMeleeCombatActor::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+void AMeleeCombatActor::PlayVisualFX()
+{
+	Super::PlayVisualFX();
+}
+
+void AMeleeCombatActor::ActorBeginOverlap(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (GetCombatComponentOwner() != nullptr && GetCombatComponentOwner() != NULL) {
-		if (!OverlappedActors.Contains(OtherActor) && (OtherActor != nullptr) && (OtherActor != GetCombatComponentOwner()->GetCharacterOwner()) && (OtherComp != nullptr) && (OtherActor != this) && bCanOverlap) {
-			OverlappedActors.AddUnique(OtherActor);
-			ApplyModifiers(OtherActor);
-			ULogger::ScreenMessage(FColor::Orange, "MELEE HIT");
+		if (!OverlappedActors.Contains(OtherActor) && (OtherActor != nullptr) && (OtherActor != GetCombatComponentOwner()->GetCharacterOwner()) && (OtherComp != nullptr) && (OtherActor != this)) {
+			OverlappedActors.Add(OtherActor);
 		}
 	}
 }
 
-void AMeleeCombatActor::SetOverlappingToFalse()
+void AMeleeCombatActor::ActorEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bCanOverlap = false;
-	OverlappedActors.Empty();
+	if (GetCombatComponentOwner() != nullptr && GetCombatComponentOwner() != NULL) {
+		if (OverlappedActors.Contains(OtherActor) && (OtherActor != nullptr) && (OtherActor != GetCombatComponentOwner()->GetCharacterOwner()) && (OtherComp != nullptr) && (OtherActor != this)) {
+			OverlappedActors.Remove(OtherActor);
+		}
+	}
 }
 
-void AMeleeCombatActor::ClearOverlappedArray()
+void AMeleeCombatActor::ApplyModifiersToSphere()
 {
-	if (ACTOR_STATE == ECombatActorState::USING) {
-		OverlappedActors.Empty();
-		GetWorldTimerManager().SetTimer(ClearTimer, this, &AMeleeCombatActor::ClearOverlappedArray, CurrentAnim->GetSectionLength(SectionCounter++), false);
+	for (AActor* CurrActor : OverlappedActors) {
+		ApplyModifiers(CurrActor);
 	}
 }

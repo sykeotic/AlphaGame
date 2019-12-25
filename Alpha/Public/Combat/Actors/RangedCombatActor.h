@@ -23,6 +23,7 @@ public:
 	virtual void OnUse() override;
 	virtual void ExecuteUse() override;
 	virtual void AssignValues(UBaseCombatActorData* InData) override;
+	virtual void PlayVisualFX() override;
 
 private:
 	void LaunchProjectile();

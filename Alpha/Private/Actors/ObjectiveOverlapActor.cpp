@@ -2,8 +2,10 @@
 #include "PlayableCharacter.h"
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
 #include "PlayablePawn.h"
+#include "FactionData.h"
 #include "HumanPlayerController.h"
 #include "PlayerControllerData.h"
 #include "TeamComponent.h"
@@ -30,6 +32,7 @@ void AObjectiveOverlapActor::BeginPlay(){
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapBegin);
 	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &AObjectiveOverlapActor::OnOverlapEnd);
 	UE_LOG(LogTemp, Warning, TEXT("Objective::BeginPlay - Assigning Team"));
+
 }
 
 void AObjectiveOverlapActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
@@ -165,6 +168,7 @@ void AObjectiveOverlapActor::HandleCapture() {
 		OwningTeam->RemoveObjective(this);
 		OwningTeam = ContestingTeam;
 		OwningTeam->AddObjective(this);
+		MeshComp->SetStaticMesh(OwningTeam->FactionData->FactionFlagMesh->GetStaticMesh());
 		ResetObjectiveFinished();
 		PlayActorSound(CapturedSound);
 		ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);

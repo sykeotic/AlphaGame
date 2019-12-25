@@ -12,8 +12,6 @@ struct FBaseEffectDataStruct {
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bTestBool;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class ABaseEffect> EffectClass;
 };
 
