@@ -43,7 +43,7 @@ void AArcCombatActor::PlayVisualFX()
 {
 	USkeletalMeshComponent* OwnerMesh = ComponentOwner->GetCharacterOwner()->GetMesh();
 		if (MeshComp) {
-			UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, OwnerMesh, ArcCombatActorDataStruct.ArcSpawnFromSocket);
+			UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.OnUseFeedback->VisualFX, OwnerMesh, ArcCombatActorDataStruct.ArcSpawnFromSocket);
 		}
 }
 
@@ -55,7 +55,6 @@ void AArcCombatActor::ArcSweep()
 	float DegreeIncrements = ConeTraceArcWidth / NumCones;
 	float YawValueFirst = ConeTraceArcWidth * -.5;
 	float ArcDistance = ArcCombatActorDataStruct.ArcRange;
-	ULogger::ScreenMessage(FColor::Green, "Arc Sweeping");
 	TArray<AActor*> AlreadyHitActors;
 	for (int i = 0; i < NumCones; i++) {
 		float YawValueSecond = DegreeIncrements * i;
@@ -77,9 +76,6 @@ void AArcCombatActor::ArcSweep()
 					AlreadyHitActors.Add(HitActor);
 				}				
 			}
-		}
-		else {
-			ULogger::ScreenMessage(FColor::Green, "No one was hit :(");
 		}
 	}
 

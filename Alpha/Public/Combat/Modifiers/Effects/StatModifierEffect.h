@@ -18,8 +18,8 @@ class ALPHA_API AStatModifierEffect : public ABaseEffect
 public:
 
 	virtual void ApplyEffectsToActor(AActor* AffectedActor) override;
-
 	virtual void AssignValues(UBaseEffectData* InData) override;
+	virtual void DeactivateEffect(AActor* AffectedActor) override;
 
 	FStatModifierEffectDataStruct StatModifierData;
 	

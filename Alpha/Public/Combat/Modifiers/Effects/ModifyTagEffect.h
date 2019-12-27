@@ -18,8 +18,12 @@ class ALPHA_API AModifyTagEffect : public ABaseEffect
 public:
 
 	virtual void ApplyEffectsToActor(AActor* AffectedActor) override;
-
 	virtual void AssignValues(UBaseEffectData* InData) override;
+	virtual void DeactivateEffect(AActor* AffectedActor) override;
 
 	FModifyTagEffectDataStruct ModifyTagData;
+
+private:
+
+	void TauntActor(AActor* AffectedActor);
 };

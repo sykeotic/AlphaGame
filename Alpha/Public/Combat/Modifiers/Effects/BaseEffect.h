@@ -7,6 +7,7 @@
 #include "Data/Combat/Effects/BaseEffectData.h"
 #include "BaseEffect.generated.h"
 
+class AModifier;
 /**
  * 
  */
@@ -20,6 +21,15 @@ public:
 	FBaseEffectDataStruct BaseEffectData;
 
 	virtual void ApplyEffectsToActor(AActor* AffectedActor);
-
 	virtual void AssignValues(UBaseEffectData* InData);
+	virtual void DeactivateEffect(AActor* AffectedActor);
+
+	void SetModifierOwner(AModifier* InMod);
+
+protected:
+	AModifier* ModifierOwner;
+
+private:
+
+
 };

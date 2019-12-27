@@ -121,7 +121,6 @@ void ABaseCombatActor::HandleUse()
 			else {
 				ExecuteUse();
 			}
-			ULogger::ScreenMessage(FColor::Red, "BurstCounter: " + FString::FromInt(BurstCounter));
 			BurstCounter++;
 		}
 	}
@@ -250,24 +249,26 @@ void ABaseCombatActor::InitModifiers()
 
 void ABaseCombatActor::ApplyModifiers(AActor* InActor)
 {
+
+	// TODO Add HandlerComponent scan instead of cast
 	APlayableCharacter* HitChar;
 	HitChar = Cast<APlayableCharacter>(InActor);
 	if (HitChar) {
 		for (AModifier* CurrMod : Modifiers) {
-			HitChar->ApplyModifiers(CurrMod, InActor);
+			HitChar->ApplyModifiers(CurrMod, this);
 		}
 	}
 }
 
 void ABaseCombatActor::StartSimulatingActorUse()
 {
-	if (BaseCombatActorData.Feedback) {
-		GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.Feedback->VisualFXBuffer, false);
+	if (BaseCombatActorData.OnUseFeedback) {
+		GetWorldTimerManager().SetTimer(VisualFXTimerHandle, this, &ABaseCombatActor::PlayVisualFX, BaseCombatActorData.OnUseFeedback->VisualFXBuffer, false);
 		FTimerHandle SoundDelay;
 		GetWorldTimerManager().SetTimer(SoundDelay, [this]() {
-			USoundCue* SoundToPlayObj = BaseCombatActorData.Feedback->PickRandomSound();				
+			USoundCue* SoundToPlayObj = BaseCombatActorData.OnUseFeedback->PickRandomSound();				
 			PlaySoundFX(SoundToPlayObj);
-		}, BaseCombatActorData.Feedback->SoundFXBuffer, false);			
+		}, BaseCombatActorData.OnUseFeedback->SoundFXBuffer, false);			
 	}
 	if (!bPlayingUseAnimation)
 	{
@@ -289,10 +290,10 @@ void ABaseCombatActor::StopSimulatingActorUse()
 
 void ABaseCombatActor::PlayVisualFX()
 {
-	if (BaseCombatActorData.Feedback->VisualFX)
+	if (BaseCombatActorData.OnUseFeedback->VisualFX)
 	{
 		if (MeshComp) {
-			UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.Feedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
+			UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseCombatActorData.OnUseFeedback->VisualFX, MeshComp, BaseCombatActorData.VisualFXSpawnLocation);
 		}
 	}
 }
@@ -388,4 +389,9 @@ UStaticMeshComponent* ABaseCombatActor::GetMesh()
 float ABaseCombatActor::GetNextValidFireTime()
 {
 	return NextValidFireTime;
+}
+
+void ABaseCombatActor::SetNextValidFireTime(float InTime)
+{
+	NextValidFireTime = InTime;
 }

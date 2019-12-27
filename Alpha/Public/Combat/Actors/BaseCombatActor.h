@@ -75,6 +75,7 @@ public:
 	UStaticMeshComponent* GetMesh();
 
 	float GetNextValidFireTime();
+	void SetNextValidFireTime(float InTime);
 
 	TArray<AModifier*> Modifiers;
 

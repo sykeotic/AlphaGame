@@ -128,6 +128,17 @@ void ABattlefieldAIController::SetPossessed(bool inPossessed)
 {
 	bPossessed = inPossessed;
 }
+
+UBehaviorTreeComponent* ABattlefieldAIController::GetBehaviorTreeComponent()
+{
+	return BehaviorTreeComponent;
+}
+
+UBehaviorTree* ABattlefieldAIController::GetBehaviorTree()
+{
+	return BehaviorTree;
+}
+
 /*
 void ABattlefieldAIController::BrainPulse()
 {

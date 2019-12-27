@@ -39,6 +39,7 @@ void UCombatComponent::CycleNextWeapon()
 		CurrentWeaponIndex++;
 	}
 	SetCurrentWeapon(WeaponArray[CurrentWeaponIndex], true);
+	CurrentAbility->SetNextValidFireTime(GetWorld()->GetTimeSeconds() + .5);
 }
 
 void UCombatComponent::CyclePreviousWeapon()
@@ -50,6 +51,7 @@ void UCombatComponent::CyclePreviousWeapon()
 		CurrentWeaponIndex--;
 	}
 	SetCurrentWeapon(WeaponArray[CurrentWeaponIndex], true);
+	CurrentAbility->SetNextValidFireTime(GetWorld()->GetTimeSeconds() + .5);
 }
 
 ABaseCombatActor* UCombatComponent::GetWeaponAt(uint8 WeaponIndex)
@@ -85,6 +87,7 @@ void UCombatComponent::CycleNextAbility()
 		CurrentAbilityIndex++;
 	}
 	SetCurrentAbility(AbilityArray[CurrentAbilityIndex], true);
+	CurrentAbility->SetNextValidFireTime(GetWorld()->GetTimeSeconds() + .5);
 }
 
 void UCombatComponent::UseCurrentAbility()
@@ -103,6 +106,7 @@ void UCombatComponent::CyclePreviousAbility()
 		CurrentAbilityIndex--;
 	}
 	SetCurrentAbility(AbilityArray[CurrentAbilityIndex], true);
+	CurrentAbility->SetNextValidFireTime(GetWorld()->GetTimeSeconds() + .5);
 }
 
 ABaseCombatActor* UCombatComponent::GetAbilityAt(uint8 AbilityIndex)

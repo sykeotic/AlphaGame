@@ -99,7 +99,7 @@ public:
 		float UseCooldown;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UFeedback* Feedback;
+		UFeedback* OnUseFeedback;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<UAnimMontage*> UseAnim;

@@ -3,32 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseCombatActorData.h"
-#include "Runtime/Engine/Classes/Sound/SoundCue.h"
-#include "MeleeCombatActorData.generated.h"
-
+#include "Combat/Modifiers/Context/LeafOperator.h"
+#include "ValidTargetLeafOperator.generated.h"
 
 USTRUCT(BlueprintType)
-struct FMeleeCombatActorDataStruct {
+struct FValidTargetExpression
+{
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SphereRadius;
+		ELeafOperator Operator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float HitBoxActiveDuration;
+		EValidTargetsOperand RightValue;
 };
 
 /**
  * 
  */
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
-class ALPHA_API UMeleeCombatActorData : public UBaseCombatActorData
+class ALPHA_API UValidTargetLeafOperator : public ULeafOperator
 {
 	GENERATED_BODY()
 
 public:
+	virtual bool Evaluate() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FMeleeCombatActorDataStruct MeleeCombatActorDataStruct;
+		FValidTargetExpression Expression;
+	
 };

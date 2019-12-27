@@ -46,6 +46,9 @@ public:
 	void EngageBrainPulseLoop();
 	void SetPossessed(bool inPossessed);
 
+	UBehaviorTreeComponent* GetBehaviorTreeComponent();
+	UBehaviorTree* GetBehaviorTree();
+
 	UFUNCTION(BlueprintCallable)
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
@@ -83,9 +86,4 @@ private:
 
 	void ExecuteJump();
 	void SpawnNewPawn();
-
-	void BrainPulse();
-	void NonCombatPulse();
-	void CombatPulse();
-
 };

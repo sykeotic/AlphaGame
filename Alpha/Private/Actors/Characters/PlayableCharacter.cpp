@@ -222,27 +222,31 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 }
 
 void APlayableCharacter::AbilityNext() {
-	if (!bIsAttacking) {
+	// if (!bIsAttacking) {
 		CombatComponent->CycleNextAbility();
-	}
+		SetAttackingFalse();
+	// }
 }
 
 void APlayableCharacter::AbilityPrevious() {
-	if (!bIsAttacking) {
+	// if (!bIsAttacking) {
 		CombatComponent->CyclePreviousAbility();
-	}
+		SetAttackingFalse();
+	// }
 }
 
 void APlayableCharacter::WeaponNext() {
-	if (!bIsAttacking) {
+	// if (!bIsAttacking) {
 		CombatComponent->CycleNextWeapon();
-	}
+		SetAttackingFalse();
+	// }
 }
 
 void APlayableCharacter::WeaponPrevious() {
-	if (!bIsAttacking) {
+	// if (!bIsAttacking) {
 		CombatComponent->CyclePreviousWeapon();
-	}
+		SetAttackingFalse();
+	// }
 }
 
 void APlayableCharacter::MoveForward(float Value)
@@ -271,7 +275,6 @@ void APlayableCharacter::MoveRight(float Value)
 
 void APlayableCharacter::CharacterAttackStart() {
 	if (CombatComponent->GetCurrentWeapon()) {
-		const float GameTime = GetWorld()->GetTimeSeconds();
 		if (!bIsAttacking && CombatComponent->GetCurrentWeapon()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
 			CombatComponent->UseCurrentWeapon();
@@ -296,11 +299,9 @@ void APlayableCharacter::CharacterAttackStop() {
 
 void APlayableCharacter::CharacterAbilityStart() {
 	if (CombatComponent->GetCurrentAbility()) {
-		const float GameTime = GetWorld()->GetTimeSeconds();
 		if (!bIsAttacking && CombatComponent->GetCurrentAbility()->GetNextValidFireTime() <= GetWorld()->GetTimeSeconds()) {
 			bIsAttacking = true;
 			CombatComponent->UseCurrentAbility();
-			ULogger::ScreenMessage(FColor::Red, "Using Character Ability");
 		}
 	}
 }

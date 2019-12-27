@@ -34,8 +34,6 @@ public:
 	UFUNCTION()
 		void ActorEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-
-
 private:
 	USphereComponent* SphereComponent;
 

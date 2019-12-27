@@ -53,6 +53,16 @@ AActor* AModifier::GetActorOwner()
 	return ActorOwner;
 }
 
+void AModifier::SetOriginatingActor(AActor* InActor)
+{
+	OriginatingActor = InActor;
+}
+
+AActor* AModifier::GetOriginatingActor()
+{
+	return OriginatingActor;
+}
+
 void AModifier::ApplyEffects(AActor* AffectedActor)
 {
 	for ( ABaseEffect* CurrEffect : Effects) {
@@ -77,10 +87,18 @@ void AModifier::AssignValues(FModifierDataStruct InData)
 		TempEffect = Cast<ABaseEffect>(GetWorld()->SpawnActor<ABaseEffect>(ModifierData.BaseEffectData[i]->BaseEffectDataStruct.EffectClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo));
 		if (TempEffect) {
 			TempEffect->AssignValues(ModifierData.BaseEffectData[i]);
+			TempEffect->SetModifierOwner(this);
 			Effects.Add(TempEffect);
 		}
 		else {
 			ULogger::ScreenMessage(FColor::Cyan, "TempEffect NULL");
 		}
+	}
+}
+
+void AModifier::Deactivate(AActor* InActor)
+{
+	for (ABaseEffect* CurrEff : Effects) {
+		CurrEff->DeactivateEffect(InActor);
 	}
 }

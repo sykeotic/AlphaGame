@@ -10,7 +10,7 @@ UStatsComponent::UStatsComponent()
 }
 
 void UStatsComponent::DisplayCurrentHealth() {
-	ULogger::ScreenMessage(FColor::Red, "Health: " + FString::SanitizeFloat(CurrentHealth));
+	// ULogger::ScreenMessage(FColor::Red, "Health: " + FString::SanitizeFloat(CurrentHealth));
 }
 
 float UStatsComponent::GetCurrentHealth() {

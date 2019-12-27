@@ -21,7 +21,7 @@ void UHandlerComponent::BeginPlay()
 
 void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 {
-	if (Entries.Num() + 1 >= 30 || !InModifier->GetContext().bHasDuration) {
+	if (Entries.Num() + 1 <= 30) {
 		FEntry NewEntry;
 		NewEntry = FEntry();
 		NewEntry.bIsConditionTrue = false;
@@ -32,6 +32,7 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 		NewEntry.Modifier->ModifierData.Feedback = InModifier->ModifierData.Feedback;
 		NewEntry.Modifier->AssignValues(InModifier->ModifierData);
 		NewEntry.Modifier->SetActorOwner(ActorOwner);
+		NewEntry.Modifier->SetOriginatingActor(Origin);
 		Entries.Add(NewEntry);
 		UpdateModifiers();
 	}
@@ -39,7 +40,11 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 
 void UHandlerComponent::RemoveEntry(int32 InIndex)
 {
-	Entries.RemoveAt(InIndex);
+	if (Entries.Num() - 1 <= InIndex || InIndex >= 0) {
+		AModifier* RemovedMod = Entries[InIndex].Modifier;
+		RemovedMod->Deactivate(ActorOwner);
+		Entries.RemoveAt(InIndex);
+	}
 }
 
 void UHandlerComponent::UpdateModifiers()

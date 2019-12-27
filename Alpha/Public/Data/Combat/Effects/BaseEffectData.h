@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "BaseEffectData.generated.h"
 
+class UFeedback;
+
 USTRUCT(BlueprintType)
 struct FBaseEffectDataStruct {
 	GENERATED_BODY()
@@ -13,6 +15,12 @@ struct FBaseEffectDataStruct {
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class ABaseEffect> EffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UFeedback* OnImpactFeedback;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName EffectFXLocation;
 };
 
 /**

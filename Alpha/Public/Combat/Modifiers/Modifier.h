@@ -52,9 +52,14 @@ public:
 	void SetActorOwner(AActor* InActor);
 	AActor* GetActorOwner();
 
+	void SetOriginatingActor(AActor* InActor);
+	AActor* GetOriginatingActor();
+
 	void ApplyEffects(AActor* AffectedActor);
 
 	void AssignValues(FModifierDataStruct InData);
+
+	void Deactivate(AActor* InActor);
 
 	FModifierDataStruct ModifierData;
 
@@ -64,6 +69,7 @@ protected:
 private:
 	FContext Context;
 	AActor* ActorOwner;
+	AActor* OriginatingActor;
 	EFeedbackType FeedbackType;
 	TArray<ABaseEffect*> Effects;
 };

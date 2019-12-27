@@ -9,7 +9,18 @@
 
 UENUM(BlueprintType)
 enum class ETargetOperand : uint8 {
-	SELF UMETA(DisplayName = "Self")
+	SELF UMETA(DisplayName = "Self"),
+	ORIGINATING_ACTOR UMETA(DisplayName = "Originating Actor")
+};
+
+UENUM(BlueprintType)
+enum class EValidTargetsOperand : uint8 {
+	SELF UMETA(DisplayName = "Self"),
+	ALLIES UMETA(DisplayName = "Allies"),
+	ENEMIES UMETA(DisplayName = "Enemies"),
+	NEUTRAL UMETA(DisplayName = "Neutral"),
+	HERO UMETA(DisplayName = "Hero"),
+	TROOP UMETA(DisplayName = "Troop")
 };
 
 UENUM(BlueprintType)

@@ -30,8 +30,7 @@ void AMeleeCombatActor::OnUse() {
 
 void AMeleeCombatActor::ExecuteUse()
 {
-	SectionCounter = 0;
-	GetWorldTimerManager().SetTimer(OverlapWindowTimer, this, &AMeleeCombatActor::ApplyModifiersToSphere, MeleeCombatActorStruct.HitBoxActiveDuration, false);
+	ApplyModifiersToSphere();
 }
 
 void AMeleeCombatActor::AssignValues(UBaseCombatActorData* InData)
