@@ -8,13 +8,6 @@
 
 class UConditionTree;
 
-UENUM(BlueprintType)
-enum class EFeedbackType : uint8 {
-	ALIVE UMETA(DisplayName = "Alive"),
-	ACTIVE UMETA(DisplayName = "Active"),
-	EFFECTS_APPLIED UMETA(DisplayName = "Effects Applied")
-};
-
 USTRUCT(BlueprintType)
 struct FContext {
 	GENERATED_BODY()
@@ -56,12 +49,14 @@ public:
 	AActor* GetOriginatingActor();
 
 	void ApplyEffects(AActor* AffectedActor);
+	void PlayAllEffectFeedbacks();
 
 	void AssignValues(FModifierDataStruct InData);
 
 	void Deactivate(AActor* InActor);
 
 	FModifierDataStruct ModifierData;
+	EFeedbackAppliedType FeedbackType;
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,6 +65,8 @@ private:
 	FContext Context;
 	AActor* ActorOwner;
 	AActor* OriginatingActor;
-	EFeedbackType FeedbackType;
+
 	TArray<ABaseEffect*> Effects;
+
+	bool bEffectFeedbacksHaveBeenPlayed;
 };

@@ -12,13 +12,20 @@ class AModifier;
 class UConditionTree;
 class UBaseEffectData;
 
+UENUM(BlueprintType)
+enum class EFeedbackAppliedType : uint8 {
+	EFFECTS_APPLIED UMETA(DisplayName = "Effects Applied"),
+	ACTIVE UMETA(DisplayName = "Active"),
+	ALIVE UMETA(DisplayName = "Alive")
+};
+
 USTRUCT(BlueprintType)
 struct FModifierDataStruct {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UFeedback* Feedback;
+		EFeedbackAppliedType FeedbackType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AModifier> ModifierClass;

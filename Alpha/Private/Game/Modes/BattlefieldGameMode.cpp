@@ -24,6 +24,7 @@ void ABattlefieldGameMode::InitTeams()
 	UE_LOG(LogTemp, Warning, TEXT("BattlefieldGameMode::InitTeams - Initializing Teams"));
 	TeamData = CurrentGameInstance->GetTeamData();
 	for (auto& Elem : TeamData) {
+		ULogger::ScreenMessage(FColor::White, "Initiating Team " + TeamData.FindRef(Elem.Key).SelectedFactionData->FactionName.ToString());
 		InitTeam(Elem.Key, TeamData.FindRef(Elem.Key));
 	}
 }

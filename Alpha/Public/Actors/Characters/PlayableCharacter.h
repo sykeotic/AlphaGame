@@ -14,6 +14,7 @@ class ACombatActor;
 class UCombatComponent;
 class UStatsComponent;
 class UTeamComponent;
+class UHandlerComponent;
 class USpringArmComponent;
 class USoundCue;
 class ABaseCombatActor;
@@ -140,8 +141,8 @@ private:
 	float BaseLookUpRate;
 	float BaseTurnRate;
 
-	class UTeamComponent* OwnerTeam;
-	class UHandlerComponent* HandlerComponent;
+	UTeamComponent* OwnerTeam;
+	UHandlerComponent* HandlerComponent;
 
 	bool bIsAIPlayer;
 

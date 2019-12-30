@@ -1,17 +1,30 @@
 #include "ValidTargetLeafOperator.h"
 #include "ConditionTree.h"
+#include "PlayableCharacter.h"
+#include "Logger.h"
+#include "FactionData.h"
+#include "FactionData.h"
 #include "Game/TeamComponent.h"
+#include "Containers/UnrealString.h"
 #include "Modifier.h"
 
 bool UValidTargetLeafOperator::Evaluate()
 {
-	ULogger::ScreenMessage(FColor::Emerald, "Evaluating Valid Target");
-
 	AActor* ModifierOwner = GetOwnerConditionTree()->GetModifierOwner()->GetActorOwner();
 	AActor* OriginatingActor = GetOwnerConditionTree()->GetModifierOwner()->GetOriginatingActor();
 
-	UTeamComponent* OwnerTeam = Cast<UTeamComponent>(ModifierOwner->GetComponentByClass(UTeamComponent::StaticClass()));
-	UTeamComponent* OriginatingActorTeam = Cast<UTeamComponent>(OriginatingActor->GetComponentByClass(UTeamComponent::StaticClass()));
+	UTeamComponent* OwnerTeam = nullptr;
+	UTeamComponent* OriginatingActorTeam = nullptr;
+
+	if (ModifierOwner && OriginatingActor) {
+		APlayableCharacter* OwnerChar = Cast<APlayableCharacter>(ModifierOwner);
+		APlayableCharacter* OriginatingChar = Cast<APlayableCharacter>(OriginatingActor);
+
+		if (OwnerChar && OriginatingChar) {
+			OwnerTeam = OwnerChar->GetOwnerTeam();
+			OriginatingActorTeam = OriginatingChar->GetOwnerTeam();
+		}
+	}
 
 	if (OwnerTeam && OriginatingActorTeam && ModifierOwner && OriginatingActor) {
 		switch (Expression.Operator)
@@ -20,10 +33,10 @@ bool UValidTargetLeafOperator::Evaluate()
 			switch (Expression.RightValue)
 			{
 			case EValidTargetsOperand::ALLIES:
-				return OwnerTeam == OriginatingActorTeam;
+				return OwnerTeam->TeamIndex == OriginatingActorTeam->TeamIndex;
 				break;
 			case EValidTargetsOperand::ENEMIES:
-				return OwnerTeam != OriginatingActorTeam;
+				return OwnerTeam->TeamIndex != OriginatingActorTeam->TeamIndex;
 				break;
 			case EValidTargetsOperand::SELF:
 				return ModifierOwner == OriginatingActor;
@@ -35,10 +48,10 @@ bool UValidTargetLeafOperator::Evaluate()
 			switch (Expression.RightValue)
 			{
 			case EValidTargetsOperand::ALLIES:
-				return OwnerTeam != OriginatingActorTeam;
+				return OwnerTeam->TeamIndex != OriginatingActorTeam->TeamIndex;
 				break;
 			case EValidTargetsOperand::ENEMIES:
-				return OwnerTeam == OriginatingActorTeam;
+				return OwnerTeam->TeamIndex == OriginatingActorTeam->TeamIndex;
 				break;
 			case EValidTargetsOperand::SELF:
 				return ModifierOwner != OriginatingActor;

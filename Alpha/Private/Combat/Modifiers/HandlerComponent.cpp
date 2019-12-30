@@ -19,7 +19,7 @@ void UHandlerComponent::BeginPlay()
 	ActorOwner->GetWorldTimerManager().SetTimer(ManualTickTimer, this, &UHandlerComponent::ManualTick, TickRate, true);
 }
 
-void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
+void UHandlerComponent::ActivateModifier(AModifier* InModifier, AActor* Origin)
 {
 	if (Entries.Num() + 1 <= 30) {
 		FEntry NewEntry;
@@ -29,18 +29,21 @@ void UHandlerComponent::ActivateModifier(AModifier * InModifier, AActor* Origin)
 		NewEntry.Origin = Origin;
 		FActorSpawnParameters SpawnInfo;
 		NewEntry.Modifier = GetWorld()->SpawnActor<AModifier>(InModifier->ModifierData.ModifierClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		NewEntry.Modifier->ModifierData.Feedback = InModifier->ModifierData.Feedback;
 		NewEntry.Modifier->AssignValues(InModifier->ModifierData);
 		NewEntry.Modifier->SetActorOwner(ActorOwner);
 		NewEntry.Modifier->SetOriginatingActor(Origin);
+		NewEntry.Modifier->FeedbackType = InModifier->FeedbackType;
 		Entries.Add(NewEntry);
+		if (NewEntry.Modifier->FeedbackType == EFeedbackAppliedType::ACTIVE) {
+			NewEntry.Modifier->PlayAllEffectFeedbacks();
+		}
 		UpdateModifiers();
-	}
+	} 
 }
 
 void UHandlerComponent::RemoveEntry(int32 InIndex)
 {
-	if (Entries.Num() - 1 <= InIndex || InIndex >= 0) {
+	if (Entries.Num() <= InIndex + 1 && InIndex >= 0) {
 		AModifier* RemovedMod = Entries[InIndex].Modifier;
 		RemovedMod->Deactivate(ActorOwner);
 		Entries.RemoveAt(InIndex);
@@ -52,25 +55,38 @@ void UHandlerComponent::UpdateModifiers()
 	TArray<int32> RemoveItems;
 	for (int i = 0; i < Entries.Num(); i++) {
 		if (Entries[i].Modifier) {
-			if (!Entries[i].Modifier->GetConditionTree()) {
-				Entries[i].Modifier->SetIsActive(true);
-			}
-			else {
-				if (Entries[i].Modifier->AreConditionsTrue()) {
+			if (Entries[i].Modifier->ModifierData.bHasDuration) {
+				if (!Entries[i].Modifier->GetConditionTree()) {
+					if (Entries[i].Modifier->FeedbackType == EFeedbackAppliedType::ACTIVE) {
+						Entries[i].Modifier->PlayAllEffectFeedbacks();
+					}						
 					Entries[i].Modifier->SetIsActive(true);
 				}
 				else {
-					Entries[i].Modifier->SetIsActive(false);
+					if (Entries[i].Modifier->AreConditionsTrue()) {
+						if (Entries[i].Modifier->FeedbackType == EFeedbackAppliedType::ACTIVE) {
+							Entries[i].Modifier->PlayAllEffectFeedbacks();
+						}						
+						Entries[i].Modifier->SetIsActive(true);
+					}
+					else {
+						Entries[i].Modifier->SetIsActive(false);
+					}
+				}
+				if (Entries[i].Modifier->IsActive()) {
+					ApplyEffects(Entries[i].Modifier, ActorOwner);
+				}
+				float CurrentTime = GetWorld()->GetTimeSeconds();
+				float EndTime = Entries[i].StartTime + Entries[i].Modifier->GetContext().Duration;
+				if (EndTime <= CurrentTime) {
+					RemoveItems.AddUnique(i);
 				}
 			}
-			if (Entries[i].Modifier->IsActive()) {
-				ApplyEffects(Entries[i].Modifier, ActorOwner);
-			}
-			float CurrentTime = GetWorld()->GetTimeSeconds();
-			float EndTime = Entries[i].StartTime + Entries[i].Modifier->GetContext().Duration;
-			bool bPersistent = Entries[i].Modifier->GetContext().bHasDuration;
-			if (!bPersistent || EndTime <= CurrentTime) {
-				RemoveItems.AddUnique(i);
+			else {
+				if (Entries[i].Modifier->AreConditionsTrue()) {
+					ApplyEffects(Entries[i].Modifier, ActorOwner);
+					RemoveItems.AddUnique(i);
+				}
 			}
 		}
 	}

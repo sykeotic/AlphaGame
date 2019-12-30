@@ -66,21 +66,41 @@ AActor* AModifier::GetOriginatingActor()
 void AModifier::ApplyEffects(AActor* AffectedActor)
 {
 	for ( ABaseEffect* CurrEffect : Effects) {
-		CurrEffect->ApplyEffectsToActor(AffectedActor);		
+		switch (ModifierData.FeedbackType)
+		{
+		default:
+			break;
+		case EFeedbackAppliedType::EFFECTS_APPLIED:
+			CurrEffect->ApplyEffectsToActor(AffectedActor, true);
+			break;
+		case EFeedbackAppliedType::ACTIVE:
+			CurrEffect->ApplyEffectsToActor(AffectedActor, false);
+			break;
+		case EFeedbackAppliedType::ALIVE:
+			CurrEffect->ApplyEffectsToActor(AffectedActor, false);
+			break;
+		}
+		
+	}
+}
+
+void AModifier::PlayAllEffectFeedbacks()
+{
+	for (ABaseEffect* CurrEffect : Effects) {
+		CurrEffect->ShowEffectFeedback(ActorOwner);
 	}
 }
 
 void AModifier::AssignValues(FModifierDataStruct InData)
 {
 	ModifierData = InData;
+	FeedbackType = InData.FeedbackType;
 	Context.bHasDuration = ModifierData.bHasDuration;
 	Context.bIsActive = false;
 	Context.Duration = ModifierData.Duration;
-	if (Context.Conditions) {
-		Context.Conditions = ModifierData.Conditions;
-		Context.Conditions->SetModifierOwner(this);
-		Context.Conditions->InitExpressions();
-	}
+	Context.Conditions = DuplicateObject<UConditionTree>(ModifierData.Conditions, this);
+	Context.Conditions->SetModifierOwner(this);
+	Context.Conditions->InitExpressions();
 	for (int i = 0; i < ModifierData.BaseEffectData.Num(); i++) {
 		FActorSpawnParameters SpawnInfo;
 		ABaseEffect* TempEffect;

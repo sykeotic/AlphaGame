@@ -8,25 +8,10 @@
 #include "Particles/ParticleSystem.h"
 #include "Logger.h"
 
-void ABaseEffect::ApplyEffectsToActor(AActor* AffectedActor)
+void ABaseEffect::ApplyEffectsToActor(AActor* AffectedActor, bool bPlayFeedback)
 {
-	APlayableCharacter* AffChar = Cast<APlayableCharacter>(AffectedActor);
-	if (AffChar) {
-		if (BaseEffectData.OnImpactFeedback->VisualFX)
-		{
-			UParticleSystemComponent* UsePSC;
-			if (ModifierOwner->GetActorOwner()) {
-				UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseEffectData.OnImpactFeedback->VisualFX, AffChar->GetMesh(), BaseEffectData.EffectFXLocation);
-			}
-		}
-
-		UAudioComponent* AC = nullptr;
-		USoundCue* InSound = BaseEffectData.OnImpactFeedback->PickRandomSound();
-		if (InSound)
-		{
-			AC = UGameplayStatics::SpawnSoundAttached(InSound, AffChar->GetRootComponent());
-		}
-
+	if (bPlayFeedback) {
+		ShowEffectFeedback(AffectedActor);
 	}
 }
 
@@ -38,6 +23,27 @@ void ABaseEffect::AssignValues(UBaseEffectData* InData)
 void ABaseEffect::DeactivateEffect(AActor* AffectedActor)
 {
 
+}
+
+void ABaseEffect::ShowEffectFeedback(AActor* AffectedActor)
+{
+	APlayableCharacter* AffChar = Cast<APlayableCharacter>(AffectedActor);
+	if (AffChar && BaseEffectData.OnImpactFeedback) {
+		if (BaseEffectData.OnImpactFeedback->VisualFX)
+		{
+			UParticleSystemComponent* UsePSC;
+			if (ModifierOwner->GetActorOwner()) {
+				// ULogger::ScreenMessage(FColor::Orange, "BaseEffect::ShowEffectFeedback()");
+				UsePSC = UGameplayStatics::SpawnEmitterAttached(BaseEffectData.OnImpactFeedback->VisualFX, AffChar->GetMesh(), BaseEffectData.EffectFXLocation);
+			}
+		}
+		UAudioComponent* AC = nullptr;
+		USoundCue* InSound = BaseEffectData.OnImpactFeedback->PickRandomSound();
+		if (InSound)
+		{
+			AC = UGameplayStatics::SpawnSoundAttached(InSound, AffChar->GetRootComponent());
+		}
+	}
 }
 
 void ABaseEffect::SetModifierOwner(AModifier* InMod)

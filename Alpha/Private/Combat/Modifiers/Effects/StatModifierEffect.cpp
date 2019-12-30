@@ -2,12 +2,14 @@
 #include "StatModifierEffectData.h"
 #include "StatsComponent.h"
 
-void AStatModifierEffect::ApplyEffectsToActor(AActor* AffectedActor)
+void AStatModifierEffect::ApplyEffectsToActor(AActor* AffectedActor, bool bPlayFeedback)
 {
-	Super::ApplyEffectsToActor(AffectedActor);
+	Super::ApplyEffectsToActor(AffectedActor, bPlayFeedback);
 	UStatsComponent* TempStats = AffectedActor->FindComponentByClass<UStatsComponent>();
 	if (StatModifierData.Type == EStatModifierType::HP) {
-		TempStats->AdjustHealth(-StatModifierData.ModifierOperand);
+		if (TempStats) {
+			TempStats->AdjustHealth(-StatModifierData.ModifierOperand);
+		}
 	}
 }
 

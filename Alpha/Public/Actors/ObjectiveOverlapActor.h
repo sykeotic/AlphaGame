@@ -26,8 +26,10 @@ public:
 
 	AObjectiveOverlapActor();
 
+	USkeletalMesh*  SkeletalMesh;
+
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMeshComponent* MeshComp;
+	USkeletalMeshComponent* SkeletalMeshComp;
 
 	UPROPERTY(EditDefaultsOnly)
 	USphereComponent* SphereComponent;

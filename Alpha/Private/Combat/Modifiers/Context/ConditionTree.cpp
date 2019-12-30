@@ -6,7 +6,9 @@
 void UConditionTree::InitExpressions()
 {
 	for (UBaseExpression* CurrExp : ExpressionTree) {
-		CurrExp->SetOwnerConditionTree(this);
+		if (CurrExp) {
+			CurrExp->SetOwnerConditionTree(this);
+		}
 	}
 }
 
@@ -14,7 +16,7 @@ bool UConditionTree::IsConditionTreeTrue()
 {
 	if (ExpressionTree.Num() > 0) {
 		for (UBaseExpression* CurrExp : ExpressionTree) {
-			if (CurrExp->Evaluate() == false) {
+			if (CurrExp && CurrExp->Evaluate() == false) {
 				return false;
 			}
 		}

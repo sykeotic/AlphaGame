@@ -6,11 +6,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BattlefieldAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "ConditionTree.h"
 #include "ModifyTagEffectData.h"
 
-void AModifyTagEffect::ApplyEffectsToActor(AActor* AffectedActor)
+void AModifyTagEffect::ApplyEffectsToActor(AActor* AffectedActor, bool bPlayFeedback)
 {
-	Super::ApplyEffectsToActor(AffectedActor);
+	Super::ApplyEffectsToActor(AffectedActor, bPlayFeedback);
 	if (ModifyTagData.Type == EModifyTagType::TAUNT) {
 		TauntActor(AffectedActor);
 	}
@@ -29,6 +30,7 @@ void AModifyTagEffect::DeactivateEffect(AActor* AffectedActor)
 		APlayableCharacter* CharCast = Cast<APlayableCharacter>(AffectedActor);
 		if (CharCast) {
 			CharCast->CharacterAttackStop();
+			CharCast->GetCharacterMovement()->StopMovementImmediately();
 			ABattlefieldAIController* Cont = Cast<ABattlefieldAIController>(CharCast->GetController());
 			if (Cont) {
 				Cont->GetBehaviorTreeComponent()->StartTree(*Cont->GetBehaviorTree());
@@ -39,17 +41,19 @@ void AModifyTagEffect::DeactivateEffect(AActor* AffectedActor)
 
 void AModifyTagEffect::TauntActor(AActor* AffectedActor)
 {
-	APlayableCharacter* CharCast = Cast<APlayableCharacter>(AffectedActor);
-	if (CharCast) {
-		if ( FMath::Abs(FVector::Distance(CharCast->GetActorLocation(), ModifierOwner->GetOriginatingActor()->GetActorLocation())) <= 200.f) {
-			CharCast->GetCharacterMovement()->StopMovementImmediately();
-			CharCast->CharacterAttackStart();
-		}
-		else {
-			ABattlefieldAIController* Cont = Cast<ABattlefieldAIController>(CharCast->GetController());
-			if (Cont) {
-				Cont->GetBehaviorTreeComponent()->StopTree(EBTStopMode::Safe);
-				Cont->MoveToActor(ModifierOwner->GetOriginatingActor());
+	if (AffectedActor) {
+		APlayableCharacter* CharCast = Cast<APlayableCharacter>(AffectedActor);
+		if (CharCast) {
+			if (FMath::Abs(FVector::Distance(CharCast->GetActorLocation(), ModifierOwner->GetOriginatingActor()->GetActorLocation())) <= 400.f) {
+				CharCast->GetCharacterMovement()->StopMovementImmediately();
+				CharCast->CharacterAttackStart();
+			}
+			else {
+				ABattlefieldAIController* Cont = Cast<ABattlefieldAIController>(CharCast->GetController());
+				if (Cont) {
+					Cont->GetBehaviorTreeComponent()->StopTree(EBTStopMode::Safe);
+					Cont->MoveToActor(ModifierOwner->GetOriginatingActor());
+				}
 			}
 		}
 	}

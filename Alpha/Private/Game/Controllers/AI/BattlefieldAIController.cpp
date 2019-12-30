@@ -56,7 +56,7 @@ void ABattlefieldAIController::AssignData(UAIData* InData)
 	Sight->DetectionByAffiliation.bDetectEnemies = InData->DetectEnemies;
 	Sight->DetectionByAffiliation.bDetectFriendlies = InData->DetectAllies;
 	Sight->DetectionByAffiliation.bDetectNeutrals = InData->DetectNeutrals;
-	if (BehaviorTree)
+	if (BehaviorTree && AIData->bShouldTreeRun)
 	{
 		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 		BehaviorTreeComponent->StartTree(*BehaviorTree);
@@ -103,8 +103,10 @@ void ABattlefieldAIController::SpawnNewPawn()
 	bPossessed = true;
 	AICharacter->SetIsAIPlayer(true);
 	SpawnTextActor();
-	Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-	BehaviorTreeComponent->StartTree(*BehaviorTree);
+	if (AIData->bShouldTreeRun) {
+		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		BehaviorTreeComponent->StartTree(*BehaviorTree);
+	}
 }
 
 void ABattlefieldAIController::SpawnTextActor()
@@ -138,131 +140,6 @@ UBehaviorTree* ABattlefieldAIController::GetBehaviorTree()
 {
 	return BehaviorTree;
 }
-
-/*
-void ABattlefieldAIController::BrainPulse()
-{
-	if (!AICharacter) {
-		UE_LOG(LogTemp, Warning, TEXT("AIController::SpawnNewPawn No AI Character"));
-	}
-	if (!AIStatusText) {
-		UE_LOG(LogTemp, Warning, TEXT("AIController::SpawnNewPawn No AIStatusText"));
-	}
-	if (AICharacter && bPossessed) {
-		if (VisibleEnemies.Num() <= 0) {
-			bInCombat = false;
-			if (AICharacter && AIStatusText) {
-				AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("PEACE")));
-				AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Green);
-			}
-			NonCombatPulse();
-		}
-		else {
-			bInCombat = true;
-			if (AICharacter && AIStatusText) {
-				AIStatusText->GetTextRender()->SetText(FText::FromString(TEXT("COMBAT")));
-				AIStatusText->GetTextRender()->SetTextRenderColor(FColor::Red);
-			}
-			CombatPulse();
-		}
-	}
-	if (bPossessed) {
-		GetWorld()->GetTimerManager().SetTimer(PulseHandler, this, &ABattlefieldAIController::BrainPulse, .1f, true);
-	}
-
-
-	// REMOVE
-	//if (AIStatusText) {
-	//	AIStatusText->SetActorHiddenInGame(true);
-	//}
-}
-
-void ABattlefieldAIController::NonCombatPulse()
-{
-	if (VisibleEnemies.Num() > 0 && !CurrentTarget) {
-		int32 EnemyIndex = FMath::RandRange(0, VisibleEnemies.Num() - 1);
-		CurrentTarget = VisibleEnemies[EnemyIndex];
-		SetFocus(CurrentTarget);
-	}
-
-	uint8 CurrTeamIndex = AICharacter->GetOwnerTeam()->TeamIndex;
-	if (CurrTeamIndex == 0) {
-		ABattlefieldGameState* CurrentGameState = Cast<ABattlefieldGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		UTeamComponent* EnemyTeam = CurrentGameState->GetTeamFromID(1);
-		APlayableCharacter* SelectedChar = EnemyTeam->TeamHeroes[FMath::RandRange(0, EnemyTeam->TeamHeroes.Num() - 1)];
-		if (SelectedChar->GetStatsComponent()) {
-			if (SelectedChar->GetStatsComponent()->IsAlive())
-				CurrentTarget = SelectedChar;
-		}
-	}
-	else {
-		ABattlefieldGameState* CurrentGameState = Cast<ABattlefieldGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		UTeamComponent* EnemyTeam = CurrentGameState->GetTeamFromID(0);
-		APlayableCharacter* SelectedChar = EnemyTeam->TeamHeroes[FMath::RandRange(0, EnemyTeam->TeamHeroes.Num() - 1)];
-		if (SelectedChar->GetStatsComponent()) {
-			if(SelectedChar->GetStatsComponent()->IsAlive())
-				CurrentTarget = SelectedChar;
-		}
-	}
-	if (CurrentTarget && CurrentTarget->GetRootComponent()) {
-		FVector MoveLocation = CurrentTarget->GetActorLocation();
-		MoveToLocation(MoveLocation);
-	}
-}
-
-void ABattlefieldAIController::CombatPulse()
-{
-	if (VisibleEnemies.Num() > 0 && !CurrentTarget) {
-		int32 EnemyIndex = FMath::RandRange(0, VisibleEnemies.Num() - 1);
-		CurrentTarget = VisibleEnemies[EnemyIndex];
-		SetFocus(CurrentTarget);
-	}
-	if (CurrentTarget && CurrentTarget->GetRootComponent() && AICharacter) {
-		SetFocus(CurrentTarget);
-		FVector EnemyLoc;
-		FVector MyLoc;
-		if (CurrentTarget && CurrentTarget->GetRootComponent()) {
-			EnemyLoc = CurrentTarget->GetActorLocation();
-		}
-		if (AICharacter && AICharacter->GetRootComponent()) {
-			MyLoc = AICharacter->GetActorLocation();
-		}
-		float DistanceBetween = FMath::Abs(FVector::Distance(EnemyLoc, MyLoc));
-		bool bInRangeToAttack = false;
-		int32 DiceRoll = FMath::RandRange(0, 15);
-		if (DiceRoll != 15) {
-			if (AICharacter->GetCombatComponent()->GetCurrentWeapon()->IsA(AMeleeCombatActor::StaticClass())) {
-				if (DistanceBetween <= 100) {
-					bInRangeToAttack = true;
-				}
-				else {
-					FVector MoveLocation = CurrentTarget->GetActorLocation();
-					MoveToLocation(MoveLocation);
-				}
-			}
-			else if (AICharacter->GetCombatComponent()->GetCurrentWeapon()->IsA(ARangedCombatActor::StaticClass())) {
-				if (DistanceBetween < 300) {
-					MoveToLocation(MyLoc - FVector::Distance(EnemyLoc, MyLoc));
-				}
-				else {
-					AICharacter->AddControllerPitchInput(-20);
-					bInRangeToAttack = true;
-				}
-			}
-			if (bInRangeToAttack) {
-				AICharacter->CharacterAttackStart();
-			}
-			else {
-				FVector MoveLocation = CurrentTarget->GetActorLocation();
-				MoveToLocation(MoveLocation);
-			}
-		}
-		else {
-			AICharacter->CharacterAbilityStart();
-		}
-	}
-}
-*/
 
 void ABattlefieldAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {

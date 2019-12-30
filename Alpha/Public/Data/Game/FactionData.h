@@ -28,5 +28,5 @@ public:
 		FName FactionName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* FactionFlagMesh;
+		USkeletalMesh* FactionFlagMesh;
 };

@@ -44,7 +44,6 @@ void AHumanPlayerController::HeroSelectIndex(uint8 HeroCharIndex) {
 	else {
 		ULogger::ScreenMessage(FColor::Blue, "HumanPlayerController::HeroSelectIndex() - HeroChar not valid");
 	}
-	ULogger::ScreenMessage(FColor::Red, "Spawning Hero");
 	bHeroChosen = true;
 	bGeneralChosen = false;
 	bShowMouseCursor = false;

@@ -11,11 +11,12 @@
 #include "TeamComponent.h"
 #include "Battlefield/BattlefieldGameState.h"
 #include "Game/Modes/Battlefield/BattlefieldGameState.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Logger.h"
 
 AObjectiveOverlapActor::AObjectiveOverlapActor() {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	RootComponent = MeshComp;
+	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
+	RootComponent = SkeletalMeshComp;
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	SphereComponent->SetupAttachment(RootComponent);
 	RequiredCaptureScore = 0;
@@ -168,7 +169,8 @@ void AObjectiveOverlapActor::HandleCapture() {
 		OwningTeam->RemoveObjective(this);
 		OwningTeam = ContestingTeam;
 		OwningTeam->AddObjective(this);
-		MeshComp->SetStaticMesh(OwningTeam->FactionData->FactionFlagMesh->GetStaticMesh());
+		//MeshComp->SetStaticMesh(OwningTeam->FactionData->FactionFlagMesh->GetStaticMesh());
+		SkeletalMeshComp->SetSkeletalMesh(OwningTeam->FactionData->FactionFlagMesh);
 		ResetObjectiveFinished();
 		PlayActorSound(CapturedSound);
 		ULogger::ScreenMessage(FColor::Yellow, "Objective Captured by " + OwningTeam->TeamName);
@@ -213,7 +215,7 @@ UAudioComponent* AObjectiveOverlapActor::PlayActorSound(USoundCue* SoundToPlay) 
 	UAudioComponent* AC = nullptr;
 	if (SoundToPlay)
 	{
-		AC = UGameplayStatics::SpawnSoundAtLocation(MeshComp, SoundToPlay, MeshComp->GetComponentLocation(), MeshComp->GetComponentRotation());
+		AC = UGameplayStatics::SpawnSoundAtLocation(SkeletalMeshComp, SoundToPlay, SkeletalMeshComp->GetComponentLocation(), SkeletalMeshComp->GetComponentRotation());
 	}
 	else {
 		ULogger::ScreenMessage(FColor::Red, "Null Sound");

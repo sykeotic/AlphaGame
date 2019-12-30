@@ -2,6 +2,7 @@
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Logger.h"
 #include "TimerManager.h"
+#include "Combat/Modifiers/HandlerComponent.h"
 #include "Feedback.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Modifier.h"
@@ -249,14 +250,13 @@ void ABaseCombatActor::InitModifiers()
 
 void ABaseCombatActor::ApplyModifiers(AActor* InActor)
 {
-
-	// TODO Add HandlerComponent scan instead of cast
-	APlayableCharacter* HitChar;
-	HitChar = Cast<APlayableCharacter>(InActor);
-	if (HitChar) {
+	UHandlerComponent* TempHandler = InActor->FindComponentByClass<UHandlerComponent>();
+	if (InActor && TempHandler && Modifiers.Num() > 0) {
 		for (AModifier* CurrMod : Modifiers) {
-			HitChar->ApplyModifiers(CurrMod, this);
-		}
+			if (CurrMod && GetCombatComponentOwner() && GetCombatComponentOwner()->GetCharacterOwner()) {
+				TempHandler->ActivateModifier(CurrMod, GetCombatComponentOwner()->GetCharacterOwner());
+			}			
+		}		
 	}
 }
 

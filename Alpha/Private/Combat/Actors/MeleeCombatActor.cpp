@@ -39,7 +39,6 @@ void AMeleeCombatActor::AssignValues(UBaseCombatActorData* InData)
 	UMeleeCombatActorData* TempData = Cast<UMeleeCombatActorData>(InData);
 	MeleeCombatActorStruct = TempData->MeleeCombatActorDataStruct;
 	SphereComponent->SetSphereRadius(MeleeCombatActorStruct.SphereRadius);
-	SphereComponent->SetVisibility(true);
 }
 
 void AMeleeCombatActor::PlayVisualFX()
@@ -51,7 +50,7 @@ void AMeleeCombatActor::ActorBeginOverlap(UPrimitiveComponent * OverlappedComp, 
 {
 	if (GetCombatComponentOwner() != nullptr && GetCombatComponentOwner() != NULL) {
 		if (!OverlappedActors.Contains(OtherActor) && (OtherActor != nullptr) && (OtherActor != GetCombatComponentOwner()->GetCharacterOwner()) && (OtherComp != nullptr) && (OtherActor != this)) {
-			OverlappedActors.Add(OtherActor);
+			OverlappedActors.AddUnique(OtherActor);
 		}
 	}
 }

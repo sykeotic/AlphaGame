@@ -20,9 +20,11 @@ public:
 
 	FBaseEffectDataStruct BaseEffectData;
 
-	virtual void ApplyEffectsToActor(AActor* AffectedActor);
+	virtual void ApplyEffectsToActor(AActor* AffectedActor, bool bPlayFeedback);
 	virtual void AssignValues(UBaseEffectData* InData);
 	virtual void DeactivateEffect(AActor* AffectedActor);
+
+	void ShowEffectFeedback(AActor* AffectedActor);
 
 	void SetModifierOwner(AModifier* InMod);
 

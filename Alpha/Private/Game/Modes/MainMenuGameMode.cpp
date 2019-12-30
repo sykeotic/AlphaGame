@@ -24,7 +24,7 @@ void AMainMenuGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	FMainMenuTeamStruct Team_1;
 	FMainMenuTeamStruct Team_2;
-	Team_2.SelectedFactionData = LoadObject<UFactionData>(NULL, TEXT("FactionData'/Game/Data/DataAssets/Factions/Dwarves.Dwarves'"), NULL, LOAD_None, NULL);
+	// Team_2.SelectedFactionData = LoadObject<UFactionData>(NULL, TEXT("FactionData'/Game/Data/DataAssets/Factions/Dwarves.Dwarves'"), NULL, LOAD_None, NULL);
 	AMainMenuController* InputPlayer = Cast<AMainMenuController>(NewPlayer);
 	if (InputPlayer) {
 		if (GameStruct.MainMenuWidget) {

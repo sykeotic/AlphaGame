@@ -24,6 +24,9 @@ public:
 		UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bShouldTreeRun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SightRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

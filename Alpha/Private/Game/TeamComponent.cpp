@@ -47,7 +47,7 @@ void UTeamComponent::FindAllObjectivesForTeam()
 			AddObjective(CurrObj);
 			CurrObj->OBJECTIVE_STATE = EObjectiveState::CAPTURED;
 			CurrObj->PREV_STATE = EObjectiveState::NEUTRAL;
-			CurrObj->MeshComp->SetStaticMesh(FactionData->FactionFlagMesh->GetStaticMesh());
+			CurrObj->SkeletalMeshComp->SetSkeletalMesh(FactionData->FactionFlagMesh);
 		}
 	}
 }
@@ -60,7 +60,7 @@ void UTeamComponent::AddObjective(AObjectiveOverlapActor* InObjective)
 
 void UTeamComponent::RemoveObjective(AObjectiveOverlapActor* InObjective)
 {
-	if(InObjective)
+	if(InObjective && this)
 		OwnedObjectives.Remove(InObjective);
 }
 
@@ -72,8 +72,8 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FR
 	if (GetWorld()) {
 		if (OwnedObjectives.Num() > 0) {
 			FVector Loc = OwnedObjectives.Last()->GetActorLocation();
-			Loc.X += FMath::RandRange(-500, 500);
-			Loc.Y += FMath::RandRange(-500, 500);
+			Loc.X += FMath::RandRange(-200, 200);
+			Loc.Y += FMath::RandRange(-200, 200);
 			Loc.Z += 100;
 			SpawnChar = GetWorld()->SpawnActor<APlayableCharacter>(APlayableCharacter::StaticClass(), Loc, OwnedObjectives.Last()->GetActorRotation(), SpawnInfo);
 			
@@ -102,7 +102,7 @@ APlayableCharacter* UTeamComponent::SpawnTeamCharacter(FVector SpawnLocation, FR
 			TeamHeroes.Add(SpawnChar);
 		}
 		else {
-
+			ULogger::ScreenMessage(FColor::Yellow, "TEAM IS NULL ASSHOLE");
 		}
 		if (GetWorld()->GetTimeSeconds() > 1) {
 			SpawnChar->PlaySpawnFX(SpawnFX->VisualFX, SpawnFX->SoundFX[0]);
