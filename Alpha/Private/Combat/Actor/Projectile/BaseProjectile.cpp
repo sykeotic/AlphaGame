@@ -87,7 +87,7 @@ void ABaseProjectile::InitProjectileData(FProjectileDataStruct InData, FVector I
 void ABaseProjectile::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (ProjectileData.bDiesUponCollision) {
-		this->Destroy();
+		GetWorld()->DestroyActor(this);
 	}
 	UsePSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileData.Feedback->VisualFX, SweepResult.ImpactPoint, OtherActor->GetActorRotation(), true);
 	UGameplayStatics::SpawnSoundAttached(ProjectileData.Feedback->PickRandomSound(), OtherActor->GetRootComponent());

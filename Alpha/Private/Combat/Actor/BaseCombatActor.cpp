@@ -250,13 +250,15 @@ void ABaseCombatActor::InitModifiers()
 
 void ABaseCombatActor::ApplyModifiers(AActor* InActor)
 {
-	UHandlerComponent* TempHandler = InActor->FindComponentByClass<UHandlerComponent>();
-	if (InActor && TempHandler && Modifiers.Num() > 0) {
-		for (AModifier* CurrMod : Modifiers) {
-			if (CurrMod && GetCombatComponentOwner() && GetCombatComponentOwner()->GetCharacterOwner()) {
-				TempHandler->ActivateModifier(CurrMod, GetCombatComponentOwner()->GetCharacterOwner());
-			}			
-		}		
+	if (InActor) {
+		UHandlerComponent* TempHandler = InActor->FindComponentByClass<UHandlerComponent>();
+		if (TempHandler && Modifiers.Num() > 0) {
+			for (AModifier* CurrMod : Modifiers) {
+				if (CurrMod && GetCombatComponentOwner() && GetCombatComponentOwner()->GetCharacterOwner()) {
+					TempHandler->ActivateModifier(CurrMod, GetCombatComponentOwner()->GetCharacterOwner());
+				}
+			}
+		}
 	}
 }
 

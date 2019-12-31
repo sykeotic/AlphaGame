@@ -107,6 +107,8 @@ public:
 	
 	void HandleDeath();
 
+	bool IsHero();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -145,6 +147,7 @@ private:
 	UHandlerComponent* HandlerComponent;
 
 	bool bIsAIPlayer;
+	bool bIsHero;
 
 	UParticleSystemComponent* SpawnEffect;
 };

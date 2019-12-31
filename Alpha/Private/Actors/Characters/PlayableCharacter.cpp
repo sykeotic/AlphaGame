@@ -79,7 +79,7 @@ void APlayableCharacter::InitCharacterData(UBasePawnData* BaseData) {
 void APlayableCharacter::DestroyActor()
 {
 	CombatComponent->HandleDeath();
-	Destroy();
+	GetWorld()->DestroyActor(this);
 }
 
 void APlayableCharacter::InitCombatComponent() {
@@ -128,11 +128,11 @@ void APlayableCharacter::SwitchOffDecal() {
 	CursorToWorld->SetVisibility(false);
 }
 
-void APlayableCharacter::SetSpawnFX(UParticleSystemComponent* InComp){
+void APlayableCharacter::SetSpawnFX(UParticleSystemComponent* InComp) {
 	SpawnEffect = InComp;
 }
 
-UParticleSystemComponent* APlayableCharacter::GetSpawnFX(){
+UParticleSystemComponent* APlayableCharacter::GetSpawnFX() {
 	return SpawnEffect;
 }
 
@@ -206,9 +206,14 @@ void APlayableCharacter::HandleDeath()
 	}
 	else {
 		ABattlefieldAIController* TempController = Cast<ABattlefieldAIController>(GetController());
-		if(TempController)
+		if (TempController)
 			TempController->HandlePawnDeath();
 	}
+}
+
+bool APlayableCharacter::IsHero()
+{
+	return bIsHero;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -222,31 +227,23 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 }
 
 void APlayableCharacter::AbilityNext() {
-	// if (!bIsAttacking) {
-		CombatComponent->CycleNextAbility();
-		SetAttackingFalse();
-	// }
+	CombatComponent->CycleNextAbility();
+	SetAttackingFalse();
 }
 
 void APlayableCharacter::AbilityPrevious() {
-	// if (!bIsAttacking) {
-		CombatComponent->CyclePreviousAbility();
-		SetAttackingFalse();
-	// }
+	CombatComponent->CyclePreviousAbility();
+	SetAttackingFalse();
 }
 
 void APlayableCharacter::WeaponNext() {
-	// if (!bIsAttacking) {
-		CombatComponent->CycleNextWeapon();
-		SetAttackingFalse();
-	// }
+	CombatComponent->CycleNextWeapon();
+	SetAttackingFalse();
 }
 
 void APlayableCharacter::WeaponPrevious() {
-	// if (!bIsAttacking) {
-		CombatComponent->CyclePreviousWeapon();
-		SetAttackingFalse();
-	// }
+	CombatComponent->CyclePreviousWeapon();
+	SetAttackingFalse();
 }
 
 void APlayableCharacter::MoveForward(float Value)
@@ -404,4 +401,5 @@ void APlayableCharacter::SetCharacterValues() {
 	StatsComponent->SetAlive(true);
 	StatsComponent->SetCurrentHealth(PawnStatsData.MaxHealth);
 	StatsComponent->SetMaxHealth(PawnStatsData.MaxHealth);
+	bIsHero = CharacterData.bIsHero;
 }

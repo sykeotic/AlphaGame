@@ -118,6 +118,8 @@ public:
 		TArray<UBaseCombatActorData*> Abilities;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAnimMontage* DeathAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bIsHero;
 };
 
 /**
